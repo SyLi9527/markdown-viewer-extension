@@ -80,14 +80,14 @@ class ExtensionRenderer {
       throw new Error(response.error);
     }
 
-    // Cache the result (wait for completion to ensure it's saved)
+    // Cache the complete response (base64 + dimensions)
     try {
-      await this.cache.set(cacheKey, response.base64, 'MERMAID_PNG');
+      await this.cache.set(cacheKey, response, 'MERMAID_PNG');
     } catch (error) {
       // Ignore cache errors
     }
     
-    return response.base64;
+    return response;
   }
 
   /**
@@ -113,14 +113,14 @@ class ExtensionRenderer {
       throw new Error(response.error);
     }
 
-    // Cache the result (wait for completion to ensure it's saved)
+    // Cache the complete response (base64 + dimensions)
     try {
-      await this.cache.set(cacheKey, response.base64, 'HTML_PNG');
+      await this.cache.set(cacheKey, response, 'HTML_PNG');
     } catch (error) {
       // Ignore cache errors
     }
     
-    return response.base64;
+    return response;
   }
 
   /**
@@ -144,13 +144,13 @@ class ExtensionRenderer {
       throw new Error(response.error);
     }
 
-    // Cache the result in background (don't await to avoid blocking)
-    this.cache.set(cacheKey, response.base64, 'SVG_PNG').then(() => {
+    // Cache the complete response (base64 + dimensions)
+    this.cache.set(cacheKey, response, 'SVG_PNG').then(() => {
     }).catch(error => {
       // Ignore cache errors
     });
     
-    return response.base64;
+    return response;
   }
 
   /**

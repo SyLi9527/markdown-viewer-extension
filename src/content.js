@@ -455,11 +455,13 @@ function remarkMermaidToPng(renderer) {
           const result = asyncTask(async (data) => {
             const { id, code } = data;
             try {
-              const pngBase64 = await renderer.renderMermaidToPng(code);
+              const pngResult = await renderer.renderMermaidToPng(code);
               const placeholder = document.getElementById(id);
               if (placeholder) {
+                // Calculate display size (1/4 of original PNG size)
+                const displayWidth = Math.round(pngResult.width / 4);
                 placeholder.outerHTML = `<div class="mermaid-diagram" style="text-align: center; margin: 20px 0;">
-                  <img src="data:image/png;base64,${pngBase64}" alt="Mermaid diagram" />
+                  <img src="data:image/png;base64,${pngResult.base64}" alt="Mermaid diagram" width="${displayWidth}px" />
                 </div>`;
               }
             } catch (error) {
@@ -495,11 +497,13 @@ function remarkHtmlToPng(renderer) {
           const result = asyncTask(async (data) => {
             const { id, code } = data;
             try {
-              const pngBase64 = await renderer.renderHtmlToPng(code);
+              const pngResult = await renderer.renderHtmlToPng(code);
               const placeholder = document.getElementById(id);
               if (placeholder) {
+                // Calculate display size (1/4 of original PNG size)
+                const displayWidth = Math.round(pngResult.width / 4);
                 placeholder.outerHTML = `<div class="html-diagram" style="text-align: center; margin: 20px 0;">
-                  <img src="data:image/png;base64,${pngBase64}" alt="HTML diagram" />
+                  <img src="data:image/png;base64,${pngResult.base64}" alt="HTML diagram" width="${displayWidth}px" />
                 </div>`;
               }
             } catch (error) {
@@ -573,12 +577,14 @@ async function processSvgImages(html, renderer) {
           throw new Error('No SVG content available');
         }
         
-        const pngBase64 = await renderer.renderSvgToPng(svgContent);
+        const pngResult = await renderer.renderSvgToPng(svgContent);
         const placeholder = document.getElementById(id);
         if (placeholder) {
-          placeholder.outerHTML = `<div class="svg-diagram" style="text-align: center; margin: 20px 0;">
-            <img src="data:image/png;base64,${pngBase64}" alt="SVG diagram" />
-          </div>`;
+          // Calculate display size (1/4 of original PNG size)
+          const displayWidth = Math.round(pngResult.width / 4);
+          placeholder.outerHTML = `<span class="svg-diagram" style="text-align: center; margin: 20px 0;">
+            <img src="data:image/png;base64,${pngResult.base64}" alt="SVG diagram" width="${displayWidth}px" />
+          </span>`;
         }
       } catch (error) {
         const placeholder = document.getElementById(id);

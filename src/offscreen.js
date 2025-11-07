@@ -153,7 +153,7 @@ async function renderHtmlToPng(htmlContent, targetWidth = 1200) {
     // Use html2canvas to capture
     const canvas = await html2canvas(container, {
       backgroundColor: '#ffffff',
-      scale: 2,
+      scale: 4,
       logging: false,
       useCORS: true,
       allowTaint: true,
@@ -179,7 +179,11 @@ async function renderHtmlToPng(htmlContent, targetWidth = 1200) {
     container.innerHTML = '';
     container.style.cssText = 'display: block;';
     
-    return { base64: base64Data };
+    return { 
+      base64: base64Data,
+      width: canvas.width,
+      height: canvas.height
+    };
   } catch (error) {
     // Cleanup on error
     const container = document.getElementById('html-container');
@@ -340,7 +344,11 @@ async function renderSvgToPng(svgContent) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     container.innerHTML = '';
     
-    return { base64: base64Data };
+    return { 
+      base64: base64Data,
+      width: canvas.width,
+      height: canvas.height
+    };
   } catch (error) {
     return { error: error.message };
   }
