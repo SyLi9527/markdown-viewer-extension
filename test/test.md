@@ -124,6 +124,9 @@ URLs for the reference above:
 **网络图片：**
 ![Random Photo](https://picsum.photos/400/300)
 
+**GitHub 图片示例：**
+![alt text](https://raw.githubusercontent.com/xicilion/markdown-viewer-extension/refs/heads/main/test/icon48.png "Logo Title Text 1")
+
 **本地图片（相对路径）：**
 ![Icon](../icons/icon128.png)
 

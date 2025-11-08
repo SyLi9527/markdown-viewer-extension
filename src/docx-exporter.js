@@ -401,17 +401,22 @@ class DocxExporter {
       });
       
       // Generate blob
-      const blob = await Packer.toBlob(doc);
-      
-      // Download file
-      this.downloadBlob(blob, filename);
-      
-      // Clean up progress tracking
-      this.progressCallback = null;
-      this.totalResources = 0;
-      this.processedResources = 0;
-      
-      return { success: true };
+      try {
+        const blob = await Packer.toBlob(doc);
+        
+        // Download file
+        this.downloadBlob(blob, filename);
+        
+        // Clean up progress tracking
+        this.progressCallback = null;
+        this.totalResources = 0;
+        this.processedResources = 0;
+        
+        return { success: true };
+      } catch (packError) {
+        console.error('Failed to generate DOCX:', packError);
+        throw new Error(`Failed to generate DOCX: ${packError.message}`);
+      }
     } catch (error) {
       console.error('DOCX export error:', error);
       return { success: false, error: error.message };
@@ -828,22 +833,52 @@ class DocxExporter {
       return result;
     }
 
-    // Handle http:// and https:// URLs
+    // Handle http:// and https:// URLs - use background script to fetch
     if (url.startsWith('http://') || url.startsWith('https://')) {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch image: HTTP ${response.status}`);
-      }
-      
-      const arrayBuffer = await response.arrayBuffer();
-      const contentType = response.headers.get('content-type') || 'image/png';
-      
-      const result = { 
-        buffer: new Uint8Array(arrayBuffer),  // Convert to Uint8Array
-        contentType 
-      };
-      this.imageCache.set(url, result);
-      return result;
+      return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage({
+          type: 'READ_LOCAL_FILE',
+          filePath: url,
+          binary: true
+        }, (response) => {
+          if (response.error) {
+            reject(new Error(response.error));
+            return;
+          }
+          
+          // Convert base64 to Uint8Array
+          const binaryString = atob(response.content);
+          const len = binaryString.length;
+          const bytes = new Uint8Array(len);
+          for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          
+          // Use content type from response, or determine from URL extension
+          let contentType = response.contentType;
+          if (!contentType) {
+            const ext = url.split('.').pop().toLowerCase().split('?')[0];
+            const contentTypeMap = {
+              'png': 'image/png',
+              'jpg': 'image/jpeg',
+              'jpeg': 'image/jpeg',
+              'gif': 'image/gif',
+              'bmp': 'image/bmp',
+              'webp': 'image/webp',
+              'svg': 'image/svg+xml'
+            };
+            contentType = contentTypeMap[ext] || 'image/png';
+          }
+          
+          const result = {
+            buffer: bytes,
+            contentType: contentType
+          };
+          
+          this.imageCache.set(url, result);
+          resolve(result);
+        });
+      });
     }
 
     // Handle local file:// URLs
@@ -1017,11 +1052,13 @@ class DocxExporter {
       console.warn('Failed to load image:', node.url, error);
       // Report progress even on error
       this.reportResourceProgress();
-      // Fallback to text placeholder
+      
+      // Fallback to text placeholder with more visible formatting
       return new TextRun({
-        text: `[Image: ${node.alt || node.url}]`,
+        text: `[图片加载失败: ${node.alt || node.url}]`,
         italics: true,
-        color: '666666',
+        color: 'DC2626', // Red color to make it more visible
+        bold: true,
       });
     }
   }
@@ -1710,7 +1747,44 @@ class DocxExporter {
   /**
    * Download blob as file
    */
-  downloadBlob(blob, filename) {
+  /**
+   * Download blob as file
+   */
+  async downloadBlob(blob, filename) {
+    try {
+      // Convert blob to base64 for transmission to background script
+      const arrayBuffer = await blob.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const base64 = btoa(binary);
+      
+      // Send to background script to handle download
+      chrome.runtime.sendMessage({
+        type: 'DOWNLOAD_FILE',
+        filename: filename,
+        data: base64,
+        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      }, (response) => {
+        if (response && response.error) {
+          console.error('Download error:', response.error);
+          // Fallback to traditional method
+          this.fallbackDownload(blob, filename);
+        }
+      });
+    } catch (error) {
+      console.error('Download failed:', error);
+      // Try fallback method
+      this.fallbackDownload(blob, filename);
+    }
+  }
+  
+  /**
+   * Fallback download method using <a> element
+   */
+  fallbackDownload(blob, filename) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -1720,7 +1794,6 @@ class DocxExporter {
     document.body.appendChild(a);
     a.click();
     
-    // Cleanup
     setTimeout(() => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);

@@ -94,6 +94,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     handleFileRead(message, sendResponse);
     return true; // Keep message channel open for async response
   }
+  
+  // Handle file download
+  if (message.type === 'DOWNLOAD_FILE') {
+    handleFileDownload(message, sendResponse);
+    return true; // Keep message channel open for async response
+  }
 });
 
 async function handleContentCacheOperation(message, sendResponse) {
@@ -189,6 +195,9 @@ async function handleFileRead(message, sendResponse) {
       throw new Error(`Failed to read file: ${response.status} ${response.statusText}`);
     }
     
+    // Get content type from response headers
+    const contentType = response.headers.get('content-type') || '';
+    
     // Check if binary mode is requested
     if (message.binary) {
       // Read as ArrayBuffer for binary files (images)
@@ -200,12 +209,37 @@ async function handleFileRead(message, sendResponse) {
         binary += String.fromCharCode(bytes[i]);
       }
       const base64 = btoa(binary);
-      sendResponse({ content: base64 });
+      sendResponse({ 
+        content: base64,
+        contentType: contentType 
+      });
     } else {
       // Read as text for text files
       const content = await response.text();
       sendResponse({ content });
     }
+  } catch (error) {
+    sendResponse({ error: error.message });
+  }
+}
+
+async function handleFileDownload(message, sendResponse) {
+  try {
+    // Convert base64 to data URL
+    const dataUrl = `data:${message.mimeType};base64,${message.data}`;
+    
+    // Use chrome.downloads API
+    chrome.downloads.download({
+      url: dataUrl,
+      filename: message.filename,
+      saveAs: true
+    }, (downloadId) => {
+      if (chrome.runtime.lastError) {
+        sendResponse({ error: chrome.runtime.lastError.message });
+      } else {
+        sendResponse({ downloadId: downloadId });
+      }
+    });
   } catch (error) {
     sendResponse({ error: error.message });
   }
