@@ -633,6 +633,8 @@ async function fetchData<T>(url: string): Promise<T> {
 
 当 $x \to \infty$ 时，函数 $f(x) = \frac{1}{x}$ 趋于 $0$。
 
+箭头扩展测试：$\xleftarrow{R}$。
+
 ### 6.2 块级公式
 
 **二次方程求根公式：**

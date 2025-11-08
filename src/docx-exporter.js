@@ -21,34 +21,13 @@ import {
   ExternalHyperlink,
 } from 'docx';
 import { VerticalAlign as VerticalAlignTable } from 'docx';
-import { mathJaxReady, convertLatex2Math as originalConvertLatex2Math } from '@hungknguyen/docx-math-converter';
+import { mathJaxReady, convertLatex2Math } from './docx-math-converter.js';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import remarkMath from 'remark-math';
 import { visit } from 'unist-util-visit';
-
-// Patch convertLatex2Math to fix issues with unsupported LaTeX commands
-function convertLatex2Math(latex) {
-  // Preprocessing: handle commands that MathJax converts to unsupported OMML structures
-  let processedLatex = latex;
-  
-  // \xleftarrow and \xrightarrow use <mover> which needs special handling
-  // Convert to explicit stacked structure
-  processedLatex = processedLatex.replace(/\\xleftarrow\{([^}]+)\}/g, '\\overset{$1}{\\leftarrow}');
-  processedLatex = processedLatex.replace(/\\xrightarrow\{([^}]+)\}/g, '\\overset{$1}{\\rightarrow}');
-  
-  // \xleftrightarrow
-  processedLatex = processedLatex.replace(/\\xleftrightarrow\{([^}]+)\}/g, '\\overset{$1}{\\leftrightarrow}');
-  
-  // More extensible arrow commands
-  processedLatex = processedLatex.replace(/\\xLeftarrow\{([^}]+)\}/g, '\\overset{$1}{\\Leftarrow}');
-  processedLatex = processedLatex.replace(/\\xRightarrow\{([^}]+)\}/g, '\\overset{$1}{\\Rightarrow}');
-  processedLatex = processedLatex.replace(/\\xLeftrightarrow\{([^}]+)\}/g, '\\overset{$1}{\\Leftrightarrow}');
-  
-  return originalConvertLatex2Math(processedLatex);
-}
 
 /**
  * Main class for exporting Markdown to DOCX
