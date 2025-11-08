@@ -189,8 +189,23 @@ async function handleFileRead(message, sendResponse) {
       throw new Error(`Failed to read file: ${response.status} ${response.statusText}`);
     }
     
-    const content = await response.text();
-    sendResponse({ content });
+    // Check if binary mode is requested
+    if (message.binary) {
+      // Read as ArrayBuffer for binary files (images)
+      const arrayBuffer = await response.arrayBuffer();
+      // Convert to base64 for transmission
+      const bytes = new Uint8Array(arrayBuffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const base64 = btoa(binary);
+      sendResponse({ content: base64 });
+    } else {
+      // Read as text for text files
+      const content = await response.text();
+      sendResponse({ content });
+    }
   } catch (error) {
     sendResponse({ error: error.message });
   }

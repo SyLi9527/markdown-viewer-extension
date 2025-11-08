@@ -209,8 +209,9 @@ body.toc-hidden #markdown-wrapper {
 #markdown-content blockquote {
   border-left: 4px solid #dfe2e5;
   color: #6a737d;
-  padding: 0 15px;
+  padding: 1px 15px;
   margin: 0;
+  background-color: #f6f8fa;
 }
 
 #markdown-content ul, #markdown-content ol {
@@ -416,6 +417,70 @@ body.toc-hidden #markdown-wrapper {
 
 .svg-placeholder .async-spinner {
   border-top-color: #ffc107;
+}
+
+/* Export Button Styles */
+.export-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
+.export-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.export-button:active {
+  transform: translateY(0);
+}
+
+.export-button .icon {
+  font-size: 18px;
+}
+
+.export-button.exporting {
+  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+  cursor: wait;
+  pointer-events: none;
+}
+
+.export-button.exporting::after {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-left: 8px;
+  border: 2px solid white;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Hide export button when printing */
+@media print {
+  .export-button {
+    display: none !important;
+  }
 }
 
 /* Print Styles - Only show content area */

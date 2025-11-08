@@ -20,7 +20,10 @@ export const createBuildConfig = () => {
     // Define globals
     define: {
       'process.env.NODE_ENV': '"production"',
+      'global': 'globalThis', // Polyfill for global
     },
+    // Inject Node.js polyfills for browser environment
+    inject: ['./scripts/buffer-shim.js'],
     loader: {
       '.css': 'css', // Load CSS files properly to handle @import
       '.woff': 'file',

@@ -12,6 +12,7 @@ import rehypeStringify from 'rehype-stringify';
 import { visit } from 'unist-util-visit';
 import ExtensionRenderer from './renderer.js';
 import ExtensionCacheManager from './cache-manager.js';
+import DocxExporter from './docx-exporter.js';
 
 // Background Cache Proxy for Content Scripts
 class BackgroundCacheManagerProxy {
@@ -166,31 +167,6 @@ function restoreScrollPosition(scrollPosition) {
       performScroll();
     }
   });
-}
-
-/**
- * Normalize list markers in markdown text
- * Converts non-standard list markers to standard ones
- * @param {string} markdown - Raw markdown content
- * @returns {string} Normalized markdown
- */
-function normalizeListMarkers(markdown) {
-  // Convert bullet points (•) to standard dashes
-  // Handle Tab + bullet + Tab pattern (common in some editors)
-  let normalized = markdown.replace(/^(\s*)\t*[•◦▪▫]\t*\s*/gm, '$1- ');
-
-  // Convert other common bullet symbols with various whitespace patterns
-  normalized = normalized.replace(/^(\s*)\t*[▸▹►▷]\t*\s*/gm, '$1- ');
-
-  // Handle cases where there are only tabs (convert to 2 spaces per tab for proper indentation)
-  normalized = normalized.replace(/^(\t+)/gm, (match, tabs) => {
-    return '  '.repeat(tabs.length);
-  });
-
-  // Convert numbered lists with various number formats
-  normalized = normalized.replace(/^(\s*)([①②③④⑤⑥⑦⑧⑨⑩])\s+/gm, '$1$2. ');
-
-  return normalized;
 }
 
 /**
@@ -670,8 +646,12 @@ function escapeHtml(text) {
 const cacheManager = new BackgroundCacheManagerProxy();
 const renderer = new ExtensionRenderer(cacheManager);
 
+// Initialize DOCX exporter
+const docxExporter = new DocxExporter(renderer);
+
 // Store renderer globally for debugging and access from other parts
 window.extensionRenderer = renderer;
+window.docxExporter = docxExporter;
 
 // Listen for cache operations messages
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -770,6 +750,10 @@ document.body.innerHTML = `
   <div id="markdown-wrapper">
     <div id="markdown-content"></div>
   </div>
+  <button id="export-docx-btn" class="export-button" title="Export to DOCX">
+    <span class="icon">📄</span>
+    <span class="text">Export to DOCX</span>
+  </button>
 `;
 
 // Wait a bit for DOM to be ready, then start processing
@@ -785,6 +769,9 @@ setTimeout(async () => {
 
   // Setup responsive behavior
   setupResponsiveToc();
+  
+  // Setup export button
+  setupExportButton();
   
   // Now that all DOM is ready, process async tasks
   // Add a small delay to ensure DOM is fully rendered and visible
@@ -828,7 +815,6 @@ async function renderMarkdown(markdown, savedScrollPosition = 0) {
 
   // Pre-process markdown to normalize math blocks and list markers
   let normalizedMarkdown = normalizeMathBlocks(markdown);
-  normalizedMarkdown = normalizeListMarkers(normalizedMarkdown);
 
   try {
     // Setup markdown processor with async plugins
@@ -937,6 +923,84 @@ function setupTocToggle() {
 
   // Close TOC when clicking overlay (for mobile)
   overlayDiv.addEventListener('click', toggleToc);
+}
+
+function setupExportButton() {
+  const exportBtn = document.getElementById('export-docx-btn');
+  
+  if (!exportBtn) return;
+  
+  exportBtn.addEventListener('click', async () => {
+    // Prevent multiple clicks
+    if (exportBtn.classList.contains('exporting')) {
+      return;
+    }
+    
+    try {
+      // Update button state
+      exportBtn.classList.add('exporting');
+      const originalText = exportBtn.querySelector('.text').textContent;
+      exportBtn.querySelector('.text').textContent = 'Exporting...';
+      
+      // Get the original markdown content
+      const markdown = rawMarkdown;
+      
+      // Generate filename from document title or URL
+      const filename = getDocumentFilename();
+      
+      // Export to DOCX
+      const result = await docxExporter.exportToDocx(markdown, filename);
+      
+      if (result.success) {
+        // Show success feedback
+        exportBtn.querySelector('.text').textContent = 'Exported!';
+        setTimeout(() => {
+          exportBtn.querySelector('.text').textContent = originalText;
+          exportBtn.classList.remove('exporting');
+        }, 2000);
+      } else {
+        throw new Error(result.error || 'Export failed');
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+      alert('导出失败: ' + error.message);
+      
+      // Reset button
+      exportBtn.querySelector('.text').textContent = 'Export to DOCX';
+      exportBtn.classList.remove('exporting');
+    }
+  });
+}
+
+function getDocumentFilename() {
+  // Try to get filename from URL
+  const url = window.location.href;
+  const urlParts = url.split('/');
+  const lastPart = urlParts[urlParts.length - 1];
+  
+  // Remove .md or .markdown extension and add .docx
+  if (lastPart) {
+    const nameWithoutExt = lastPart.replace(/\.(md|markdown)$/i, '');
+    if (nameWithoutExt) {
+      return nameWithoutExt + '.docx';
+    }
+  }
+  
+  // Try to get from first h1 heading
+  const firstH1 = document.querySelector('#markdown-content h1');
+  if (firstH1) {
+    const title = firstH1.textContent.trim()
+      .replace(/[^\w\s-]/g, '') // Remove special chars
+      .replace(/\s+/g, '-') // Replace spaces with dashes
+      .substring(0, 50); // Limit length
+    
+    if (title) {
+      return title + '.docx';
+    }
+  }
+  
+  // Default fallback
+  return 'document.docx';
 }
 
 function setupResponsiveToc() {
