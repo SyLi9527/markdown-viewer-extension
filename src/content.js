@@ -799,8 +799,11 @@ setTimeout(async () => {
   // Parse and render markdown
   await renderMarkdown(rawMarkdown, savedScrollPosition);
 
-  // Setup TOC toggle (using keyboard shortcut)
+  // Setup TOC toggle
   setupTocToggle();
+
+  // Setup keyboard shortcuts
+  setupKeyboardShortcuts();
 
   // Setup responsive behavior
   setupResponsiveToc();
@@ -940,19 +943,42 @@ function setupTocToggle() {
     overlayDiv.classList.toggle('hidden');
   };
 
-  // Use keyboard shortcut (Ctrl+T or Cmd+T) to toggle TOC
-  document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 't') {
-      e.preventDefault();
-      toggleToc();
-    }
-  });
-
   // Close TOC when clicking overlay (for mobile)
   overlayDiv.addEventListener('click', toggleToc);
   
-  // Return toggleToc function for use by toolbar button
+  // Return toggleToc function for use by toolbar button and keyboard shortcuts
   return toggleToc;
+}
+
+// Setup global keyboard shortcuts
+function setupKeyboardShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    // Ctrl/Cmd + B: Toggle TOC
+    if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+      e.preventDefault();
+      const tocDiv = document.getElementById('table-of-contents');
+      const overlayDiv = document.getElementById('toc-overlay');
+      if (tocDiv && overlayDiv) {
+        tocDiv.classList.toggle('hidden');
+        document.body.classList.toggle('toc-hidden');
+        overlayDiv.classList.toggle('hidden');
+      }
+      return;
+    }
+    
+    // Ctrl/Cmd + S: Download as DOCX
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      const downloadBtn = document.getElementById('download-btn');
+      if (downloadBtn && !downloadBtn.disabled) {
+        downloadBtn.click();
+      }
+      return;
+    }
+    
+    // Ctrl/Cmd + P: Print (browser default, but we ensure it's enabled)
+    // No need to prevent default for print, browser handles it well
+  });
 }
 
 function initializeToolbar() {
