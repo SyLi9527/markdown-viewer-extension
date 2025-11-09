@@ -202,6 +202,159 @@ function initializeContentScript() {
     return normalized;
   }
 
+  /**
+   * Sanitize rendered HTML to remove active content like scripts before injection
+   * @param {string} html - Raw HTML string produced by the markdown pipeline
+   * @returns {string} Sanitized HTML safe for innerHTML assignment
+   */
+  function sanitizeRenderedHtml(html) {
+    try {
+      const template = document.createElement('template');
+      template.innerHTML = html;
+
+      sanitizeNodeTree(template.content);
+
+      return template.innerHTML;
+    } catch (error) {
+      return html;
+    }
+  }
+
+  /**
+   * Walk the node tree and remove dangerous elements/attributes
+   * @param {Node} root - Root node to sanitize
+   */
+  function sanitizeNodeTree(root) {
+  const blockedTags = new Set(['SCRIPT', 'IFRAME', 'OBJECT', 'EMBED', 'AUDIO', 'VIDEO']);
+    const stack = [];
+
+    Array.from(root.childNodes).forEach((child) => {
+      if (child.nodeType === Node.ELEMENT_NODE) {
+        stack.push(child);
+      } else if (child.nodeType === Node.COMMENT_NODE) {
+        child.remove();
+      }
+    });
+
+    while (stack.length > 0) {
+      const node = stack.pop();
+
+      if (node.nodeType !== Node.ELEMENT_NODE) {
+        continue;
+      }
+
+      const tagName = node.tagName ? node.tagName.toUpperCase() : '';
+      if (blockedTags.has(tagName)) {
+  const originalMarkup = node.outerHTML || `<${tagName.toLowerCase()}>`;
+  const truncatedMarkup = originalMarkup.length > 500 ? `${originalMarkup.slice(0, 500)}...` : originalMarkup;
+        const warning = document.createElement('pre');
+        warning.className = 'blocked-html-warning';
+        warning.setAttribute('style', 'background: #fee; border-left: 4px solid #f00; padding: 10px; font-size: 12px; white-space: pre-wrap;');
+  const message = `Blocked insecure <${tagName.toLowerCase()}> element removed.
+
+${truncatedMarkup}`;
+        warning.textContent = message;
+        node.replaceWith(warning);
+        continue;
+      }
+
+      sanitizeElementAttributes(node);
+
+      Array.from(node.childNodes).forEach((child) => {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+          stack.push(child);
+        } else if (child.nodeType === Node.COMMENT_NODE) {
+          child.remove();
+        }
+      });
+    }
+  }
+
+  /**
+   * Strip unsafe attributes from an element
+   * @param {Element} element - Element to sanitize
+   */
+  function sanitizeElementAttributes(element) {
+    if (!element.hasAttributes()) {
+      return;
+    }
+
+    const urlAttributes = ['src', 'href', 'xlink:href', 'action', 'formaction', 'poster', 'data', 'srcset'];
+
+    Array.from(element.attributes).forEach((attr) => {
+      const attrName = attr.name.toLowerCase();
+
+      if (attrName.startsWith('on')) {
+        element.removeAttribute(attr.name);
+        return;
+      }
+
+      if (urlAttributes.includes(attrName)) {
+        if (attrName === 'srcset') {
+          if (!isSafeSrcset(attr.value)) {
+            element.removeAttribute(attr.name);
+          }
+        } else if (attrName === 'href' || attrName === 'xlink:href') {
+          if (attr.value && attr.value.trim()) {
+            element.setAttribute(attr.name, '#');
+          } else {
+            element.removeAttribute(attr.name);
+          }
+        } else if (!isSafeUrl(attr.value)) {
+          element.removeAttribute(attr.name);
+        }
+      }
+    });
+  }
+
+  /**
+   * Validate that every URL candidate in a srcset attribute is safe
+   * @param {string} value - Raw srcset value
+   * @returns {boolean} True when every entry is safe
+   */
+  function isSafeSrcset(value) {
+    if (!value) {
+      return true;
+    }
+
+    return value.split(',').every((candidate) => {
+      const urlPart = candidate.trim().split(/\s+/)[0];
+      return isSafeUrl(urlPart);
+    });
+  }
+
+  /**
+   * Validate URL values and block javascript-style protocols
+   * @param {string} url - URL to validate
+   * @returns {boolean} True when URL is considered safe
+   */
+  function isSafeUrl(url) {
+    if (!url) {
+      return true;
+    }
+
+    const trimmed = url.trim();
+    if (!trimmed || trimmed.startsWith('#')) {
+      return true;
+    }
+
+    const lower = trimmed.toLowerCase();
+    if (lower.startsWith('javascript:') || lower.startsWith('vbscript:') || lower.startsWith('data:text/javascript')) {
+      return false;
+    }
+
+    if (lower.startsWith('data:')) {
+      return lower.startsWith('data:image/') || lower.startsWith('data:application/pdf');
+    }
+
+    try {
+      const parsed = new URL(trimmed, document.baseURI);
+      return ['http:', 'https:', 'mailto:', 'tel:', 'chrome-extension:', 'file:'].includes(parsed.protocol);
+    } catch (error) {
+      return false;
+    }
+  }
+
   // Global async task queue
   const asyncTaskQueue = [];
   let asyncTaskIdCounter = 0;
@@ -362,7 +515,6 @@ function initializeContentScript() {
 
         if (fetchingTasks.length === 0) {
           // No more tasks to process (shouldn't happen), break the loop
-          console.warn('No ready or fetching tasks found, breaking loop');
           break;
         }
 
@@ -462,37 +614,57 @@ function initializeContentScript() {
         // Collect all significant HTML nodes
         visit(tree, 'html', (node, index, parent) => {
           const htmlContent = node.value.trim();
+          if (!htmlContent) {
+            return;
+          }
 
-          // Check if it's a significant HTML block (any HTML tag with sufficient content)
-          // Allow common block elements: div, table, svg, dl, ul, ol, form, fieldset, etc.
-          const isBlockElement = /^<(div|table|svg|dl|ul|ol|form|fieldset|section|article|aside|header|footer|nav|main|figure)/i.test(htmlContent);
-          if (isBlockElement && htmlContent.length > 100) {
-            // Create async task for HTML processing
-            // HTML code is embedded data, so it's ready immediately
-            const result = asyncTask(async (data) => {
-              const { id, code } = data;
-              try {
-                const pngResult = await renderer.renderHtmlToPng(code);
-                const placeholder = document.getElementById(id);
-                if (placeholder) {
-                  // Calculate display size (1/4 of original PNG size)
-                  const displayWidth = Math.round(pngResult.width / 4);
-                  placeholder.outerHTML = `<div class="html-diagram" style="text-align: center; margin: 20px 0;">
-                  <img src="data:image/png;base64,${pngResult.base64}" alt="HTML diagram" width="${displayWidth}px" />
-                </div>`;
-                }
-              } catch (error) {
-                const placeholder = document.getElementById(id);
-                if (placeholder) {
-                  const errorDetail = escapeHtml(error.message || '');
-                  const localizedError = translate('async_html_convert_error', [errorDetail])
-                    || `HTML conversion error: ${errorDetail}`;
-                  placeholder.outerHTML = `<pre style="background: #fee; border-left: 4px solid #f00; padding: 10px; font-size: 12px;">${localizedError}</pre>`;
-                }
+          const sanitizedHtml = sanitizeRenderedHtml(htmlContent);
+          if (!sanitizedHtml || sanitizedHtml.replace(/\s+/g, '').length <= 0) {
+            return;
+          }
+
+          const result = asyncTask(async (data) => {
+            const { id, code } = data;
+            try {
+              const pngResult = await renderer.renderHtmlToPng(code);
+              const placeholder = document.getElementById(id);
+              if (!placeholder) {
+                return;
               }
-            }, { code: node.value }, 'html', '', 'ready'); // Embedded code is ready immediately
 
-            // Replace HTML node with placeholder
+              const renderedBase64 = pngResult?.base64 ? pngResult.base64.trim() : '';
+              const isLikelyPng = renderedBase64.startsWith('iVBOR');
+              if (!pngResult || pngResult.error || !renderedBase64 || !isLikelyPng) {
+                const fallbackReason = !pngResult || pngResult.error
+                  ? (pngResult?.error || 'Renderer returned empty image data')
+                  : (!renderedBase64 ? 'Renderer returned empty image data' : 'Renderer returned invalid image data');
+                const errorDetail = escapeHtml(fallbackReason);
+                const localizedError = translate('async_html_convert_error', [errorDetail])
+                  || `HTML conversion error: ${errorDetail}`;
+                const truncated = code.length > 500 ? `${code.slice(0, 500)}...` : code;
+                const snippet = escapeHtml(truncated);
+                placeholder.outerHTML = `<pre style="background: #fee; border-left: 4px solid #f00; padding: 10px; font-size: 12px;">${localizedError}\n\n${snippet}</pre>`;
+                return;
+              }
+
+              const displayWidth = Math.round(pngResult.width / 4);
+              placeholder.outerHTML = `<div class="html-diagram" style="text-align: center; margin: 20px 0;">
+                <img src="data:image/png;base64,${renderedBase64}" alt="HTML diagram" width="${displayWidth}px" />
+              </div>`;
+            } catch (error) {
+              const placeholder = document.getElementById(id);
+              if (placeholder) {
+                const errorDetail = escapeHtml(error.message || '');
+                const localizedError = translate('async_html_convert_error', [errorDetail])
+                  || `HTML conversion error: ${errorDetail}`;
+                const truncated = code.length > 500 ? `${code.slice(0, 500)}...` : code;
+                const snippet = escapeHtml(truncated);
+                placeholder.outerHTML = `<pre style="background: #fee; border-left: 4px solid #f00; padding: 10px; font-size: 12px;">${localizedError}\n\n${snippet}</pre>`;
+              }
+            }
+          }, { code: sanitizedHtml }, 'html', '', 'ready');
+
+          if (result && result.placeholder) {
             parent.children[index] = result.placeholder;
           }
         });
@@ -893,6 +1065,9 @@ function initializeContentScript() {
       // Add table centering for better Word compatibility
       htmlContent = processTablesForWordCompatibility(htmlContent);
 
+      // Sanitize HTML before injecting into the document
+      htmlContent = sanitizeRenderedHtml(htmlContent);
+
       contentDiv.innerHTML = htmlContent;
 
       // Show the content container
@@ -1245,7 +1420,6 @@ function initializeContentScript() {
       printBtn.addEventListener('click', async () => {
         const contentDiv = document.getElementById('markdown-content');
         if (!contentDiv) {
-          console.warn('Print content not found');
           return;
         }
 
@@ -1286,7 +1460,6 @@ function initializeContentScript() {
     try {
       fileName = decodeURIComponent(fileName);
     } catch (e) {
-      console.warn('Failed to decode filename:', e);
     }
 
     return fileName;
