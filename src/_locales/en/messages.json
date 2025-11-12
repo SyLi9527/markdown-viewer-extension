@@ -135,6 +135,10 @@
     "message": "Print",
     "description": "Toolbar print tooltip"
   },
+  "toolbar_print_disabled_title": {
+    "message": "Print is only available for local files",
+    "description": "Tooltip when print button is disabled for remote files"
+  },
   "async_placeholder_type_mermaid": {
     "message": "Mermaid diagram",
     "description": "Label for mermaid async placeholder"

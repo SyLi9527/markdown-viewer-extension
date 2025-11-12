@@ -135,6 +135,10 @@
     "message": "Drucken",
     "description": "Tooltip für Drucken"
   },
+  "toolbar_print_disabled_title": {
+    "message": "Drucken ist nur für lokale Dateien verfügbar",
+    "description": "Tooltip wenn Drucken-Button für Remote-Dateien deaktiviert ist"
+  },
   "async_placeholder_type_mermaid": {
     "message": "Mermaid-Diagramm",
     "description": "Beschriftung für Mermaid-Platzhalter"

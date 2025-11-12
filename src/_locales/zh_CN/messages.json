@@ -135,6 +135,10 @@
     "message": "打印",
     "description": "打印按钮提示"
   },
+  "toolbar_print_disabled_title": {
+    "message": "打印功能仅适用于本地文件",
+    "description": "远程文件时打印按钮禁用提示"
+  },
   "async_placeholder_type_mermaid": {
     "message": "Mermaid 图表",
     "description": "Mermaid 异步占位标签"

@@ -135,6 +135,10 @@
     "message": "Imprimer",
     "description": "Infobulle du bouton d'impression"
   },
+  "toolbar_print_disabled_title": {
+    "message": "L'impression n'est disponible que pour les fichiers locaux",
+    "description": "Infobulle quand le bouton d'impression est désactivé pour les fichiers distants"
+  },
   "async_placeholder_type_mermaid": {
     "message": "Diagramme Mermaid",
     "description": "Libellé pour le placeholder Mermaid"

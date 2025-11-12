@@ -135,6 +135,10 @@
     "message": "印刷",
     "description": "印刷ボタンのツールチップ"
   },
+  "toolbar_print_disabled_title": {
+    "message": "印刷はローカルファイルでのみ利用可能です",
+    "description": "リモートファイルで印刷ボタンが無効な時のツールチップ"
+  },
   "async_placeholder_type_mermaid": {
     "message": "Mermaid 図",
     "description": "Mermaid プレースホルダーのラベル"

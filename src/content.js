@@ -873,6 +873,7 @@ ${truncatedMarkup}`;
   const toolbarLayoutTitleNarrow = translate('toolbar_layout_title_narrow');
   const toolbarDownloadTitle = translate('toolbar_download_title');
   const toolbarPrintTitle = translate('toolbar_print_title');
+  const toolbarPrintDisabledTitle = translate('toolbar_print_disabled_title');
 
   const toggleTocTitleAttr = escapeHtml(toolbarToggleTocTitle);
   const zoomOutTitleAttr = escapeHtml(toolbarZoomOutTitle);
@@ -1138,73 +1139,15 @@ ${truncatedMarkup}`;
     });
   }
 
-  const PRINT_UPLOAD_CHUNK_SIZE = 256 * 1024;
-
   async function dispatchPrintJob(html, metadata = {}) {
-    const htmlString = typeof html === 'string' ? html : '';
-    const totalLength = htmlString.length;
-
+    // For local files, use simple browser print
     if (document.location.protocol === 'file:') {
       window.print();
       return 'local-print';
     }
 
-    const sendMessage = (message) => new Promise((resolve, reject) => {
-      try {
-        chrome.runtime.sendMessage(message, (response) => {
-          if (chrome.runtime.lastError) {
-            reject(new Error(chrome.runtime.lastError.message));
-            return;
-          }
-          resolve(response);
-        });
-      } catch (error) {
-        reject(error);
-      }
-    });
-
-    const title = typeof metadata.title === 'string' ? metadata.title : undefined;
-    const filename = typeof metadata.filename === 'string' ? metadata.filename : undefined;
-
-    let uploadToken = null;
-
-    try {
-      const uploadResult = await uploadInChunks({
-        sendMessage,
-        purpose: 'print-html',
-        encoding: 'text',
-        totalSize: totalLength,
-        metadata: {
-          title: title || 'Document',
-          filename: filename || 'document.html'
-        },
-        requestedChunkSize: PRINT_UPLOAD_CHUNK_SIZE,
-        getChunk: (offset, size) => htmlString.slice(offset, offset + size)
-      });
-
-      uploadToken = uploadResult.token;
-
-      const startResponse = await sendMessage({
-        type: 'PRINT_JOB_START',
-        token: uploadToken,
-        payload: {
-          title: title || 'Document',
-          filename: filename || 'document.html'
-        }
-      });
-
-      if (!startResponse || !startResponse.success) {
-        const errorDetail = startResponse?.error ? `: ${startResponse.error}` : '';
-        throw new Error(`Failed to start print job${errorDetail}`);
-      }
-
-      return uploadToken;
-    } catch (error) {
-      if (uploadToken) {
-        abortUpload(sendMessage, uploadToken);
-      }
-      throw error;
-    }
+    // For remote files, show message that print is not supported
+    throw new Error('Print functionality is only available for local files. Please save the file locally to print.');
   }
 
   function initializeToolbar() {
@@ -1432,33 +1375,43 @@ ${truncatedMarkup}`;
     // Print button
     const printBtn = document.getElementById('print-btn');
     if (printBtn) {
-      printBtn.addEventListener('click', async () => {
-        const contentDiv = document.getElementById('markdown-content');
-        if (!contentDiv) {
-          return;
-        }
-
-        const htmlContent = contentDiv.innerHTML;
-        const printTitle = document.title || getDocumentFilename();
-        const fileName = getDocumentFilename();
-
-        try {
-          if (printBtn.disabled) {
+      // Check if this is a remote file - disable print for remote files
+      const isLocalFile = document.location.protocol === 'file:';
+      
+      if (!isLocalFile) {
+        printBtn.disabled = true;
+        printBtn.title = toolbarPrintDisabledTitle;
+        printBtn.style.opacity = '0.5';
+        printBtn.style.cursor = 'not-allowed';
+      } else {
+        printBtn.addEventListener('click', async () => {
+          const contentDiv = document.getElementById('markdown-content');
+          if (!contentDiv) {
             return;
           }
-          printBtn.disabled = true;
 
-          await dispatchPrintJob(htmlContent, {
-            title: printTitle,
-            filename: fileName
-          });
-        } catch (error) {
-          console.error('Print request failed:', error);
-          alert(`Failed to open print preview: ${error.message}`);
-        } finally {
-          printBtn.disabled = false;
-        }
-      });
+          const htmlContent = contentDiv.innerHTML;
+          const printTitle = document.title || getDocumentFilename();
+          const fileName = getDocumentFilename();
+
+          try {
+            if (printBtn.disabled) {
+              return;
+            }
+            printBtn.disabled = true;
+
+            await dispatchPrintJob(htmlContent, {
+              title: printTitle,
+              filename: fileName
+            });
+          } catch (error) {
+            console.error('Print request failed:', error);
+            alert(`Failed to open print preview: ${error.message}`);
+          } finally {
+            printBtn.disabled = false;
+          }
+        });
+      }
     }
   }
 

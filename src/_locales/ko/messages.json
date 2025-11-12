@@ -135,6 +135,10 @@
     "message": "인쇄",
     "description": "인쇄 버튼 툴팁"
   },
+  "toolbar_print_disabled_title": {
+    "message": "인쇄는 로컬 파일에서만 사용할 수 있습니다",
+    "description": "원격 파일에서 인쇄 버튼이 비활성화될 때의 툴팁"
+  },
   "async_placeholder_type_mermaid": {
     "message": "Mermaid 다이어그램",
     "description": "Mermaid 플레이스홀더 라벨"

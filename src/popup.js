@@ -561,10 +561,7 @@ class PopupManager {
       // Add click handler to open the document
       historyItemEl.addEventListener('click', async () => {
         try {
-          await chrome.tabs.create({
-            url: item.url,
-            active: true
-          });
+          window.open(item.url, '_blank');
           window.close();
         } catch (error) {
           console.error('Failed to open document:', error);
@@ -734,10 +731,7 @@ class PopupManager {
     try {
       const demoUrl = 'https://raw.githubusercontent.com/xicilion/markdown-viewer-extension/refs/heads/main/test/test.md';
 
-      await chrome.tabs.create({
-        url: demoUrl,
-        active: true
-      });
+      window.open(demoUrl, '_blank');
 
       window.close();
     } catch (error) {
