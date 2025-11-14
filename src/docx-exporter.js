@@ -409,7 +409,7 @@ class DocxExporter {
             },
             heading1: {
               run: {
-                size: 52, // 26pt in half-points
+                size: 48, // 24pt in half-points
                 bold: true,
                 font: this.createFontConfig('Times New Roman', 'SimSun'),
               },
@@ -424,20 +424,6 @@ class DocxExporter {
             },
             heading2: {
               run: {
-                size: 44, // 22pt
-                bold: true,
-                font: this.createFontConfig('Times New Roman', 'SimSun'),
-              },
-              paragraph: {
-                spacing: {
-                  before: 330, // 22px
-                  after: 135, // 9px
-                  line: 360,
-                },
-              },
-            },
-            heading3: {
-              run: {
                 size: 40, // 20pt
                 bold: true,
                 font: this.createFontConfig('Times New Roman', 'SimSun'),
@@ -450,7 +436,7 @@ class DocxExporter {
                 },
               },
             },
-            heading4: {
+            heading3: {
               run: {
                 size: 36, // 18pt
                 bold: true,
@@ -459,6 +445,20 @@ class DocxExporter {
               paragraph: {
                 spacing: {
                   before: 225, // 15px
+                  after: 105, // 7px
+                  line: 360,
+                },
+              },
+            },
+            heading4: {
+              run: {
+                size: 32, // 16pt
+                bold: true,
+                font: this.createFontConfig('Times New Roman', 'SimSun'),
+              },
+              paragraph: {
+                spacing: {
+                  before: 210, // 14px
                   after: 105, // 7px
                   line: 360,
                 },
@@ -731,10 +731,10 @@ class DocxExporter {
    */
   getHeadingLevel(depth) {
     const levels = {
-      1: HeadingLevel.HEADING_1, // 26px -> 26pt
-      2: HeadingLevel.HEADING_2, // 22px -> 22pt
-      3: HeadingLevel.HEADING_3, // 20px -> 20pt
-      4: HeadingLevel.HEADING_4, // 18px -> 18pt
+      1: HeadingLevel.HEADING_1, // 24px -> 24pt
+      2: HeadingLevel.HEADING_2, // 20px -> 20pt
+      3: HeadingLevel.HEADING_3, // 18px -> 18pt
+      4: HeadingLevel.HEADING_4, // 16px -> 16pt
       5: HeadingLevel.HEADING_5, // 14px -> 14pt
       6: HeadingLevel.HEADING_6, // 12px -> 12pt
     };

@@ -240,26 +240,26 @@ body.toc-hidden #markdown-wrapper {
 }
 
 #markdown-content h1 {
-  font-size: 26px;
+  font-size: 24px;
   text-align: center;
   margin: 0 0 10px 0;
 }
 
 #markdown-content h2 {
-  font-size: 22px;
-  margin-top: 22px;
-  margin-bottom: 9px;
-}
-
-#markdown-content h3 {
   font-size: 20px;
   margin-top: 18px;
   margin-bottom: 8px;
 }
 
-#markdown-content h4 {
+#markdown-content h3 {
   font-size: 18px;
   margin-top: 15px;
+  margin-bottom: 7px;
+}
+
+#markdown-content h4 {
+  font-size: 16px;
+  margin-top: 14px;
   margin-bottom: 7px;
 }
 
