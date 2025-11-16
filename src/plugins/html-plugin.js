@@ -4,6 +4,7 @@
  * Handles HTML code block processing in content script and DOCX export
  */
 import { BasePlugin } from './base-plugin.js';
+import { sanitizeAndCheck } from '../html-sanitizer.js';
 
 export class HtmlPlugin extends BasePlugin {
   constructor() {
@@ -38,8 +39,10 @@ export class HtmlPlugin extends BasePlugin {
       return null;
     }
 
-    // Skip simple line breaks
-    if (/^(?:<br\s*\/?>(?:\s|&nbsp;)*)+$/i.test(htmlContent)) {
+    // Sanitize HTML and check if it has meaningful content
+    // This removes comments, scripts, dangerous elements, and simple line breaks
+    const { hasContent } = sanitizeAndCheck(htmlContent);
+    if (!hasContent) {
       return null;
     }
 

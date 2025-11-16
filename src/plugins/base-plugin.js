@@ -217,7 +217,16 @@ export class BasePlugin {
                 try {
                   const extraParams = plugin.getRenderParams();
                   const pngResult = await renderer.render(plugin.type, code, extraParams);
-                  plugin.replacePlaceholder(id, pngResult);
+                  // If renderer returns null (e.g., empty content), skip rendering
+                  if (pngResult) {
+                    plugin.replacePlaceholder(id, pngResult);
+                  } else {
+                    // Remove placeholder element if content is empty
+                    const placeholder = document.getElementById(id);
+                    if (placeholder) {
+                      placeholder.remove();
+                    }
+                  }
                 } catch (error) {
                   plugin.showError(id, error, translate, escapeHtml);
                 }
@@ -282,6 +291,13 @@ export class BasePlugin {
     try {
       const extraParams = this.getRenderParams();
       const pngResult = await renderer.render(this.type, content, extraParams);
+
+      // If renderer returns null (e.g., empty content), skip rendering
+      if (!pngResult) {
+        return new Paragraph({
+          children: [],
+        });
+      }
 
       // Convert base64 to Uint8Array
       const binaryString = atob(pngResult.base64);

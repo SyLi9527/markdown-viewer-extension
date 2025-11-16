@@ -225,10 +225,56 @@ export class BaseRenderer {
         // Draw image
         ctx.drawImage(img, 0, 0, width, height);
 
+        // Enhanced content verification with pixel sampling to prevent partial content PNG
+        const sampleRegions = [
+          { name: 'top-left', x: 0, y: 0, size: Math.min(width, height, 100) },
+          { name: 'center', x: Math.floor(width / 2) - 50, y: Math.floor(height / 2) - 50, size: 100 },
+          { name: 'bottom-right', x: Math.max(0, width - 100), y: Math.max(0, height - 100), size: 100 }
+        ];
+
+        let totalNonWhitePixels = 0;
+        let totalSampledPixels = 0;
+
+        sampleRegions.forEach(region => {
+          const startX = Math.max(0, region.x);
+          const startY = Math.max(0, region.y);
+          const endX = Math.min(width, startX + region.size);
+          const endY = Math.min(height, startY + region.size);
+          const regionWidth = endX - startX;
+          const regionHeight = endY - startY;
+
+          if (regionWidth > 0 && regionHeight > 0) {
+            const imageData = ctx.getImageData(startX * canvasScale, startY * canvasScale, 
+                                               regionWidth * canvasScale, regionHeight * canvasScale);
+            let regionNonWhite = 0;
+            let regionTotal = 0;
+
+            for (let i = 0; i < imageData.data.length; i += 4) {
+              const r = imageData.data[i];
+              const g = imageData.data[i + 1];
+              const b = imageData.data[i + 2];
+              const alpha = imageData.data[i + 3];
+
+              // Skip transparent pixels
+              if (alpha < 10) continue;
+
+              regionTotal++;
+              totalSampledPixels++;
+
+              // Check if pixel is not white/near-white
+              if (r < 240 || g < 240 || b < 240) {
+                regionNonWhite++;
+                totalNonWhitePixels++;
+              }
+            }
+          }
+        });
+
         const pngDataUrl = canvas.toDataURL('image/png', 1.0);
         const base64Data = pngDataUrl.replace(/^data:image\/png;base64,/, '');
 
         // Clear canvas and container
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         container.innerHTML = '';
 

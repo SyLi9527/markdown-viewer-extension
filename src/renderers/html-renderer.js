@@ -4,6 +4,7 @@
  * Renders HTML code blocks to PNG images using html2canvas
  */
 import { BaseRenderer } from './base-renderer.js';
+import { sanitizeHtml, hasHtmlContent } from '../html-sanitizer.js';
 
 export class HtmlRenderer extends BaseRenderer {
   constructor() {
@@ -32,9 +33,12 @@ export class HtmlRenderer extends BaseRenderer {
     }
 
     // Sanitize HTML before rendering
-    const sanitizedHtml = this.sanitizeHtml(htmlContent);
-    if (!sanitizedHtml || sanitizedHtml.replace(/\s+/g, '').length <= 0) {
-      throw new Error('HTML content is empty after sanitization');
+    const sanitizedHtml = sanitizeHtml(htmlContent);
+    
+    // Check if there's any visible content after sanitization
+    if (!hasHtmlContent(sanitizedHtml)) {
+      // If only comments or whitespace, return null to skip rendering
+      return null;
     }
 
     const container = this.getContainer();
@@ -116,66 +120,5 @@ export class HtmlRenderer extends BaseRenderer {
    */
   async renderToSvg(input, themeConfig, extraParams) {
     throw new Error('HTML renderer does not use SVG pipeline');
-  }
-
-  /**
-   * Sanitize HTML content to remove dangerous elements and attributes
-   * @param {string} html - Raw HTML content
-   * @returns {string} Sanitized HTML
-   */
-  sanitizeHtml(html) {
-    try {
-      const template = document.createElement('template');
-      template.innerHTML = html;
-
-      this.sanitizeNodeTree(template.content);
-
-      return template.innerHTML;
-    } catch (error) {
-      return html;
-    }
-  }
-
-  /**
-   * Walk the node tree and remove dangerous elements/attributes
-   * @param {Node} root - Root node to sanitize
-   */
-  sanitizeNodeTree(root) {
-    const blockedTags = new Set(['SCRIPT', 'IFRAME', 'OBJECT', 'EMBED', 'AUDIO', 'VIDEO']);
-    const stack = [];
-
-    Array.from(root.childNodes).forEach((child) => {
-      if (child.nodeType === Node.ELEMENT_NODE) {
-        stack.push(child);
-      } else if (child.nodeType === Node.COMMENT_NODE) {
-        child.remove();
-      }
-    });
-
-    while (stack.length > 0) {
-      const node = stack.pop();
-
-      if (blockedTags.has(node.tagName)) {
-        node.remove();
-        continue;
-      }
-
-      // Remove event handler attributes
-      const attributes = Array.from(node.attributes || []);
-      for (const attr of attributes) {
-        if (attr.name.startsWith('on') || attr.name === 'href' && attr.value.trim().toLowerCase().startsWith('javascript:')) {
-          node.removeAttribute(attr.name);
-        }
-      }
-
-      // Process children
-      Array.from(node.childNodes).forEach((child) => {
-        if (child.nodeType === Node.ELEMENT_NODE) {
-          stack.push(child);
-        } else if (child.nodeType === Node.COMMENT_NODE) {
-          child.remove();
-        }
-      });
-    }
   }
 }

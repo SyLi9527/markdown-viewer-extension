@@ -1121,6 +1121,9 @@ graph TD
   </div>
 </div>
 
+**html注释**
+<!-- 这是一个 html 注释 -->
+
 ### 10.2 复杂布局示例
 
 <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin: 20px 0;">
