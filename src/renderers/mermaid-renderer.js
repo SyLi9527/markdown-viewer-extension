@@ -17,6 +17,17 @@ export class MermaidRenderer extends BaseRenderer {
    * @returns {Promise<void>}
    */
   async initialize(themeConfig = null) {
+    // Initialize Mermaid with theme configuration
+    this.applyThemeConfig(themeConfig);
+    this._initialized = true;
+  }
+
+  /**
+   * Apply theme configuration to Mermaid
+   * This is called on every render to ensure font follows theme changes
+   * @param {object} themeConfig - Theme configuration
+   */
+  applyThemeConfig(themeConfig = null) {
     // Use theme font or fallback to default
     const fontFamily = themeConfig?.fontFamily || "'SimSun', 'Times New Roman', Times, serif";
     
@@ -33,8 +44,6 @@ export class MermaidRenderer extends BaseRenderer {
         curve: 'basis'
       }
     });
-
-    this._initialized = true;
   }
 
   /**
@@ -44,6 +53,9 @@ export class MermaidRenderer extends BaseRenderer {
    * @returns {Promise<string>} SVG string
    */
   async renderToSvg(code, themeConfig) {
+    // Apply theme configuration before each render to ensure font follows theme
+    this.applyThemeConfig(themeConfig);
+    
     const { svg } = await mermaid.render('mermaid-diagram-' + Date.now(), code);
 
     // Validate SVG content
