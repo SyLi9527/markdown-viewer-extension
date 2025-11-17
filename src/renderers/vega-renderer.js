@@ -118,11 +118,23 @@ export class VegaRenderer extends BaseRenderer {
   }
 
   /**
-   * Render Vega/Vega-Lite specification to SVG string
+   * Override render to use direct Canvas rendering instead of SVG pipeline
+   * @param {object} vegaSpec - Vega/Vega-Lite specification
+   * @param {object} themeConfig - Theme configuration
+   * @param {object} extraParams - Extra parameters
+   * @returns {Promise<{base64: string, width: number, height: number}>}
    */
-  async renderToSvg(vegaSpec, themeConfig) {
-    // Store theme config for use in calculateScale
-    this.themeConfig = themeConfig;
+  async render(vegaSpec, themeConfig, extraParams = {}) {
+    // Ensure renderer is initialized
+    if (!this._initialized) {
+      await this.initialize(themeConfig);
+    }
+    
+    // Validate input
+    this.validateInput(vegaSpec);
+    
+    // Preprocess input
+    const processedSpec = this.preprocessInput(vegaSpec, extraParams);
     
     // Get font family from theme config
     const fontFamily = themeConfig?.fontFamily || "'SimSun', 'Times New Roman', Times, serif";
@@ -133,11 +145,11 @@ export class VegaRenderer extends BaseRenderer {
     container.innerHTML = '';
     container.style.cssText = 'display: inline-block; background: transparent; padding: 0; margin: 0;';
 
-    // Prepare embed options with autosize for responsive layout
+    // Prepare embed options with canvas renderer for direct rendering
     const embedOptions = {
       mode: this.mode,
       actions: false, // Hide action links
-      renderer: 'svg', // Use SVG renderer
+      renderer: 'canvas', // Use Canvas renderer for direct rendering
       ast: true, // Use AST mode to avoid eval
       expr: expressionInterpreter, // Use expression interpreter instead of eval
       config: {
@@ -162,30 +174,32 @@ export class VegaRenderer extends BaseRenderer {
     };
 
     // Render the spec using vega-embed
-    const result = await embed(container, vegaSpec, embedOptions);
+    const result = await embed(container, processedSpec, embedOptions);
     
-    // Get SVG directly from the view object instead of DOM query
-    // This is thread-safe and doesn't depend on DOM state
-    const svgString = await result.view.toSVG();
+    // Calculate scale for final output
+    const scale = this.calculateCanvasScale(themeConfig);
+    
+    // Get Canvas directly from the view object
+    // toCanvas() returns a Promise<HTMLCanvasElement>
+    const sourceCanvas = await result.view.toCanvas(scale);
 
-    // Validate SVG content
-    if (!svgString || svgString.length < 100) {
-      throw new Error('Generated SVG is too small or empty');
+    // Validate canvas
+    if (!sourceCanvas || sourceCanvas.width === 0 || sourceCanvas.height === 0) {
+      throw new Error('Generated canvas is empty or invalid');
     }
+
+    // Convert canvas to PNG data URL
+    const pngDataUrl = sourceCanvas.toDataURL('image/png', 1.0);
+    const base64Data = pngDataUrl.replace(/^data:image\/png;base64,/, '');
 
     // Cleanup
     container.innerHTML = '';
 
-    return svgString;
-  }
-
-  /**
-   * Calculate scale based on theme font size
-   */
-  calculateScale(themeConfig, extraParams) {
-    const baseFontSize = 12; // pt
-    const themeFontSize = themeConfig?.fontSize || baseFontSize;
-    return themeFontSize / baseFontSize;
+    return {
+      base64: base64Data,
+      width: sourceCanvas.width,
+      height: sourceCanvas.height
+    };
   }
 
   /**

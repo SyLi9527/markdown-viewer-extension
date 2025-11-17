@@ -64,7 +64,7 @@ export class HtmlRenderer extends BaseRenderer {
     container.style.display = 'block';
 
     // Calculate scale based on target width
-    const scale = this.calculateScale(themeConfig, { width: normalizedTargetWidth, captureWidth });
+    const scale = this.calculateCanvasScale(themeConfig);
 
     // Use html2canvas to capture
     const canvas = await html2canvas(container, {
@@ -102,23 +102,5 @@ export class HtmlRenderer extends BaseRenderer {
       width: canvas.width,
       height: canvas.height
     };
-  }
-
-  /**
-   * Calculate scale for HTML rendering
-   * @param {object} themeConfig - Theme configuration
-   * @param {object} extraParams - Extra parameters with width and captureWidth
-   * @returns {number} Scale factor (fixed at 4)
-   */
-  calculateScale(themeConfig, extraParams) {
-    // HTML rendering uses a fixed scale of 4 for high quality
-    return 4;
-  }
-
-  /**
-   * HTML renderer doesn't use SVG pipeline
-   */
-  async renderToSvg(input, themeConfig, extraParams) {
-    throw new Error('HTML renderer does not use SVG pipeline');
   }
 }

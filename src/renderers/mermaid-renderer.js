@@ -1,7 +1,7 @@
 /**
  * Mermaid Renderer
  * 
- * Renders Mermaid diagrams to PNG images
+ * Renders Mermaid diagrams to PNG images using direct DOM capture
  */
 import { BaseRenderer } from './base-renderer.js';
 import mermaid from 'mermaid';
@@ -47,70 +47,134 @@ export class MermaidRenderer extends BaseRenderer {
   }
 
   /**
-   * Render Mermaid code to SVG
+   * Override render to use direct DOM capture instead of SVG pipeline
    * @param {string} code - Mermaid diagram code
    * @param {object} themeConfig - Theme configuration
-   * @returns {Promise<string>} SVG string
+   * @param {object} extraParams - Extra parameters
+   * @returns {Promise<{base64: string, width: number, height: number}>}
    */
-  async renderToSvg(code, themeConfig) {
-    // Apply theme configuration before each render to ensure font follows theme
+  async render(code, themeConfig, extraParams = {}) {
+    // Ensure renderer is initialized
+    if (!this._initialized) {
+      await this.initialize(themeConfig);
+    }
+    
+    // Validate input
+    this.validateInput(code);
+    
+    // Apply theme configuration before each render
     this.applyThemeConfig(themeConfig);
     
+    // Render Mermaid diagram to DOM
+    const container = this.getContainer();
+    container.innerHTML = '';
+    container.style.cssText = 'display: inline-block; background: transparent; padding: 0; margin: 0;';
+    
     const { svg } = await mermaid.render('mermaid-diagram-' + Date.now(), code);
-
+    
     // Validate SVG content
     if (!svg || svg.length < 100) {
       throw new Error('Generated SVG is too small or empty');
     }
-
+    
     if (!svg.includes('<svg') || !svg.includes('</svg>')) {
       throw new Error('Generated content is not valid SVG');
     }
-
-    return svg;
-  }
-
-  /**
-   * Postprocess SVG to prevent text clipping
-   * @param {string} svg - Raw SVG string
-   * @returns {string} Processed SVG string
-   */
-  postprocessSvg(svg, themeConfig) {
-    return this.preventTextClipping(svg);
-  }
-
-  /**
-   * Calculate scale based on theme font size
-   * Mermaid uses a different font size calculation
-   * @param {object} themeConfig - Theme configuration
-   * @returns {number} Scale factor
-   */
-  calculateScale(themeConfig) {
-    // Calculate scale based on theme font size
-    // Default: 12pt body → 10pt mermaid (10/12 ratio)
-    // Mermaid default is 16pt, so we need: (themeFontSize * 10/12) / 16
-    const baseFontSize = 12; // pt - base body font size
-    const themeFontSize = themeConfig?.fontSize || baseFontSize;
-    const mermaidFontSize = themeFontSize * 10 / 12; // mermaid is 10/12 of body
-    const mermaidDefaultSize = 16; // pt - mermaid's default font size
-    return mermaidFontSize / mermaidDefaultSize;
-  }
-
-  /**
-   * Prevent text clipping in SVG by adding padding
-   * @param {string} svgString - Original SVG string
-   * @returns {string} Modified SVG string
-   */
-  preventTextClipping(svgString) {
-    try {
-      const parser = new DOMParser();
-      const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-      const svgElement = svgDoc.querySelector('svg');
-
-      if (!svgElement) {
-        return svgString;
+    
+    // Insert SVG into container
+    container.innerHTML = svg;
+    
+    // Add padding to prevent text clipping
+    const svgElement = container.querySelector('svg');
+    if (svgElement) {
+      this.addPaddingToSvg(svgElement);
+    }
+    
+    // Give layout engine time to process
+    container.offsetHeight;
+    svgElement.getBoundingClientRect();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Wait for fonts to load
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+    
+    // Force another reflow
+    container.offsetHeight;
+    svgElement.getBoundingClientRect();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    // Get SVG dimensions from viewBox or attributes (not getBoundingClientRect which may be affected by CSS)
+    const viewBox = svgElement.getAttribute('viewBox');
+    let captureWidth, captureHeight;
+    
+    if (viewBox) {
+      const parts = viewBox.split(/\s+/);
+      captureWidth = Math.ceil(parseFloat(parts[2]));
+      captureHeight = Math.ceil(parseFloat(parts[3]));
+    } else {
+      captureWidth = Math.ceil(parseFloat(svgElement.getAttribute('width')) || 800);
+      captureHeight = Math.ceil(parseFloat(svgElement.getAttribute('height')) || 600);
+    }
+    
+    // Set container size to match SVG intrinsic size
+    container.style.width = `${captureWidth}px`;
+    container.style.height = `${captureHeight}px`;
+    
+    // Calculate scale
+    const scale = this.calculateCanvasScale(themeConfig);
+    
+    // Capture using html2canvas
+    if (typeof html2canvas === 'undefined') {
+      throw new Error('html2canvas not loaded');
+    }
+    
+    const canvas = await html2canvas(container, {
+      backgroundColor: null,
+      scale: scale,
+      logging: false,
+      useCORS: true,
+      allowTaint: true,
+      width: captureWidth,
+      height: captureHeight,
+      windowWidth: captureWidth,
+      windowHeight: captureHeight,
+      x: 0,
+      y: 0,
+      scrollX: 0,
+      scrollY: 0,
+      onclone: (clonedDoc, element) => {
+        // Set willReadFrequently for better performance
+        const canvases = clonedDoc.getElementsByTagName('canvas');
+        for (let canvas of canvases) {
+          if (canvas.getContext) {
+            canvas.getContext('2d', { willReadFrequently: true });
+          }
+        }
       }
+    });
+    
+    const pngDataUrl = canvas.toDataURL('image/png', 1.0);
+    const base64Data = pngDataUrl.replace(/^data:image\/png;base64,/, '');
+    
+    // Cleanup
+    container.innerHTML = '';
+    container.style.cssText = 'display: block; background: transparent;';
+    
+    return {
+      base64: base64Data,
+      width: canvas.width,
+      height: canvas.height
+    };
+  }
 
+  /**
+   * Add padding to SVG element to prevent text clipping
+   * @param {SVGElement} svgElement - SVG DOM element
+   */
+  addPaddingToSvg(svgElement) {
+    try {
       // Get current viewBox or create from width/height
       let viewBox = svgElement.getAttribute('viewBox');
       if (!viewBox) {
@@ -129,13 +193,9 @@ export class MermaidRenderer extends BaseRenderer {
 
       const newViewBox = `${x - paddingX} ${y - paddingY} ${width + 2 * paddingX} ${height + 2 * paddingY}`;
       svgElement.setAttribute('viewBox', newViewBox);
-
-      // Serialize back to string
-      const serializer = new XMLSerializer();
-      return serializer.serializeToString(svgDoc);
     } catch (error) {
-      // If processing fails, return original
-      return svgString;
+      // If processing fails, ignore
+      console.warn('Failed to add padding to SVG:', error);
     }
   }
 }
