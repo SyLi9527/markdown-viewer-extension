@@ -27,6 +27,7 @@ export const plugins = [
 
 /**
  * Register all plugins to a remark processor
+ * This creates a single unified plugin that processes all node types in document order
  * @param {object} processor - Unified/remark processor
  * @param {object} renderer - Renderer instance
  * @param {Function} asyncTask - Async task creator
@@ -36,9 +37,75 @@ export const plugins = [
  * @returns {object} The processor (for chaining)
  */
 export function registerRemarkPlugins(processor, renderer, asyncTask, translate, escapeHtml, visit) {
-  for (const plugin of plugins) {
-    processor.use(plugin.createRemarkPlugin(renderer, asyncTask, translate, escapeHtml, visit));
-  }
+  // Create a unified plugin that processes all plugins in a single AST traversal
+  // This ensures tasks are created in document order, not grouped by plugin type
+  processor.use(function unifiedPluginProcessor() {
+    return (tree) => {
+      // Collect all unique node types that plugins are interested in
+      const nodeTypes = new Set();
+      for (const plugin of plugins) {
+        for (const nodeType of plugin.nodeSelector) {
+          nodeTypes.add(nodeType);
+        }
+      }
+
+      // Single traversal of AST, processing nodes in document order
+      for (const nodeType of nodeTypes) {
+        visit(tree, nodeType, (node, index, parent) => {
+          // Find the first plugin that can handle this node
+          for (const plugin of plugins) {
+            const content = plugin.extractContent(node);
+            if (!content) continue;
+
+            // This plugin can handle this node, create async task
+            const initialStatus = plugin.isUrl(content) ? 'fetching' : 'ready';
+
+            const result = asyncTask(
+              async (data) => {
+                const { id, code } = data;
+                try {
+                  const extraParams = plugin.getRenderParams();
+                  const pngResult = await renderer.render(plugin.type, code, extraParams);
+                  if (pngResult) {
+                    plugin.replacePlaceholder(id, pngResult);
+                  } else {
+                    const placeholder = document.getElementById(id);
+                    if (placeholder) {
+                      placeholder.remove();
+                    }
+                  }
+                } catch (error) {
+                  plugin.showError(id, error, translate, escapeHtml);
+                }
+              },
+              plugin.createTaskData(content),
+              plugin,
+              translate,
+              initialStatus
+            );
+
+            // For URLs, start fetching immediately
+            if (plugin.isUrl(content)) {
+              plugin.fetchContent(content)
+                .then(fetchedContent => {
+                  result.task.data.code = fetchedContent;
+                  result.task.setReady();
+                })
+                .catch(error => {
+                  result.task.setError(error);
+                });
+            }
+
+            parent.children[index] = result.placeholder;
+            
+            // Stop checking other plugins once we found a match
+            break;
+          }
+        });
+      }
+    };
+  });
+
   return processor;
 }
 
@@ -73,4 +140,43 @@ export function getPluginForNode(node) {
  */
 export function getPluginTypes() {
   return plugins.map(p => p.type);
+}
+
+/**
+ * Convert AST node to DOCX element using appropriate plugin
+ * High-level wrapper that encapsulates plugin lookup, content extraction, and conversion
+ * 
+ * @param {object} node - AST node to convert
+ * @param {object} renderer - Renderer instance for generating images
+ * @param {object} docxHelpers - DOCX helper objects and functions
+ * @param {Function} progressCallback - Optional callback to report progress
+ * @returns {Promise<object|null>} DOCX element (Paragraph/ImageRun) or null if no plugin handles this node
+ */
+export async function convertNodeToDOCX(node, renderer, docxHelpers, progressCallback = null) {
+  // Find plugin that can handle this node
+  const plugin = getPluginForNode(node);
+  if (!plugin) {
+    return null;
+  }
+
+  // Extract content from node
+  let content = plugin.extractContent(node);
+  if (!content) {
+    return null;
+  }
+
+  // Handle URL fetching if needed
+  if (plugin.isUrl && plugin.isUrl(content)) {
+    content = await plugin.fetchContent(content);
+  }
+
+  // Convert to DOCX using plugin
+  const result = await plugin.convertToDOCX(renderer, content, docxHelpers);
+
+  // Report progress if callback provided
+  if (progressCallback) {
+    progressCallback();
+  }
+
+  return result;
 }

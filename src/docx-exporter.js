@@ -32,7 +32,7 @@ import { uploadInChunks, abortUpload } from './upload-manager.js';
 import hljs from 'highlight.js/lib/common';
 import { loadThemeForDOCX } from './theme-to-docx.js';
 import themeManager from './theme-manager.js';
-import { getPluginForNode } from './plugins/index.js';
+import { getPluginForNode, convertNodeToDOCX } from './plugins/index.js';
 
 /**
  * Main class for exporting Markdown to DOCX
@@ -562,22 +562,26 @@ class DocxExporter {
    * Convert a single AST node to docx element
    */
   async convertNode(node, parentStyle = {}) {
-    // First, try to find a plugin that can handle this node
-    const plugin = getPluginForNode(node);
-    if (plugin) {
-      const docxHelpers = {
-        Paragraph,
-        TextRun,
-        ImageRun,
-        AlignmentType,
-        convertInchesToTwip,
-        applyPendingSpacing: this.applyPendingSpacing.bind(this),
-        themeStyles: this.themeStyles
-      };
-      const result = await plugin.convertToDOCX(this.renderer, node.value, docxHelpers);
-      // Report progress for plugin-handled nodes
-      this.reportResourceProgress();
-      return result;
+    // Try to convert using plugin system
+    const docxHelpers = {
+      Paragraph,
+      TextRun,
+      ImageRun,
+      AlignmentType,
+      convertInchesToTwip,
+      applyPendingSpacing: this.applyPendingSpacing.bind(this),
+      themeStyles: this.themeStyles
+    };
+    
+    const pluginResult = await convertNodeToDOCX(
+      node, 
+      this.renderer, 
+      docxHelpers, 
+      () => this.reportResourceProgress()
+    );
+    
+    if (pluginResult) {
+      return pluginResult;
     }
 
     // Handle node types that don't use plugins
@@ -753,29 +757,26 @@ class DocxExporter {
    * Convert single inline node
    */
   async convertInlineNode(node, parentStyle = {}) {
-    // First, check if a plugin can handle this node
-    const plugin = getPluginForNode(node);
-    if (plugin) {
-      const docxHelpers = {
-        Paragraph,
-        TextRun,
-        ImageRun,
-        AlignmentType,
-        convertInchesToTwip,
-        applyPendingSpacing: this.applyPendingSpacing.bind(this),
-        themeStyles: this.themeStyles
-      };
-      
-      // For inline nodes, we need to handle URL fetching here
-      let content = plugin.extractContent(node);
-      if (content && plugin.isUrl && plugin.isUrl(content)) {
-        // Fetch the content synchronously
-        content = await plugin.fetchContent(content);
-      }
-      
-      const result = await plugin.convertToDOCX(this.renderer, content, docxHelpers);
-      this.reportResourceProgress();
-      return result;
+    // Try to convert using plugin system
+    const docxHelpers = {
+      Paragraph,
+      TextRun,
+      ImageRun,
+      AlignmentType,
+      convertInchesToTwip,
+      applyPendingSpacing: this.applyPendingSpacing.bind(this),
+      themeStyles: this.themeStyles
+    };
+    
+    const pluginResult = await convertNodeToDOCX(
+      node, 
+      this.renderer, 
+      docxHelpers, 
+      () => this.reportResourceProgress()
+    );
+    
+    if (pluginResult) {
+      return pluginResult;
     }
 
     // Handle standard inline nodes
