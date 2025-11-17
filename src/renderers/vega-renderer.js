@@ -42,7 +42,79 @@ export class VegaRenderer extends BaseRenderer {
       throw new Error(`Invalid ${this.mode} specification: must be an object`);
     }
 
+    // Disable auto-sorting for vega-lite specs (recursively handle all views)
+    if (this.mode === 'vega-lite') {
+      this.disableAutoSortRecursive(vegaSpec);
+    }
+
     return vegaSpec;
+  }
+
+  /**
+   * Recursively disable automatic sorting in vega-lite specs
+   * Handles: single views, layers, concat, facet, repeat
+   */
+  disableAutoSortRecursive(spec) {
+    if (!spec || typeof spec !== 'object') {
+      return;
+    }
+
+    // Handle encoding in current spec
+    if (spec.encoding) {
+      this.disableAutoSort(spec.encoding);
+    }
+
+    // Handle layer compositions
+    if (Array.isArray(spec.layer)) {
+      spec.layer.forEach(layerSpec => this.disableAutoSortRecursive(layerSpec));
+    }
+
+    // Handle concat compositions (hconcat, vconcat, concat)
+    ['hconcat', 'vconcat', 'concat'].forEach(concatType => {
+      if (Array.isArray(spec[concatType])) {
+        spec[concatType].forEach(subSpec => this.disableAutoSortRecursive(subSpec));
+      }
+    });
+
+    // Handle facet compositions
+    if (spec.facet) {
+      // Facet can have encoding
+      if (spec.facet.encoding) {
+        this.disableAutoSort(spec.facet.encoding);
+      }
+      // Nested spec in facet
+      if (spec.spec) {
+        this.disableAutoSortRecursive(spec.spec);
+      }
+    }
+
+    // Handle repeat compositions
+    if (spec.repeat) {
+      if (spec.spec) {
+        this.disableAutoSortRecursive(spec.spec);
+      }
+    }
+  }
+
+  /**
+   * Disable automatic sorting in encoding channels
+   */
+  disableAutoSort(encoding) {
+    if (!encoding || typeof encoding !== 'object') {
+      return;
+    }
+
+    // Iterate through all encoding channels (x, y, color, size, row, column, etc.)
+    for (const channel in encoding) {
+      const channelDef = encoding[channel];
+      
+      if (channelDef && typeof channelDef === 'object' && !Array.isArray(channelDef)) {
+        // Only set sort to null if it's not explicitly defined
+        if (!channelDef.hasOwnProperty('sort')) {
+          channelDef.sort = null;
+        }
+      }
+    }
   }
 
   /**
