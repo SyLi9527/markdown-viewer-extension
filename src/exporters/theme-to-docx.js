@@ -37,19 +37,31 @@ function generateDefaultStyle(fontScheme, spacingScheme) {
   // Line spacing in DOCX: 240 = single spacing, 360 = 1.5 spacing, 480 = double spacing
   const lineSpacing = Math.round(fontScheme.body.lineHeight * 240);
   
-  // Calculate actual spacing from ratio
+  // Calculate the extra space added by line spacing (beyond 100%)
+  // For example, if lineSpacing = 360 (1.5x), extra = 360 - 240 = 120
+  const lineSpacingExtra = lineSpacing - 240;
+  
+  // Calculate actual spacing from ratio - split evenly between before and after
   const paragraphSpacingPt = baseFontSizePt * spacingScheme.paragraph;
-  const afterSpacing = themeManager.ptToTwips(paragraphSpacingPt + 'pt');
+  const halfSpacing = themeManager.ptToTwips((paragraphSpacingPt / 2) + 'pt');
+  
+  // Compensate for line spacing being applied to bottom
+  // Split the extra line spacing evenly: before += extra/2, after -= extra/2
+  const beforeSpacing = halfSpacing + lineSpacingExtra / 2;
+  const afterSpacing = Math.max(0, halfSpacing - lineSpacingExtra / 2);
   
   console.log('[Theme-to-DOCX] Default style:', {
     bodyFont,
     fontSize,
     lineHeight: fontScheme.body.lineHeight,
     calculatedLineSpacing: lineSpacing,
+    lineSpacingExtra,
     baseFontSizePt,
     paragraphRatio: spacingScheme.paragraph,
     paragraphSpacingPt,
-    afterTwips: afterSpacing
+    halfSpacingTwips: halfSpacing,
+    beforeSpacing,
+    afterSpacing
   });
 
   // For DOCX: get font configuration from font-config.json
@@ -63,6 +75,7 @@ function generateDefaultStyle(fontScheme, spacingScheme) {
     paragraph: {
       spacing: {
         line: lineSpacing,
+        before: beforeSpacing,
         after: afterSpacing
       }
     }
@@ -87,6 +100,20 @@ function generateParagraphStyles(fontScheme, spacingScheme) {
     const font = heading.fontFamily || fontScheme.body.fontFamily;
     const docxFont = themeManager.getDocxFont(font);
 
+    // Get heading's own spacing (before/after from theme), split evenly
+    const headingBeforePt = heading.spacing?.before ? parseFloat(heading.spacing.before) : 0;
+    const headingAfterPt = heading.spacing?.after ? parseFloat(heading.spacing.after) : 0;
+    
+    const halfBeforePt = headingBeforePt / 2;
+    const halfAfterPt = headingAfterPt / 2;
+    
+    // Compensate for line spacing in before
+    // Headings use 1.5x line spacing = 360, extra = 120
+    const lineSpacingExtra = 360 - 240;
+    
+    const totalBefore = themeManager.ptToTwips(halfBeforePt + 'pt') + lineSpacingExtra / 2;
+    const totalAfter = Math.max(0, themeManager.ptToTwips(halfAfterPt + 'pt') - lineSpacingExtra / 2);
+
     styles[`heading${headingLevel}`] = {
       id: `Heading${headingLevel}`,
       name: `Heading ${headingLevel}`,
@@ -99,8 +126,8 @@ function generateParagraphStyles(fontScheme, spacingScheme) {
       },
       paragraph: {
         spacing: {
-          before: heading.spacing?.before ? themeManager.ptToTwips(heading.spacing.before) : 0,
-          after: heading.spacing?.after ? themeManager.ptToTwips(heading.spacing.after) : 0,
+          before: totalBefore,
+          after: totalAfter,
           line: 360 // 1.5 line spacing for headings
         },
         alignment: heading.alignment === 'center' ? 'center' : 'left'

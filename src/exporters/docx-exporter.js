@@ -44,7 +44,6 @@ class DocxExporter {
     this.listInstanceCounter = 0; // Counter for list instances to restart numbering
     this.mathJaxInitialized = false; // Track MathJax initialization
     this.baseUrl = null; // Base URL for resolving relative paths
-    this.pendingBlockSpacing = 0; // Spacing to apply before the next block-level element
     this.themeStyles = null; // Theme configuration for DOCX styles
     this.spacingScheme = null; // Spacing scheme from theme
   }
@@ -509,7 +508,6 @@ class DocxExporter {
 
     // Reset list instance counter for each document
     this.listInstanceCounter = 0;
-    this.pendingBlockSpacing = 0;
 
     for (const node of ast.children) {
       // Add minimal spacing paragraph between consecutive thematicBreaks to prevent merging
@@ -549,10 +547,6 @@ class DocxExporter {
       }
 
       lastNodeType = node.type;
-
-      if (node.type === 'table') {
-        this.pendingBlockSpacing = Math.max(this.pendingBlockSpacing, 360);
-      }
     }
 
     return elements;
@@ -569,7 +563,6 @@ class DocxExporter {
       ImageRun,
       AlignmentType,
       convertInchesToTwip,
-      applyPendingSpacing: this.applyPendingSpacing.bind(this),
       themeStyles: this.themeStyles
     };
     
@@ -631,22 +624,10 @@ class DocxExporter {
     // Get heading style from theme
     const headingStyleKey = `heading${node.depth}`;
     const headingStyle = this.themeStyles?.paragraphStyles?.[headingStyleKey];
-    
-    // Use theme spacing if available, otherwise use defaults
-    const defaultSpacingBefore = node.depth === 1 ? 240 : 240; // 12pt before
-    const defaultSpacingAfter = 120; // 6pt after
-    
-    const spacingBefore = headingStyle?.paragraph?.spacing?.before || defaultSpacingBefore;
-    const spacingAfter = headingStyle?.paragraph?.spacing?.after || defaultSpacingAfter;
 
     const paragraphConfig = {
       text: text,
       heading: level,
-      spacing: this.applyPendingSpacing({
-        before: spacingBefore,
-        after: spacingAfter,
-        line: 360, // 1.5 line spacing (360 = 1.5 * 240)
-      }),
     };
 
     // Use alignment from theme style if available
@@ -677,15 +658,6 @@ class DocxExporter {
   /**
    * Apply spacing reserved for the next block-level element.
    */
-  applyPendingSpacing(spacing = {}) {
-    if (this.pendingBlockSpacing > 0) {
-      const before = spacing.before || 0;
-      spacing.before = Math.max(before, this.pendingBlockSpacing);
-      this.pendingBlockSpacing = 0;
-    }
-    return spacing;
-  }
-
   /**
    * Convert paragraph node
    */
@@ -699,26 +671,22 @@ class DocxExporter {
 
     if (children.length === 0) {
       // Empty paragraph
-      const spacing = this.applyPendingSpacing({
-        after: defaultAfterSpacing,
-        line: defaultLineSpacing,
-      });
-
       return new Paragraph({
         text: '',
-        spacing: spacing,
+        spacing: {
+          after: defaultAfterSpacing,
+          line: defaultLineSpacing,
+        },
         alignment: AlignmentType.LEFT, // Explicitly set left alignment
       });
     }
 
-    const spacing = this.applyPendingSpacing({
-      after: defaultAfterSpacing,
-      line: defaultLineSpacing,
-    });
-
     return new Paragraph({
       children: children,
-      spacing: spacing,
+      spacing: {
+        after: defaultAfterSpacing,
+        line: defaultLineSpacing,
+      },
       alignment: AlignmentType.LEFT, // Explicitly set left alignment
     });
   }
@@ -764,7 +732,6 @@ class DocxExporter {
       ImageRun,
       AlignmentType,
       convertInchesToTwip,
-      applyPendingSpacing: this.applyPendingSpacing.bind(this),
       themeStyles: this.themeStyles
     };
     
@@ -1168,11 +1135,11 @@ class DocxExporter {
       children: runs,
       wordWrap: true, // Enable word wrap for long code lines
       alignment: AlignmentType.LEFT,
-      spacing: this.applyPendingSpacing({
+      spacing: {
         before: 200, // 13px
         after: 200,  // 13px
         line: 276,   // 1.15 line height for code blocks
-      }),
+      },
       shading: {
         fill: codeBackground,
       },
@@ -1199,7 +1166,7 @@ class DocxExporter {
         }),
       ],
       alignment: AlignmentType.LEFT,
-      spacing: this.applyPendingSpacing({ before: 120, after: 120 }),
+      spacing: { before: 120, after: 120 },
     });
   }
 
@@ -1252,10 +1219,11 @@ class DocxExporter {
         
         const paragraphConfig = {
           children: children,
-          spacing: this.applyPendingSpacing({
-            after: 45,  // 3px spacing between items (hardcoded for now)
+          spacing: {
+            before: 0,
+            after: 0,
             line: defaultLineSpacing,
-          }),
+          },
           alignment: AlignmentType.LEFT, // Explicitly set left alignment for list items
         };
 
@@ -1314,11 +1282,11 @@ class DocxExporter {
     // Build common paragraph config
     const buildParagraphConfig = (children, spacingBefore = 0, spacingAfter = 0) => ({
       children: children,
-      spacing: this.applyPendingSpacing({
+      spacing: {
         before: spacingBefore,
         after: spacingAfter,
         line: defaultLineSpacing,
-      }),
+      },
       alignment: AlignmentType.LEFT,
       indent: {
         left: convertInchesToTwip(outerIndent - leftBorderAndPadding),
@@ -1565,10 +1533,10 @@ class DocxExporter {
 
       return new Paragraph({
         children: [math],
-        spacing: this.applyPendingSpacing({
+        spacing: {
           before: 120, // 6pt
           after: 120,  // 6pt
-        }),
+        },
         alignment: AlignmentType.CENTER,
       });
     } catch (error) {
@@ -1584,7 +1552,7 @@ class DocxExporter {
           }),
         ],
         alignment: AlignmentType.LEFT, // Explicitly set left alignment for error fallback
-        spacing: this.applyPendingSpacing({ before: 120, after: 120 }),
+        spacing: { before: 120, after: 120 },
       });
     }
   }
