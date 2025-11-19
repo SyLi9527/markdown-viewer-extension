@@ -692,6 +692,46 @@ ${truncatedMarkup}`;
   const initialMaxWidth = layoutConfigs[initialLayout].maxWidth;
   const initialZoom = initialState.zoom || 100;
   
+  // Global zoom state
+  let currentZoomLevel = initialZoom;
+
+  /**
+   * Apply zoom level to content and update UI
+   * @param {number} newLevel - New zoom level percentage (e.g. 100, 150)
+   * @param {boolean} saveState - Whether to save state to storage
+   */
+  const applyZoom = (newLevel, saveState = true) => {
+    currentZoomLevel = Math.max(50, Math.min(400, newLevel));
+    
+    const zoomLevelSpan = document.getElementById('zoom-level');
+    const contentDiv = document.getElementById('markdown-content');
+    
+    if (zoomLevelSpan) {
+      zoomLevelSpan.textContent = currentZoomLevel + '%';
+    }
+    
+    if (contentDiv) {
+      // Apply zoom using CSS zoom property (like browser zoom)
+      contentDiv.style.zoom = (currentZoomLevel / 100);
+      
+      // Update scroll-margin-top for all headings to account for zoom
+      // Formula: 50px (toolbar height) / zoom ratio
+      const scrollMargin = 50 / (currentZoomLevel / 100);
+      const headings = contentDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      headings.forEach(heading => {
+        heading.style.scrollMarginTop = scrollMargin + 'px';
+      });
+    }
+    
+    // Save zoom level
+    if (saveState) {
+      saveFileState({ zoom: currentZoomLevel });
+    }
+    
+    // Update TOC active state since zoom affects scroll positions
+    updateActiveTocItem();
+  };
+  
   // Default TOC visibility based on screen width if no saved state
   let initialTocVisible;
   if (initialState.tocVisible !== undefined) {
@@ -856,9 +896,16 @@ ${truncatedMarkup}`;
     // Get current scroll position
     const scrollTop = window.scrollY || window.pageYOffset;
     
+    // Get current zoom level
+    let currentZoom = 1;
+    if (contentDiv.style.zoom) {
+      currentZoom = parseFloat(contentDiv.style.zoom) || 1;
+    }
+
     // Threshold: toolbar height (50px) + small tolerance (10px)
-    // getBoundingClientRect() already accounts for zoom, so no adjustment needed
-    const threshold = 60;
+    // Scale threshold with zoom to ensure accurate detection
+    // Use Math.max to ensure threshold is never too small for low zoom levels
+    const threshold = Math.max(60, 60 * currentZoom);
     
     // Find the last heading that is above or near the viewport top
     let activeHeading = null;
@@ -993,8 +1040,14 @@ ${truncatedMarkup}`;
       // Generate table of contents after rendering
       await generateTOC();
 
+      // Apply initial zoom to ensure scroll margins are correct
+      applyZoom(currentZoomLevel, false);
+
       // Restore scroll position immediately
       restoreScrollPosition(savedScrollPosition);
+      
+      // Update TOC active state initially
+      setTimeout(updateActiveTocItem, 100);
 
       // Don't process async tasks here - let main flow handle it
     } catch (error) {
@@ -1182,53 +1235,32 @@ ${truncatedMarkup}`;
     }
 
     // Zoom controls
-    let zoomLevel = 100;
     const zoomLevelSpan = document.getElementById('zoom-level');
-    const contentDiv = document.getElementById('markdown-content');
-
-    const updateZoom = (newLevel, saveState = true) => {
-      zoomLevel = Math.max(50, Math.min(400, newLevel));
-      if (zoomLevelSpan) {
-        zoomLevelSpan.textContent = zoomLevel + '%';
-      }
-      if (contentDiv) {
-        // Apply zoom using CSS zoom property (like browser zoom)
-        contentDiv.style.zoom = (zoomLevel / 100);
-        
-        // Update scroll-margin-top for all headings to account for zoom
-        // Formula: 50px (toolbar height) / zoom ratio
-        const scrollMargin = 50 / (zoomLevel / 100);
-        const headings = contentDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
-        headings.forEach(heading => {
-          heading.style.scrollMarginTop = scrollMargin + 'px';
-        });
-      }
-      
-      // Save zoom level
-      if (saveState) {
-        saveFileState({ zoom: zoomLevel });
-      }
-    };
+    
+    // Initialize zoom display
+    if (zoomLevelSpan) {
+      zoomLevelSpan.textContent = currentZoomLevel + '%';
+    }
 
     // Click zoom level to reset to 100%
     if (zoomLevelSpan) {
       zoomLevelSpan.style.cursor = 'pointer';
       zoomLevelSpan.addEventListener('click', () => {
-        updateZoom(100);
+        applyZoom(100);
       });
     }
 
     const zoomInBtn = document.getElementById('zoom-in-btn');
     if (zoomInBtn) {
       zoomInBtn.addEventListener('click', () => {
-        updateZoom(zoomLevel + 10);
+        applyZoom(currentZoomLevel + 10);
       });
     }
 
     const zoomOutBtn = document.getElementById('zoom-out-btn');
     if (zoomOutBtn) {
       zoomOutBtn.addEventListener('click', () => {
-        updateZoom(zoomLevel - 10);
+        applyZoom(currentZoomLevel - 10);
       });
     }
 
@@ -1304,7 +1336,7 @@ ${truncatedMarkup}`;
           
           if (newZoom !== null) {
             // Apply zoom without saving (will save together with layout)
-            updateZoom(newZoom, false);
+            applyZoom(newZoom, false);
             settingsToUpdate.zoom = newZoom;
           }
         }
@@ -1344,7 +1376,7 @@ ${truncatedMarkup}`;
         
         // Restore zoom level
         if (savedState.zoom && typeof savedState.zoom === 'number') {
-          updateZoom(savedState.zoom, false);
+          applyZoom(savedState.zoom, false);
         }
       })();
     }
