@@ -1,0 +1,642 @@
+{
+  "about": {
+    "message": "关于",
+    "description": "Menu item for about"
+  },
+  "async_processing_error": {
+    "message": "{0} 错误：{1}",
+    "description": "Generic error message with type and detail"
+  },
+  "async_processing_message": {
+    "message": "正在处理 {0}{1}...",
+    "description": "异步占位加载提示"
+  },
+  "async_task_processing_error": {
+    "message": "任务处理错误: {0}",
+    "description": "异步任务失败提示"
+  },
+  "async_unknown_error": {
+    "message": "未知错误",
+    "description": "错误信息缺失时的提示"
+  },
+  "cache_clear": {
+    "message": "清空缓存",
+    "description": "清空按钮"
+  },
+  "cache_clear_confirm": {
+    "message": "确定要清空所有缓存吗？该操作不可撤销。",
+    "description": "清空缓存确认提示"
+  },
+  "cache_clear_failed": {
+    "message": "清空缓存失败",
+    "description": "清空缓存失败提示"
+  },
+  "cache_clear_success": {
+    "message": "缓存已清空",
+    "description": "清空缓存成功提示"
+  },
+  "cache_error_message": {
+    "message": "缓存通信失败，请先打开 Markdown 文件",
+    "description": "缓存错误提示"
+  },
+  "cache_hint_details": {
+    "message": "缓存功能会在打开 Markdown 页面时自动运行",
+    "description": "缓存提示补充"
+  },
+  "cache_item_accessed_label": {
+    "message": "访问",
+    "description": "缓存条目访问时间标签"
+  },
+  "cache_item_created_label": {
+    "message": "创建",
+    "description": "缓存条目创建时间标签"
+  },
+  "cache_item_size_label": {
+    "message": "大小",
+    "description": "缓存条目大小标签"
+  },
+  "cache_item_type_label": {
+    "message": "类型",
+    "description": "缓存条目类型标签"
+  },
+  "cache_item_type_unknown": {
+    "message": "未知",
+    "description": "缓存条目类型未知时的提示"
+  },
+  "cache_items_empty": {
+    "message": "暂无缓存项目",
+    "description": "缓存列表为空提示"
+  },
+  "cache_items_title": {
+    "message": "缓存项目（最近访问的 20 项）",
+    "description": "缓存列表标题"
+  },
+  "cache_loading_failed": {
+    "message": "加载缓存信息失败: {0}",
+    "description": "缓存加载异常提示"
+  },
+  "cache_manual_clear_intro": {
+    "message": "如需手动清空：",
+    "description": "手动清空缓存引导"
+  },
+  "cache_manual_clear_step_1": {
+    "message": "打开任意 Markdown 文件",
+    "description": "手动清空缓存步骤"
+  },
+  "cache_manual_clear_step_2": {
+    "message": "按 F12 打开开发者工具",
+    "description": "手动清空缓存步骤"
+  },
+  "cache_manual_clear_step_3": {
+    "message": "在控制台执行 \"{0}\"",
+    "description": "手动清空缓存步骤"
+  },
+  "cache_manual_clear_title": {
+    "message": "🧹 手动清空缓存",
+    "description": "手动清空缓存标题"
+  },
+  "cache_manual_limit_desc_1": {
+    "message": "出于安全限制，popup 无法直接访问 IndexedDB。",
+    "description": "缓存手动说明内容"
+  },
+  "cache_manual_limit_desc_2": {
+    "message": "缓存功能在 Markdown 页面中正常运行，但在此无法显示详情。",
+    "description": "缓存手动说明内容"
+  },
+  "cache_manual_limit_title": {
+    "message": "⚠️ 缓存访问限制",
+    "description": "Manual cache info section title"
+  },
+  "cache_manual_status_intro": {
+    "message": "确认缓存工作情况：",
+    "description": "缓存状态章节引导"
+  },
+  "cache_manual_status_step_console": {
+    "message": "在开发者工具中查看 \"⚡ Using cached\" 日志",
+    "description": "缓存状态检查步骤"
+  },
+  "cache_manual_status_step_open": {
+    "message": "打开一个 Markdown 文件",
+    "description": "缓存状态检查步骤"
+  },
+  "cache_manual_status_step_speed": {
+    "message": "观察渲染速度（有缓存时更快）",
+    "description": "缓存状态检查步骤"
+  },
+  "cache_manual_status_title": {
+    "message": "📊 缓存状态检查",
+    "description": "缓存状态章节标题"
+  },
+  "cache_refresh": {
+    "message": "刷新",
+    "description": "刷新按钮"
+  },
+  "cache_stat_capacity_label": {
+    "message": "最大容量",
+    "description": "缓存统计标签"
+  },
+  "cache_stat_item_label": {
+    "message": "缓存项目",
+    "description": "缓存统计标签"
+  },
+  "cache_stat_size_label": {
+    "message": "占用空间",
+    "description": "缓存统计标签"
+  },
+  "cache_stat_usage_label": {
+    "message": "容量使用",
+    "description": "缓存统计标签"
+  },
+  "cancel": {
+    "message": "取消",
+    "description": "Cancel button text"
+  },
+  "clear_all": {
+    "message": "清除全部",
+    "description": "Button to clear all items"
+  },
+  "clear_recent_files": {
+    "message": "清除最近文件",
+    "description": "Dialog title for clearing recent files"
+  },
+  "clear_recent_files_confirm": {
+    "message": "确定要清除所有最近打开的文件记录吗？",
+    "description": "Confirmation message for clearing recent files"
+  },
+  "clipboard_empty": {
+    "message": "剪贴板为空",
+    "description": "剪贴板为空错误"
+  },
+  "clipboard_open": {
+    "message": "从剪贴板打开",
+    "description": "剪贴板项标题"
+  },
+  "clipboard_read_failed": {
+    "message": "读取剪贴板失败",
+    "description": "读取剪贴板失败错误"
+  },
+  "close": {
+    "message": "关闭",
+    "description": "Close button text/tooltip"
+  },
+  "contextMenu_viewAsMarkdown": {
+    "message": "以 Markdown 格式查看",
+    "description": "Context menu item to view any file as markdown"
+  },
+  "delete": {
+    "message": "删除",
+    "description": "Delete button text"
+  },
+  "delete_file": {
+    "message": "删除文件",
+    "description": "Menu item to delete a file"
+  },
+  "delete_file_confirm": {
+    "message": "确定要删除 \"{0}\" 吗？此操作无法撤销。",
+    "description": "Confirmation message for deleting a file"
+  },
+  "docx_export_failed_alert": {
+    "message": "导出失败{0}",
+    "description": "DOCX 导出失败警告"
+  },
+  "docx_export_failed_default": {
+    "message": "导出失败",
+    "description": "DOCX 导出失败的默认提示"
+  },
+  "export_docx": {
+    "message": "分享为 Word",
+    "description": "导出为 DOCX 菜单项"
+  },
+  "exporting": {
+    "message": "正在准备 Word 文档...",
+    "description": "导出中提示"
+  },
+  "extensionDescription": {
+    "message": "Markdown 一键导出完美 Word — Mermaid 流程图、Graphviz、Vega 图表、信息图、LaTeX 公式自动转为可编辑格式，代码高亮，本地处理",
+    "description": "扩展简介"
+  },
+  "extensionName": {
+    "message": "Markdown Viewer",
+    "description": "扩展名称"
+  },
+  "failed_to_open_file": {
+    "message": "打开文件失败: {0}",
+    "description": "Toast when file open fails"
+  },
+  "failed_to_open_url": {
+    "message": "无法打开URL: {0}",
+    "description": "Error message when URL cannot be opened"
+  },
+  "failed_to_share": {
+    "message": "分享失败: {0}",
+    "description": "Toast when sharing fails"
+  },
+  "file_access_disabled": {
+    "message": "未启用",
+    "description": "Status text when file access is disabled"
+  },
+  "file_access_disabled_desc_short": {
+    "message": "要查看本地文件，请访问",
+    "description": "Short description prefix for file access warning"
+  },
+  "file_access_disabled_suffix": {
+    "message": "并启用「允许访问文件网址」选项",
+    "description": "Suffix for file access warning"
+  },
+  "file_access_settings_link": {
+    "message": "扩展设置页面",
+    "description": "Link text to extension settings"
+  },
+  "file_deleted": {
+    "message": "文件已删除",
+    "description": "Toast when file is deleted"
+  },
+  "file_not_found": {
+    "message": "文件不存在",
+    "description": "Error message when file doesn't exist"
+  },
+  "file_removed": {
+    "message": "已从列表移除",
+    "description": "Toast when file is removed from list"
+  },
+  "file_url_copied": {
+    "message": "链接已复制，请粘贴到地址栏打开",
+    "description": "Message shown when file URL is copied to clipboard in Firefox"
+  },
+  "heading_h2_format": {
+    "message": "第{0}章",
+    "description": "Format for h2 headings. {0} is the chapter number."
+  },
+  "heading_h2_numerals": {
+    "message": "chinese",
+    "description": "Numeral system for h2: chinese, arabic, roman"
+  },
+  "history_clear": {
+    "message": "清空历史",
+    "description": "清空历史按钮"
+  },
+  "history_clear_confirm": {
+    "message": "确定要清空所有历史记录吗？该操作不可撤销。",
+    "description": "清空历史确认提示"
+  },
+  "history_clear_failed": {
+    "message": "清空历史记录失败",
+    "description": "清空历史失败提示"
+  },
+  "history_clear_success": {
+    "message": "历史记录已清空",
+    "description": "清空历史成功提示"
+  },
+  "history_description": {
+    "message": "显示最近打开过的 Markdown 文档，点击可以重新打开",
+    "description": "历史文档描述"
+  },
+  "history_items_empty": {
+    "message": "暂无历史记录",
+    "description": "历史列表为空提示"
+  },
+  "history_loading_failed": {
+    "message": "加载历史记录失败",
+    "description": "加载历史失败提示"
+  },
+  "history_open_failed": {
+    "message": "打开文档失败",
+    "description": "打开历史文档失败提示"
+  },
+  "history_refresh": {
+    "message": "刷新",
+    "description": "刷新历史按钮"
+  },
+  "history_title": {
+    "message": "最近访问的文档",
+    "description": "历史文档标题"
+  },
+  "language": {
+    "message": "语言",
+    "description": "Menu item for language"
+  },
+  "more": {
+    "message": "更多",
+    "description": "More options menu"
+  },
+  "no_file_opened": {
+    "message": "未打开任何文件",
+    "description": "Message when trying to perform action without file"
+  },
+  "no_file_to_share": {
+    "message": "没有可分享的文件",
+    "description": "Toast when no file is open for sharing"
+  },
+  "no_headings": {
+    "message": "未找到标题",
+    "description": "Toast when document has no headings"
+  },
+  "no_recent_files": {
+    "message": "没有最近文件",
+    "description": "Toast when there are no recent files"
+  },
+  "open_file": {
+    "message": "打开文件",
+    "description": "Menu item to open file"
+  },
+  "popup_review_link": {
+    "message": "评分",
+    "description": "评价扩展的链接文字"
+  },
+  "popup_title": {
+    "message": "Markdown Viewer",
+    "description": "弹窗标题"
+  },
+  "popup_version_label": {
+    "message": "版本 {0}",
+    "description": "弹窗中的版本文字"
+  },
+  "preparing_share": {
+    "message": "准备分享...",
+    "description": "Progress text when preparing to share"
+  },
+  "recent_files": {
+    "message": "最近文件",
+    "description": "Title for recent files section"
+  },
+  "remove_from_list": {
+    "message": "从列表移除",
+    "description": "Menu item to remove file from recent list"
+  },
+  "reset": {
+    "message": "重置",
+    "description": "Reset button"
+  },
+  "search_case_sensitive": {
+    "message": "区分大小写",
+    "description": "Match case sensitivity toggle tooltip"
+  },
+  "search_next": {
+    "message": "下一个",
+    "description": "Next match button tooltip"
+  },
+  "search_placeholder": {
+    "message": "查找",
+    "description": "Search input placeholder text"
+  },
+  "search_previous": {
+    "message": "上一个",
+    "description": "Previous match button tooltip"
+  },
+  "search_whole_word": {
+    "message": "全字匹配",
+    "description": "Match whole word toggle tooltip"
+  },
+  "settings_auto_refresh": {
+    "message": "自动刷新",
+    "description": "自动刷新复选框标签"
+  },
+  "settings_auto_refresh_interval": {
+    "message": "刷新间隔:",
+    "description": "刷新间隔选择器标签"
+  },
+  "settings_auto_refresh_note": {
+    "message": "本地文件变化时自动刷新预览（仅限 file:// 协议）。",
+    "description": "自动刷新选项说明"
+  },
+  "settings_docx_emoji_style": {
+    "message": "表情符号样式",
+    "description": "Label for emoji style selector in DOCX export settings"
+  },
+  "settings_docx_emoji_style_apple": {
+    "message": "Apple 样式",
+    "description": "Option to use Apple Color Emoji"
+  },
+  "settings_docx_emoji_style_note": {
+    "message": "选择 DOCX 导出的表情符号字体样式",
+    "description": "Helper note for the emoji style option"
+  },
+  "settings_docx_emoji_style_system": {
+    "message": "系统样式",
+    "description": "Option to use system emoji (no font processing)"
+  },
+  "settings_docx_emoji_style_windows": {
+    "message": "Windows 样式",
+    "description": "Option to use Segoe UI Emoji"
+  },
+  "settings_docx_hr_display": {
+    "message": "DOCX：分隔线处理",
+    "description": "Label for DOCX horizontal rule handling selector"
+  },
+  "settings_docx_hr_display_hide": {
+    "message": "隐藏（空行）",
+    "description": "Option to hide horizontal rules in DOCX"
+  },
+  "settings_docx_hr_display_line": {
+    "message": "分割线",
+    "description": "Option to export horizontal rules as a line in DOCX"
+  },
+  "settings_docx_hr_display_note": {
+    "message": "选择 Markdown 分隔线（---）在导出的 Word 文档中的处理方式。",
+    "description": "Helper note for DOCX horizontal rule handling"
+  },
+  "settings_docx_hr_display_page_break": {
+    "message": "分页",
+    "description": "Option to export horizontal rules as page breaks in DOCX"
+  },
+  "settings_docx_hr_page_break": {
+    "message": "DOCX：将分隔线(hr)导出为分页",
+    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
+  },
+  "settings_docx_hr_page_break_note": {
+    "message": "开启后，Markdown 分隔线（---）在导出的 Word 文档中会产生分页。",
+    "description": "Helper note for the DOCX hr page break option"
+  },
+  "settings_frontmatter_display": {
+    "message": "Frontmatter 显示:",
+    "description": "Label for frontmatter display mode selector"
+  },
+  "settings_frontmatter_hide": {
+    "message": "隐藏",
+    "description": "Option to hide frontmatter"
+  },
+  "settings_frontmatter_note": {
+    "message": "选择如何显示 Markdown 文件开头的 YAML frontmatter。",
+    "description": "Helper note for frontmatter display option"
+  },
+  "settings_frontmatter_raw": {
+    "message": "原始信息",
+    "description": "Option to display frontmatter as blockquote"
+  },
+  "settings_frontmatter_table": {
+    "message": "数据表格",
+    "description": "Option to display frontmatter as table"
+  },
+  "settings_general_title": {
+    "message": "扩展设置",
+    "description": "设置区标题"
+  },
+  "settings_interface_title": {
+    "message": "界面设置",
+    "description": "界面设置区标题"
+  },
+  "settings_invalid_max_cache": {
+    "message": "请输入 {0}-{1} 之间的有效缓存数量",
+    "description": "最大缓存输入无效提示"
+  },
+  "settings_language_auto": {
+    "message": "跟随系统语言",
+    "description": "自动语言选项"
+  },
+  "settings_language_changed": {
+    "message": "界面语言已更改",
+    "description": "语言更改成功提示"
+  },
+  "settings_language_label": {
+    "message": "界面语言:",
+    "description": "语言选择标签"
+  },
+  "settings_language_note": {
+    "message": "设置后将覆盖系统界面语言，仅影响扩展界面。",
+    "description": "语言选择说明"
+  },
+  "settings_max_cache_label": {
+    "message": "最大缓存项目数:",
+    "description": "最大缓存标签"
+  },
+  "settings_reset_btn": {
+    "message": "重置为默认",
+    "description": "重置按钮"
+  },
+  "settings_reset_confirm": {
+    "message": "确定要重置所有设置为默认值吗？",
+    "description": "重置设置确认提示"
+  },
+  "settings_reset_failed": {
+    "message": "重置设置失败",
+    "description": "设置重置失败提示"
+  },
+  "settings_reset_success": {
+    "message": "设置已重置",
+    "description": "设置重置成功提示"
+  },
+  "settings_save_failed": {
+    "message": "保存设置失败",
+    "description": "保存设置失败提示"
+  },
+  "settings_save_success": {
+    "message": "设置已保存",
+    "description": "保存设置成功提示"
+  },
+  "settings_support_canvas": {
+    "message": "JSON Canvas 图表 (.canvas)",
+    "description": "Checkbox label for enabling JSON Canvas file support"
+  },
+  "settings_support_dot": {
+    "message": "Graphviz DOT 图表 (.dot)",
+    "description": "启用 DOT 文件支持的复选框标签"
+  },
+  "settings_support_drawio": {
+    "message": "Draw.io 图表 (.drawio)",
+    "description": "Checkbox label for enabling Draw.io file support"
+  },
+  "settings_support_infographic": {
+    "message": "信息图表 (.infographic)",
+    "description": "启用信息图表文件支持的复选框标签"
+  },
+  "settings_support_mermaid": {
+    "message": "Mermaid 图表 (.mermaid)",
+    "description": "启用 Mermaid 文件支持的复选框标签"
+  },
+  "settings_support_vega": {
+    "message": "Vega 图表 (.vega)",
+    "description": "启用 Vega 文件支持的复选框标签"
+  },
+  "settings_support_vega_lite": {
+    "message": "Vega-Lite 图表 (.vl, .vega-lite)",
+    "description": "启用 Vega-Lite 文件支持的复选框标签"
+  },
+  "settings_supported_formats_title": {
+    "message": "支持的文件格式",
+    "description": "支持的格式部分标题"
+  },
+  "settings_table_merge_empty": {
+    "message": "智能表格单元格合并",
+    "description": "Checkbox label for enabling automatic vertical merging of empty table cells"
+  },
+  "settings_table_merge_empty_note": {
+    "message": "启用后，将分析表格结构并智能合并空单元格。",
+    "description": "Helper note for the table merge option"
+  },
+  "settings_theme_changed": {
+    "message": "主题已成功切换，请刷新页面查看变化。",
+    "description": "主题切换成功时显示的消息"
+  },
+  "settings_theme_label": {
+    "message": "选择主题：",
+    "description": "主题选择器标签"
+  },
+  "share": {
+    "message": "分享",
+    "description": "Share button tooltip"
+  },
+  "tab_cache": {
+    "message": "缓存",
+    "description": "缓存标签"
+  },
+  "tab_history": {
+    "message": "历史",
+    "description": "历史标签"
+  },
+  "tab_settings": {
+    "message": "设置",
+    "description": "设置标签"
+  },
+  "theme": {
+    "message": "主题",
+    "description": "Menu item for theme"
+  },
+  "toc": {
+    "message": "目录",
+    "description": "TOC drawer title"
+  },
+  "toolbar_download_title": {
+    "message": "下载",
+    "description": "下载按钮提示"
+  },
+  "toolbar_layout_title_fullscreen": {
+    "message": "满屏布局",
+    "description": "布局按钮满屏模式提示"
+  },
+  "toolbar_layout_title_narrow": {
+    "message": "窄屏布局",
+    "description": "布局按钮窄屏模式提示"
+  },
+  "toolbar_layout_title_normal": {
+    "message": "正常布局",
+    "description": "布局按钮正常模式提示"
+  },
+  "toolbar_print_disabled_title": {
+    "message": "打印功能仅适用于本地文件",
+    "description": "远程文件时打印按钮禁用提示"
+  },
+  "toolbar_print_title": {
+    "message": "打印",
+    "description": "打印按钮提示"
+  },
+  "toolbar_toggle_toc_title": {
+    "message": "显示/隐藏目录",
+    "description": "目录按钮提示"
+  },
+  "toolbar_zoom_in_title": {
+    "message": "放大",
+    "description": "放大按钮提示"
+  },
+  "toolbar_zoom_out_title": {
+    "message": "缩小",
+    "description": "缩小按钮提示"
+  },
+  "welcome_message": {
+    "message": "打开一个 Markdown 文件开始",
+    "description": "Welcome message on empty state"
+  },
+  "zoom": {
+    "message": "缩放",
+    "description": "Menu item for zoom"
+  }
+}

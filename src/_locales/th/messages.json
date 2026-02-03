@@ -1,0 +1,642 @@
+{
+  "about": {
+    "message": "เกี่ยวกับ",
+    "description": "Menu item for about"
+  },
+  "async_processing_error": {
+    "message": "{0} ข้อผิดพลาด: {1}",
+    "description": "Generic error message with type and detail"
+  },
+  "async_processing_message": {
+    "message": "กำลังประมวลผล {0}{1}...",
+    "description": "Async placeholder processing text"
+  },
+  "async_task_processing_error": {
+    "message": "ข้อผิดพลาดในการประมวลผลงาน: {0}",
+    "description": "Error when async task fails"
+  },
+  "async_unknown_error": {
+    "message": "ข้อผิดพลาดที่ไม่รู้จัก",
+    "description": "Fallback when error message missing"
+  },
+  "cache_clear": {
+    "message": "ล้างแคช",
+    "description": "Clear cache button"
+  },
+  "cache_clear_confirm": {
+    "message": "ล้างข้อมูลแคชทั้งหมด? การดำเนินการนี้ไม่สามารถยกเลิกได้",
+    "description": "Confirmation text for clearing cache"
+  },
+  "cache_clear_failed": {
+    "message": "ไม่สามารถล้างแคช",
+    "description": "Toast when cache clear fails"
+  },
+  "cache_clear_success": {
+    "message": "ล้างแคชแล้ว",
+    "description": "Toast when cache clear succeeds"
+  },
+  "cache_error_message": {
+    "message": "การสื่อสารแคชล้มเหลว — เปิดไฟล์ Markdown ก่อน",
+    "description": "Shown when cache cannot be reached"
+  },
+  "cache_hint_details": {
+    "message": "การแคชทำงานอัตโนมัติขณะที่หน้า Markdown เปิดอยู่",
+    "description": "Additional hint when cache is empty"
+  },
+  "cache_item_accessed_label": {
+    "message": "เข้าถึงล่าสุด",
+    "description": "Label for cache item last access time"
+  },
+  "cache_item_created_label": {
+    "message": "สร้างเมื่อ",
+    "description": "Label for cache item created time"
+  },
+  "cache_item_size_label": {
+    "message": "ขนาด",
+    "description": "Label for cache item size"
+  },
+  "cache_item_type_label": {
+    "message": "ประเภท",
+    "description": "Label for cache item type"
+  },
+  "cache_item_type_unknown": {
+    "message": "ไม่ทราบ",
+    "description": "Fallback label when cache type is missing"
+  },
+  "cache_items_empty": {
+    "message": "ยังไม่มีรายการที่แคช",
+    "description": "Shown when the cache list is empty"
+  },
+  "cache_items_title": {
+    "message": "รายการที่แคช (20 รายการล่าสุด)",
+    "description": "Heading for cache items list"
+  },
+  "cache_loading_failed": {
+    "message": "ไม่สามารถโหลดแคช: {0}",
+    "description": "Displayed when cache loading throws an error"
+  },
+  "cache_manual_clear_intro": {
+    "message": "วิธีล้างแคชด้วยตนเอง:",
+    "description": "Manual cache clear intro"
+  },
+  "cache_manual_clear_step_1": {
+    "message": "เปิดไฟล์ Markdown ใดๆ",
+    "description": "Manual cache clear step"
+  },
+  "cache_manual_clear_step_2": {
+    "message": "กด F12 เพื่อเปิด DevTools",
+    "description": "Manual cache clear step"
+  },
+  "cache_manual_clear_step_3": {
+    "message": "รัน \"{0}\" ในคอนโซล",
+    "description": "Manual cache clear step with code placeholder"
+  },
+  "cache_manual_clear_title": {
+    "message": "🧹 ล้างแคชด้วยตนเอง",
+    "description": "Manual cache clear title"
+  },
+  "cache_manual_limit_desc_1": {
+    "message": "ด้วยเหตุผลด้านความปลอดภัย ป๊อปอัปไม่สามารถเข้าถึง IndexedDB โดยตรง",
+    "description": "Manual cache info description"
+  },
+  "cache_manual_limit_desc_2": {
+    "message": "การแคชยังคงทำงานขณะแสดงผลหน้า Markdown แต่ป๊อปอัปไม่สามารถแสดงรายละเอียดได้",
+    "description": "Manual cache info description"
+  },
+  "cache_manual_limit_title": {
+    "message": "⚠️ ข้อจำกัดการเข้าถึงแคช",
+    "description": "Manual cache info section title"
+  },
+  "cache_manual_status_intro": {
+    "message": "เพื่อให้แน่ใจว่าการแคชทำงาน:",
+    "description": "Manual cache status intro"
+  },
+  "cache_manual_status_step_console": {
+    "message": "ตรวจสอบล็อก \"⚡ Using cached\" ใน DevTools",
+    "description": "Manual cache status checklist"
+  },
+  "cache_manual_status_step_open": {
+    "message": "เปิดไฟล์ Markdown",
+    "description": "Manual cache status checklist"
+  },
+  "cache_manual_status_step_speed": {
+    "message": "สังเกตการแสดงผลที่เร็วขึ้นเมื่อแคชพร้อม",
+    "description": "Manual cache status checklist"
+  },
+  "cache_manual_status_title": {
+    "message": "📊 ตรวจสอบสถานะแคช",
+    "description": "Manual cache status section title"
+  },
+  "cache_refresh": {
+    "message": "รีเฟรช",
+    "description": "Refresh cache button"
+  },
+  "cache_stat_capacity_label": {
+    "message": "ความจุสูงสุด",
+    "description": "Label for max cache entries"
+  },
+  "cache_stat_item_label": {
+    "message": "รายการที่แคช",
+    "description": "Label for number of cached items"
+  },
+  "cache_stat_size_label": {
+    "message": "พื้นที่ที่ใช้",
+    "description": "Label for cache size"
+  },
+  "cache_stat_usage_label": {
+    "message": "ความจุที่ใช้",
+    "description": "Label for usage percentage"
+  },
+  "cancel": {
+    "message": "ยกเลิก",
+    "description": "Cancel button text"
+  },
+  "clear_all": {
+    "message": "ล้างทั้งหมด",
+    "description": "Button to clear all items"
+  },
+  "clear_recent_files": {
+    "message": "ล้างไฟล์ล่าสุด",
+    "description": "Dialog title for clearing recent files"
+  },
+  "clear_recent_files_confirm": {
+    "message": "ลบไฟล์ล่าสุดทั้งหมดออกจากรายการ?",
+    "description": "Confirmation message for clearing recent files"
+  },
+  "clipboard_empty": {
+    "message": "คลิปบอร์ดว่างเปล่า",
+    "description": "Error when clipboard is empty"
+  },
+  "clipboard_open": {
+    "message": "เปิดจากคลิปบอร์ด",
+    "description": "Clipboard item title in history"
+  },
+  "clipboard_read_failed": {
+    "message": "ไม่สามารถอ่านคลิปบอร์ดได้",
+    "description": "Error when clipboard read fails"
+  },
+  "close": {
+    "message": "ปิด",
+    "description": "Close button text/tooltip"
+  },
+  "contextMenu_viewAsMarkdown": {
+    "message": "ดูเป็น Markdown",
+    "description": "Context menu item to view any file as markdown"
+  },
+  "delete": {
+    "message": "Delete",
+    "description": "Delete button text"
+  },
+  "delete_file": {
+    "message": "Delete file",
+    "description": "Menu item to delete a file"
+  },
+  "delete_file_confirm": {
+    "message": "Are you sure you want to delete \"{0}\"? This action cannot be undone.",
+    "description": "Confirmation message for deleting a file"
+  },
+  "docx_export_failed_alert": {
+    "message": "การส่งออกล้มเหลว{0}",
+    "description": "Alert shown when DOCX export fails"
+  },
+  "docx_export_failed_default": {
+    "message": "การส่งออกล้มเหลว",
+    "description": "Fallback message when DOCX export fails"
+  },
+  "export_docx": {
+    "message": "แชร์เป็น Word",
+    "description": "Menu item for exporting to DOCX"
+  },
+  "exporting": {
+    "message": "กำลังเตรียมเอกสาร Word...",
+    "description": "Toast shown during export"
+  },
+  "extensionDescription": {
+    "message": "Markdown สู่ Word สมบูรณ์แบบในคลิกเดียว — Mermaid, Graphviz, Vega, อินโฟกราฟิก, LaTeX (แก้ไขได้), ไฮไลท์โค้ด, ประมวลผลในเครื่อง",
+    "description": "Extension description shown in Chrome Web Store"
+  },
+  "extensionName": {
+    "message": "Markdown Viewer",
+    "description": "Extension name"
+  },
+  "failed_to_open_file": {
+    "message": "เปิดไฟล์ไม่สำเร็จ: {0}",
+    "description": "Toast when file open fails"
+  },
+  "failed_to_open_url": {
+    "message": "ไม่สามารถเปิด URL ได้: {0}",
+    "description": "Error message when URL cannot be opened"
+  },
+  "failed_to_share": {
+    "message": "แชร์ไม่สำเร็จ: {0}",
+    "description": "Toast when sharing fails"
+  },
+  "file_access_disabled": {
+    "message": "ปิดใช้งาน",
+    "description": "Status text when file access is disabled"
+  },
+  "file_access_disabled_desc_short": {
+    "message": "เพื่อดูไฟล์ในเครื่อง กรุณาไปที่",
+    "description": "Short description prefix for file access warning"
+  },
+  "file_access_disabled_suffix": {
+    "message": "และเปิดใช้งาน 'อนุญาตการเข้าถึง URL ของไฟล์'",
+    "description": "Suffix for file access warning"
+  },
+  "file_access_settings_link": {
+    "message": "หน้าการตั้งค่าส่วนขยาย",
+    "description": "Link text to extension settings"
+  },
+  "file_deleted": {
+    "message": "File deleted",
+    "description": "Toast when file is deleted"
+  },
+  "file_not_found": {
+    "message": "ไม่พบไฟล์",
+    "description": "Error message when file doesn't exist"
+  },
+  "file_removed": {
+    "message": "Removed from list",
+    "description": "Toast when file is removed from list"
+  },
+  "file_url_copied": {
+    "message": "คัดลอก URL แล้ว วางในแถบที่อยู่เพื่อเปิด",
+    "description": "Message shown when file URL is copied to clipboard in Firefox"
+  },
+  "heading_h2_format": {
+    "message": "บทที่ {0}",
+    "description": "Format for h2 headings. {0} is the chapter number."
+  },
+  "heading_h2_numerals": {
+    "message": "arabic",
+    "description": "Numeral system for h2: chinese, arabic, roman"
+  },
+  "history_clear": {
+    "message": "ล้างประวัติ",
+    "description": "Clear history button"
+  },
+  "history_clear_confirm": {
+    "message": "ล้างประวัติทั้งหมด? การดำเนินการนี้ไม่สามารถยกเลิกได้",
+    "description": "Clear history confirmation message"
+  },
+  "history_clear_failed": {
+    "message": "ไม่สามารถล้างประวัติ",
+    "description": "Clear history failed message"
+  },
+  "history_clear_success": {
+    "message": "ล้างประวัติแล้ว",
+    "description": "Clear history success message"
+  },
+  "history_description": {
+    "message": "แสดงเอกสาร Markdown ที่เปิดล่าสุด คลิกเพื่อเปิดอีกครั้ง",
+    "description": "History documents description"
+  },
+  "history_items_empty": {
+    "message": "ยังไม่มีประวัติ",
+    "description": "Empty history list message"
+  },
+  "history_loading_failed": {
+    "message": "ไม่สามารถโหลดประวัติ",
+    "description": "Load history failed message"
+  },
+  "history_open_failed": {
+    "message": "ไม่สามารถเปิดเอกสาร",
+    "description": "Open history document failed message"
+  },
+  "history_refresh": {
+    "message": "รีเฟรช",
+    "description": "Refresh history button"
+  },
+  "history_title": {
+    "message": "ไฟล์ที่เปิดล่าสุด",
+    "description": "Header for recent files in history tab"
+  },
+  "language": {
+    "message": "ภาษา",
+    "description": "Menu item for language"
+  },
+  "more": {
+    "message": "More",
+    "description": "More menu tooltip"
+  },
+  "no_file_opened": {
+    "message": "ไม่มีไฟล์ที่เปิด",
+    "description": "Message when trying to perform action without file"
+  },
+  "no_file_to_share": {
+    "message": "ไม่มีไฟล์ที่จะแชร์",
+    "description": "Toast when no file is open for sharing"
+  },
+  "no_headings": {
+    "message": "ไม่พบหัวข้อ",
+    "description": "Toast when document has no headings"
+  },
+  "no_recent_files": {
+    "message": "No recent files",
+    "description": "Toast when there are no recent files"
+  },
+  "open_file": {
+    "message": "เปิดไฟล์",
+    "description": "Menu item to open file"
+  },
+  "popup_review_link": {
+    "message": "ให้คะแนน",
+    "description": "Link text to rate and review the extension"
+  },
+  "popup_title": {
+    "message": "Markdown Viewer",
+    "description": "Popup title"
+  },
+  "popup_version_label": {
+    "message": "เวอร์ชัน {0}",
+    "description": "Shows the extension version in the header"
+  },
+  "preparing_share": {
+    "message": "กำลังเตรียมแชร์...",
+    "description": "Progress text when preparing to share"
+  },
+  "recent_files": {
+    "message": "ไฟล์ล่าสุด",
+    "description": "Title for recent files section"
+  },
+  "remove_from_list": {
+    "message": "Remove from list",
+    "description": "Menu item to remove file from recent list"
+  },
+  "reset": {
+    "message": "รีเซ็ต",
+    "description": "Reset button"
+  },
+  "search_case_sensitive": {
+    "message": "ตรงตามตัวพิมพ์",
+    "description": "Toggle case sensitive search"
+  },
+  "search_next": {
+    "message": "ถัดไป",
+    "description": "Navigate to next search match"
+  },
+  "search_placeholder": {
+    "message": "ค้นหา",
+    "description": "Placeholder text for search input"
+  },
+  "search_previous": {
+    "message": "ก่อนหน้า",
+    "description": "Navigate to previous search match"
+  },
+  "search_whole_word": {
+    "message": "คำทั้งหมด",
+    "description": "Toggle whole word search"
+  },
+  "settings_auto_refresh": {
+    "message": "รีเฟรชอัตโนมัติ",
+    "description": "Label for auto refresh checkbox"
+  },
+  "settings_auto_refresh_interval": {
+    "message": "ช่วงเวลารีเฟรช:",
+    "description": "Label for refresh interval selector"
+  },
+  "settings_auto_refresh_note": {
+    "message": "โหลดใหม่โดยอัตโนมัติเมื่อไฟล์ในเครื่องเปลี่ยนแปลง (เฉพาะ file://).",
+    "description": "Helper note for auto refresh option"
+  },
+  "settings_docx_emoji_style": {
+    "message": "สไตล์อิโมจิ",
+    "description": "Label for the emoji style selector in DOCX export settings"
+  },
+  "settings_docx_emoji_style_apple": {
+    "message": "สไตล์ Apple",
+    "description": "Option for Apple emoji style"
+  },
+  "settings_docx_emoji_style_note": {
+    "message": "เลือกสไตล์ฟอนต์อิโมจิสำหรับการส่งออก DOCX",
+    "description": "Note explaining the emoji style setting"
+  },
+  "settings_docx_emoji_style_system": {
+    "message": "สไตล์ระบบ",
+    "description": "Option to use system emoji (no font processing)"
+  },
+  "settings_docx_emoji_style_windows": {
+    "message": "สไตล์ Windows",
+    "description": "Option for Windows emoji style"
+  },
+  "settings_docx_hr_display": {
+    "message": "DOCX: การจัดการเส้นแนวนอน",
+    "description": "Label for DOCX horizontal rule handling selector"
+  },
+  "settings_docx_hr_display_hide": {
+    "message": "ซ่อน (บรรทัดว่าง)",
+    "description": "Option to hide horizontal rules in DOCX"
+  },
+  "settings_docx_hr_display_line": {
+    "message": "เส้นแนวนอน",
+    "description": "Option to export horizontal rules as a line in DOCX"
+  },
+  "settings_docx_hr_display_note": {
+    "message": "เลือกวิธีส่งออกตัวคั่น Markdown (---) ใน DOCX",
+    "description": "Helper note for DOCX horizontal rule handling"
+  },
+  "settings_docx_hr_display_page_break": {
+    "message": "ตัดหน้า",
+    "description": "Option to export horizontal rules as page breaks in DOCX"
+  },
+  "settings_docx_hr_page_break": {
+    "message": "DOCX: ใช้เส้นคั่นเป็นการขึ้นหน้าใหม่",
+    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
+  },
+  "settings_docx_hr_page_break_note": {
+    "message": "เมื่อเปิดใช้งาน ตัวคั่น Markdown (---) จะสร้างหน้าใหม่ในเอกสาร Word ที่ส่งออก",
+    "description": "Helper note for the DOCX hr page break option"
+  },
+  "settings_frontmatter_display": {
+    "message": "การแสดง Frontmatter:",
+    "description": "Label for frontmatter display mode selector"
+  },
+  "settings_frontmatter_hide": {
+    "message": "ซ่อน",
+    "description": "Option to hide frontmatter"
+  },
+  "settings_frontmatter_note": {
+    "message": "เลือกวิธีแสดง YAML frontmatter ที่จุดเริ่มต้นของไฟล์ Markdown",
+    "description": "Helper note for frontmatter display option"
+  },
+  "settings_frontmatter_raw": {
+    "message": "ดิบ (อ้างอิง)",
+    "description": "Option to display frontmatter as blockquote"
+  },
+  "settings_frontmatter_table": {
+    "message": "ตาราง",
+    "description": "Option to display frontmatter as table"
+  },
+  "settings_general_title": {
+    "message": "การตั้งค่าส่วนขยาย",
+    "description": "Heading for settings section"
+  },
+  "settings_interface_title": {
+    "message": "การตั้งค่าอินเทอร์เฟซ",
+    "description": "Heading for interface settings section"
+  },
+  "settings_invalid_max_cache": {
+    "message": "ป้อนขนาดแคชที่ถูกต้องระหว่าง {0} ถึง {1}",
+    "description": "Shown when max cache input is invalid"
+  },
+  "settings_language_auto": {
+    "message": "ภาษาระบบ",
+    "description": "ตัวเลือกภาษาอัตโนมัติ"
+  },
+  "settings_language_changed": {
+    "message": "เปลี่ยนภาษาอินเทอร์เฟซแล้ว",
+    "description": "Toast when language is changed successfully"
+  },
+  "settings_language_label": {
+    "message": "ภาษาอินเทอร์เฟซ",
+    "description": "Settings label for interface language"
+  },
+  "settings_language_note": {
+    "message": "การเปลี่ยนแปลงนี้จะแทนที่ภาษาระบบสำหรับส่วนขยาย",
+    "description": "Note explaining language changes take effect immediately"
+  },
+  "settings_max_cache_label": {
+    "message": "รายการแคชสูงสุด:",
+    "description": "Label for max cache input"
+  },
+  "settings_reset_btn": {
+    "message": "รีเซ็ตเป็นค่าเริ่มต้น",
+    "description": "Reset button"
+  },
+  "settings_reset_confirm": {
+    "message": "รีเซ็ตการตั้งค่าทั้งหมดเป็นค่าเริ่มต้น?",
+    "description": "Confirmation text for resetting settings"
+  },
+  "settings_reset_failed": {
+    "message": "ไม่สามารถรีเซ็ตการตั้งค่า",
+    "description": "Toast when resetting settings fails"
+  },
+  "settings_reset_success": {
+    "message": "รีเซ็ตการตั้งค่าแล้ว",
+    "description": "Toast when settings reset succeeds"
+  },
+  "settings_save_failed": {
+    "message": "ไม่สามารถบันทึกการตั้งค่า",
+    "description": "Toast when saving settings fails"
+  },
+  "settings_save_success": {
+    "message": "บันทึกการตั้งค่าแล้ว",
+    "description": "Toast when settings saved"
+  },
+  "settings_support_canvas": {
+    "message": "ไดอะแกรม JSON Canvas (.canvas)",
+    "description": "Checkbox label for enabling JSON Canvas file support"
+  },
+  "settings_support_dot": {
+    "message": "ไดอะแกรม Graphviz DOT (.gv)",
+    "description": "Checkbox label for Graphviz DOT format support"
+  },
+  "settings_support_drawio": {
+    "message": "ไดอะแกรม Draw.io (.drawio)",
+    "description": "Checkbox label for enabling Draw.io file support"
+  },
+  "settings_support_infographic": {
+    "message": "อินโฟกราฟิก (.infographic)",
+    "description": "Checkbox label for Infographic format support"
+  },
+  "settings_support_mermaid": {
+    "message": "ไดอะแกรม Mermaid (.mermaid)",
+    "description": "Checkbox label for Mermaid format support"
+  },
+  "settings_support_vega": {
+    "message": "แผนภูมิ Vega (.vega)",
+    "description": "Checkbox label for Vega format support"
+  },
+  "settings_support_vega_lite": {
+    "message": "แผนภูมิ Vega-Lite (.vl, .vega-lite)",
+    "description": "Checkbox label for Vega-Lite format support"
+  },
+  "settings_supported_formats_title": {
+    "message": "รูปแบบที่รองรับ",
+    "description": "Title for supported file formats section in settings"
+  },
+  "settings_table_merge_empty": {
+    "message": "รวมเซลล์ตารางอัจฉริยะ",
+    "description": "Checkbox label for enabling automatic vertical merging of empty table cells"
+  },
+  "settings_table_merge_empty_note": {
+    "message": "เมื่อเปิดใช้งาน โครงสร้างตารางจะถูกวิเคราะห์และเซลล์ว่างจะถูกรวมอย่างชาญฉลาด",
+    "description": "Helper note for the table merge option"
+  },
+  "settings_theme_changed": {
+    "message": "เปลี่ยนธีมสำเร็จ โปรดโหลดหน้าใหม่เพื่อดูการเปลี่ยนแปลง",
+    "description": "Message shown when theme is changed"
+  },
+  "settings_theme_label": {
+    "message": "ธีม",
+    "description": "Settings label for theme selection"
+  },
+  "share": {
+    "message": "แชร์",
+    "description": "Share button tooltip"
+  },
+  "tab_cache": {
+    "message": "แคช",
+    "description": "Label for cache tab"
+  },
+  "tab_history": {
+    "message": "ประวัติ",
+    "description": "Label for history tab"
+  },
+  "tab_settings": {
+    "message": "การตั้งค่า",
+    "description": "Label for settings tab"
+  },
+  "theme": {
+    "message": "ธีม",
+    "description": "Menu item for theme"
+  },
+  "toc": {
+    "message": "สารบัญ",
+    "description": "TOC drawer title"
+  },
+  "toolbar_download_title": {
+    "message": "ดาวน์โหลด",
+    "description": "Toolbar download tooltip"
+  },
+  "toolbar_layout_title_fullscreen": {
+    "message": "เค้าโครงเต็มหน้าจอ",
+    "description": "Toolbar layout toggle tooltip for fullscreen mode"
+  },
+  "toolbar_layout_title_narrow": {
+    "message": "เค้าโครงแคบ",
+    "description": "Toolbar layout toggle tooltip for narrow mode"
+  },
+  "toolbar_layout_title_normal": {
+    "message": "เค้าโครงปกติ",
+    "description": "Toolbar layout toggle tooltip for normal mode"
+  },
+  "toolbar_print_disabled_title": {
+    "message": "การพิมพ์ใช้ได้เฉพาะไฟล์ภายในเครื่องเท่านั้น",
+    "description": "Tooltip when print button is disabled for remote files"
+  },
+  "toolbar_print_title": {
+    "message": "พิมพ์",
+    "description": "Toolbar print tooltip"
+  },
+  "toolbar_toggle_toc_title": {
+    "message": "แสดงหรือซ่อนสารบัญ",
+    "description": "Toolbar button title for toggling TOC"
+  },
+  "toolbar_zoom_in_title": {
+    "message": "ซูมเข้า",
+    "description": "Toolbar zoom in tooltip"
+  },
+  "toolbar_zoom_out_title": {
+    "message": "ซูมออก",
+    "description": "Toolbar zoom out tooltip"
+  },
+  "welcome_message": {
+    "message": "เปิดไฟล์ markdown เพื่อเริ่มต้น",
+    "description": "Welcome message on empty state"
+  },
+  "zoom": {
+    "message": "ซูม",
+    "description": "Menu item for zoom"
+  }
+}

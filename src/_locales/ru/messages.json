@@ -1,0 +1,642 @@
+{
+  "about": {
+    "message": "О приложении",
+    "description": "Menu item for about"
+  },
+  "async_processing_error": {
+    "message": "Ошибка {0}: {1}",
+    "description": "Generic error message with type and detail"
+  },
+  "async_processing_message": {
+    "message": "Обработка {0}{1}...",
+    "description": "Текст во время асинхронной обработки"
+  },
+  "async_task_processing_error": {
+    "message": "Ошибка задачи: {0}",
+    "description": "Ошибка при сбое задачи"
+  },
+  "async_unknown_error": {
+    "message": "Неизвестная ошибка",
+    "description": "Резервный текст"
+  },
+  "cache_clear": {
+    "message": "Очистить кэш",
+    "description": "Кнопка очистки"
+  },
+  "cache_clear_confirm": {
+    "message": "Очистить все данные кэша? Это действие нельзя отменить.",
+    "description": "Подтверждение очистки"
+  },
+  "cache_clear_failed": {
+    "message": "Не удалось очистить кэш",
+    "description": "Уведомление об ошибке"
+  },
+  "cache_clear_success": {
+    "message": "Кэш очищен",
+    "description": "Уведомление об успехе"
+  },
+  "cache_error_message": {
+    "message": "Не удалось связаться с кэшем — сначала откройте файл Markdown",
+    "description": "Сообщение при ошибке доступа"
+  },
+  "cache_hint_details": {
+    "message": "Кэш работает автоматически, пока открыты страницы Markdown",
+    "description": "Дополнительный совет"
+  },
+  "cache_item_accessed_label": {
+    "message": "Последний доступ",
+    "description": "Метка последнего доступа"
+  },
+  "cache_item_created_label": {
+    "message": "Создан",
+    "description": "Метка даты создания"
+  },
+  "cache_item_size_label": {
+    "message": "Размер",
+    "description": "Метка размера"
+  },
+  "cache_item_type_label": {
+    "message": "Тип",
+    "description": "Метка типа"
+  },
+  "cache_item_type_unknown": {
+    "message": "неизвестно",
+    "description": "Метка при отсутствующем типе"
+  },
+  "cache_items_empty": {
+    "message": "Элементы кэша отсутствуют",
+    "description": "Сообщение при пустом списке"
+  },
+  "cache_items_title": {
+    "message": "Элементы кэша (последние 20)",
+    "description": "Заголовок списка"
+  },
+  "cache_loading_failed": {
+    "message": "Не удалось загрузить кэш: {0}",
+    "description": "Ошибка при загрузке"
+  },
+  "cache_manual_clear_intro": {
+    "message": "Чтобы очистить кэш вручную:",
+    "description": "Вступление"
+  },
+  "cache_manual_clear_step_1": {
+    "message": "Откройте любой файл Markdown",
+    "description": "Шаг очистки"
+  },
+  "cache_manual_clear_step_2": {
+    "message": "Нажмите F12, чтобы открыть DevTools",
+    "description": "Шаг очистки"
+  },
+  "cache_manual_clear_step_3": {
+    "message": "Выполните \"{0}\" в консоли",
+    "description": "Шаг очистки"
+  },
+  "cache_manual_clear_title": {
+    "message": "🧹 Очистка кэша вручную",
+    "description": "Заголовок раздела очистки"
+  },
+  "cache_manual_limit_desc_1": {
+    "message": "Из соображений безопасности popup не может напрямую обращаться к IndexedDB.",
+    "description": "Информационное описание"
+  },
+  "cache_manual_limit_desc_2": {
+    "message": "Кэш продолжает работать при рендере Markdown, но popup не показывает детали.",
+    "description": "Информационное описание"
+  },
+  "cache_manual_limit_title": {
+    "message": "⚠️ Ограничения доступа к кэшу",
+    "description": "Заголовок информационного блока"
+  },
+  "cache_manual_status_intro": {
+    "message": "Чтобы убедиться, что кэш работает:",
+    "description": "Вступление"
+  },
+  "cache_manual_status_step_console": {
+    "message": "Найдите в DevTools записи \"⚡ Using cached\"",
+    "description": "Шаг проверки"
+  },
+  "cache_manual_status_step_open": {
+    "message": "Откройте файл Markdown",
+    "description": "Шаг проверки"
+  },
+  "cache_manual_status_step_speed": {
+    "message": "Отметьте более быстрый рендер при прогретом кэше",
+    "description": "Шаг проверки"
+  },
+  "cache_manual_status_title": {
+    "message": "📊 Проверка состояния кэша",
+    "description": "Заголовок раздела состояния"
+  },
+  "cache_refresh": {
+    "message": "Обновить",
+    "description": "Кнопка обновления"
+  },
+  "cache_stat_capacity_label": {
+    "message": "Максимальная емкость",
+    "description": "Метка емкости"
+  },
+  "cache_stat_item_label": {
+    "message": "Элементов в кэше",
+    "description": "Метка количества"
+  },
+  "cache_stat_size_label": {
+    "message": "Использовано места",
+    "description": "Метка размера"
+  },
+  "cache_stat_usage_label": {
+    "message": "Использование емкости",
+    "description": "Метка процента"
+  },
+  "cancel": {
+    "message": "Отмена",
+    "description": "Cancel button text"
+  },
+  "clear_all": {
+    "message": "Очистить всё",
+    "description": "Button to clear all items"
+  },
+  "clear_recent_files": {
+    "message": "Очистить недавние файлы",
+    "description": "Dialog title for clearing recent files"
+  },
+  "clear_recent_files_confirm": {
+    "message": "Удалить все недавние файлы из списка?",
+    "description": "Confirmation message for clearing recent files"
+  },
+  "clipboard_empty": {
+    "message": "Буфер обмена пуст",
+    "description": "Error when clipboard is empty"
+  },
+  "clipboard_open": {
+    "message": "Открыть из буфера обмена",
+    "description": "Clipboard item title in history"
+  },
+  "clipboard_read_failed": {
+    "message": "Не удалось прочитать буфер обмена",
+    "description": "Error when clipboard read fails"
+  },
+  "close": {
+    "message": "Закрыть",
+    "description": "Close button text/tooltip"
+  },
+  "contextMenu_viewAsMarkdown": {
+    "message": "Просмотреть как Markdown",
+    "description": "Context menu item to view any file as markdown"
+  },
+  "delete": {
+    "message": "Удалить",
+    "description": "Delete button text"
+  },
+  "delete_file": {
+    "message": "Удалить файл",
+    "description": "Menu item to delete a file"
+  },
+  "delete_file_confirm": {
+    "message": "Вы уверены, что хотите удалить \"{0}\"? Это действие нельзя отменить.",
+    "description": "Confirmation message for deleting a file"
+  },
+  "docx_export_failed_alert": {
+    "message": "Не удалось экспортировать{0}",
+    "description": "Предупреждение при ошибке экспорта"
+  },
+  "docx_export_failed_default": {
+    "message": "Не удалось экспортировать",
+    "description": "Резервное сообщение об ошибке экспорта"
+  },
+  "export_docx": {
+    "message": "Поделиться как Word",
+    "description": "Menu item for exporting to DOCX"
+  },
+  "exporting": {
+    "message": "Подготовка документа Word...",
+    "description": "Toast shown during export"
+  },
+  "extensionDescription": {
+    "message": "Markdown в идеальный Word в один клик — Mermaid, Graphviz, Vega, инфографика, LaTeX (редактируемый), подсветка кода, локальная обработка",
+    "description": "Описание расширения в Chrome Web Store"
+  },
+  "extensionName": {
+    "message": "Просмотрщик Markdown",
+    "description": "Название расширения"
+  },
+  "failed_to_open_file": {
+    "message": "Не удалось открыть файл: {0}",
+    "description": "Toast when file open fails"
+  },
+  "failed_to_open_url": {
+    "message": "Не удалось открыть URL: {0}",
+    "description": "Error message when URL cannot be opened"
+  },
+  "failed_to_share": {
+    "message": "Не удалось поделиться: {0}",
+    "description": "Toast when sharing fails"
+  },
+  "file_access_disabled": {
+    "message": "Отключено",
+    "description": "Status text when file access is disabled"
+  },
+  "file_access_disabled_desc_short": {
+    "message": "Для просмотра локальных файлов перейдите на",
+    "description": "Short description prefix for file access warning"
+  },
+  "file_access_disabled_suffix": {
+    "message": "и включите 'Разрешить доступ к URL-адресам файлов'",
+    "description": "Suffix for file access warning"
+  },
+  "file_access_settings_link": {
+    "message": "страницу настроек расширения",
+    "description": "Link text to extension settings"
+  },
+  "file_deleted": {
+    "message": "Файл удалён",
+    "description": "Toast when file is deleted"
+  },
+  "file_not_found": {
+    "message": "Файл не найден",
+    "description": "Error message when file doesn't exist"
+  },
+  "file_removed": {
+    "message": "Удалено из списка",
+    "description": "Toast when file is removed from list"
+  },
+  "file_url_copied": {
+    "message": "URL скопирован. Вставьте в адресную строку для открытия.",
+    "description": "Message shown when file URL is copied to clipboard in Firefox"
+  },
+  "heading_h2_format": {
+    "message": "Глава {0}",
+    "description": "Format for h2 headings. {0} is the chapter number."
+  },
+  "heading_h2_numerals": {
+    "message": "arabic",
+    "description": "Numeral system for h2: chinese, arabic, roman"
+  },
+  "history_clear": {
+    "message": "Очистить историю",
+    "description": "Кнопка очистить историю"
+  },
+  "history_clear_confirm": {
+    "message": "Очистить всю историю? Это действие нельзя отменить.",
+    "description": "Сообщение подтверждения очистки истории"
+  },
+  "history_clear_failed": {
+    "message": "Не удалось очистить историю",
+    "description": "Сообщение ошибки очистки истории"
+  },
+  "history_clear_success": {
+    "message": "История очищена",
+    "description": "Сообщение успеха очистки истории"
+  },
+  "history_description": {
+    "message": "Показывает недавно открытые документы Markdown, нажмите, чтобы открыть снова",
+    "description": "Описание документов истории"
+  },
+  "history_items_empty": {
+    "message": "История пока пуста",
+    "description": "Сообщение пустой список истории"
+  },
+  "history_loading_failed": {
+    "message": "Не удалось загрузить историю",
+    "description": "Сообщение ошибки загрузки истории"
+  },
+  "history_open_failed": {
+    "message": "Не удалось открыть документ",
+    "description": "Сообщение ошибки открытия документа истории"
+  },
+  "history_refresh": {
+    "message": "Обновить",
+    "description": "Кнопка обновить историю"
+  },
+  "history_title": {
+    "message": "Недавние документы",
+    "description": "Заголовок документов истории"
+  },
+  "language": {
+    "message": "Язык",
+    "description": "Menu item for language"
+  },
+  "more": {
+    "message": "Ещё",
+    "description": "More menu tooltip"
+  },
+  "no_file_opened": {
+    "message": "Файл не открыт",
+    "description": "Message when trying to perform action without file"
+  },
+  "no_file_to_share": {
+    "message": "Нет файла для отправки",
+    "description": "Toast when no file is open for sharing"
+  },
+  "no_headings": {
+    "message": "Заголовки не найдены",
+    "description": "Toast when document has no headings"
+  },
+  "no_recent_files": {
+    "message": "Нет недавних файлов",
+    "description": "Toast when there are no recent files"
+  },
+  "open_file": {
+    "message": "Открыть файл",
+    "description": "Menu item to open file"
+  },
+  "popup_review_link": {
+    "message": "Оценить",
+    "description": "Текст ссылки для оценки расширения"
+  },
+  "popup_title": {
+    "message": "Просмотрщик Markdown",
+    "description": "Заголовок всплывающего окна"
+  },
+  "popup_version_label": {
+    "message": "Версия {0}",
+    "description": "Отображает версию расширения"
+  },
+  "preparing_share": {
+    "message": "Подготовка к отправке...",
+    "description": "Progress text when preparing to share"
+  },
+  "recent_files": {
+    "message": "Недавние файлы",
+    "description": "Title for recent files section"
+  },
+  "remove_from_list": {
+    "message": "Удалить из списка",
+    "description": "Menu item to remove file from recent list"
+  },
+  "reset": {
+    "message": "Сбросить",
+    "description": "Reset button"
+  },
+  "search_case_sensitive": {
+    "message": "С учётом регистра",
+    "description": "Toggle case sensitive search"
+  },
+  "search_next": {
+    "message": "Следующий",
+    "description": "Navigate to next search match"
+  },
+  "search_placeholder": {
+    "message": "Поиск",
+    "description": "Placeholder text for search input"
+  },
+  "search_previous": {
+    "message": "Предыдущий",
+    "description": "Navigate to previous search match"
+  },
+  "search_whole_word": {
+    "message": "Слово целиком",
+    "description": "Toggle whole word search"
+  },
+  "settings_auto_refresh": {
+    "message": "Автообновление",
+    "description": "Label for auto refresh checkbox"
+  },
+  "settings_auto_refresh_interval": {
+    "message": "Интервал обновления:",
+    "description": "Label for refresh interval selector"
+  },
+  "settings_auto_refresh_note": {
+    "message": "Автоматически перезагружать при изменении локального файла (только file://).",
+    "description": "Helper note for auto refresh option"
+  },
+  "settings_docx_emoji_style": {
+    "message": "Стиль эмодзи",
+    "description": "Label for the emoji style selector in DOCX export settings"
+  },
+  "settings_docx_emoji_style_apple": {
+    "message": "Стиль Apple",
+    "description": "Option for Apple emoji style"
+  },
+  "settings_docx_emoji_style_note": {
+    "message": "Выберите стиль шрифта эмодзи для экспорта DOCX",
+    "description": "Note explaining the emoji style setting"
+  },
+  "settings_docx_emoji_style_system": {
+    "message": "Системный стиль",
+    "description": "Option to use system emoji (no font processing)"
+  },
+  "settings_docx_emoji_style_windows": {
+    "message": "Стиль Windows",
+    "description": "Option for Windows emoji style"
+  },
+  "settings_docx_hr_display": {
+    "message": "DOCX: Обработка горизонтальных линий",
+    "description": "Label for DOCX horizontal rule handling selector"
+  },
+  "settings_docx_hr_display_hide": {
+    "message": "Скрыть (пустая строка)",
+    "description": "Option to hide horizontal rules in DOCX"
+  },
+  "settings_docx_hr_display_line": {
+    "message": "Горизонтальная линия",
+    "description": "Option to export horizontal rules as a line in DOCX"
+  },
+  "settings_docx_hr_display_note": {
+    "message": "Выберите, как разделители Markdown (---) экспортируются в DOCX.",
+    "description": "Helper note for DOCX horizontal rule handling"
+  },
+  "settings_docx_hr_display_page_break": {
+    "message": "Разрыв страницы",
+    "description": "Option to export horizontal rules as page breaks in DOCX"
+  },
+  "settings_docx_hr_page_break": {
+    "message": "DOCX: Считать горизонтальные линии разрывами страницы",
+    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
+  },
+  "settings_docx_hr_page_break_note": {
+    "message": "Если включено, разделители Markdown (---) будут создавать новую страницу в экспортированных документах Word.",
+    "description": "Helper note for the DOCX hr page break option"
+  },
+  "settings_frontmatter_display": {
+    "message": "Отображение Frontmatter:",
+    "description": "Label for frontmatter display mode selector"
+  },
+  "settings_frontmatter_hide": {
+    "message": "Скрыть",
+    "description": "Option to hide frontmatter"
+  },
+  "settings_frontmatter_note": {
+    "message": "Выберите способ отображения YAML frontmatter в начале файлов Markdown.",
+    "description": "Helper note for frontmatter display option"
+  },
+  "settings_frontmatter_raw": {
+    "message": "Исходный (цитата)",
+    "description": "Option to display frontmatter as blockquote"
+  },
+  "settings_frontmatter_table": {
+    "message": "Таблица",
+    "description": "Option to display frontmatter as table"
+  },
+  "settings_general_title": {
+    "message": "Настройки расширения",
+    "description": "Заголовок раздела настроек"
+  },
+  "settings_interface_title": {
+    "message": "Настройки интерфейса",
+    "description": "Heading for interface settings section"
+  },
+  "settings_invalid_max_cache": {
+    "message": "Введите допустимое значение между {0} и {1}",
+    "description": "Сообщение при недопустимом значении"
+  },
+  "settings_language_auto": {
+    "message": "Системный язык",
+    "description": "Опция для автоматического определения языка"
+  },
+  "settings_language_changed": {
+    "message": "Язык интерфейса изменён",
+    "description": "Toast when language is changed successfully"
+  },
+  "settings_language_label": {
+    "message": "Язык интерфейса:",
+    "description": "Подпись выбора языка"
+  },
+  "settings_language_note": {
+    "message": "Изменение этого параметра переопределяет системный язык интерфейса для расширения.",
+    "description": "Примечание к выбору языка"
+  },
+  "settings_max_cache_label": {
+    "message": "Максимум элементов в кэше:",
+    "description": "Подпись поля"
+  },
+  "settings_reset_btn": {
+    "message": "Сбросить",
+    "description": "Кнопка сброса"
+  },
+  "settings_reset_confirm": {
+    "message": "Сбросить все настройки по умолчанию?",
+    "description": "Подтверждение сброса"
+  },
+  "settings_reset_failed": {
+    "message": "Не удалось сбросить настройки",
+    "description": "Уведомление об ошибке"
+  },
+  "settings_reset_success": {
+    "message": "Настройки сброшены",
+    "description": "Уведомление об успехе"
+  },
+  "settings_save_failed": {
+    "message": "Не удалось сохранить настройки",
+    "description": "Уведомление об ошибке"
+  },
+  "settings_save_success": {
+    "message": "Настройки сохранены",
+    "description": "Уведомление об успехе"
+  },
+  "settings_support_canvas": {
+    "message": "JSON Canvas диаграммы (.canvas)",
+    "description": "Checkbox label for enabling JSON Canvas file support"
+  },
+  "settings_support_dot": {
+    "message": "Диаграммы Graphviz DOT (.gv)",
+    "description": "Checkbox label for Graphviz DOT format support"
+  },
+  "settings_support_drawio": {
+    "message": "Draw.io диаграммы (.drawio)",
+    "description": "Checkbox label for enabling Draw.io file support"
+  },
+  "settings_support_infographic": {
+    "message": "Инфографика (.infographic)",
+    "description": "Checkbox label for Infographic format support"
+  },
+  "settings_support_mermaid": {
+    "message": "Диаграммы Mermaid (.mermaid)",
+    "description": "Checkbox label for Mermaid format support"
+  },
+  "settings_support_vega": {
+    "message": "Графики Vega (.vega)",
+    "description": "Checkbox label for Vega format support"
+  },
+  "settings_support_vega_lite": {
+    "message": "Графики Vega-Lite (.vl, .vega-lite)",
+    "description": "Checkbox label for Vega-Lite format support"
+  },
+  "settings_supported_formats_title": {
+    "message": "Поддерживаемые форматы",
+    "description": "Title for supported file formats section in settings"
+  },
+  "settings_table_merge_empty": {
+    "message": "Умное объединение ячеек таблицы",
+    "description": "Checkbox label for enabling automatic vertical merging of empty table cells"
+  },
+  "settings_table_merge_empty_note": {
+    "message": "При включении структура таблицы будет проанализирована и пустые ячейки будут интеллектуально объединены.",
+    "description": "Helper note for the table merge option"
+  },
+  "settings_theme_changed": {
+    "message": "Тема успешно изменена. Пожалуйста, перезагрузите страницу, чтобы увидеть изменения.",
+    "description": "Сообщение при изменении темы"
+  },
+  "settings_theme_label": {
+    "message": "Выбрать тему:",
+    "description": "Подпись для выбора темы"
+  },
+  "share": {
+    "message": "Поделиться",
+    "description": "Share button tooltip"
+  },
+  "tab_cache": {
+    "message": "Кэш",
+    "description": "Метка вкладки кэша"
+  },
+  "tab_history": {
+    "message": "История",
+    "description": "Метка вкладки истории"
+  },
+  "tab_settings": {
+    "message": "Настройки",
+    "description": "Метка вкладки настроек"
+  },
+  "theme": {
+    "message": "Тема",
+    "description": "Menu item for theme"
+  },
+  "toc": {
+    "message": "Содержание",
+    "description": "TOC drawer title"
+  },
+  "toolbar_download_title": {
+    "message": "Скачать",
+    "description": "Подсказка кнопки скачивания"
+  },
+  "toolbar_layout_title_fullscreen": {
+    "message": "Полноэкранный макет",
+    "description": "Подсказка для полноэкранного макета"
+  },
+  "toolbar_layout_title_narrow": {
+    "message": "Узкий макет",
+    "description": "Подсказка для узкого макета"
+  },
+  "toolbar_layout_title_normal": {
+    "message": "Обычный макет",
+    "description": "Подсказка для обычного макета"
+  },
+  "toolbar_print_disabled_title": {
+    "message": "Печать доступна только для локальных файлов",
+    "description": "Подсказка когда кнопка печати отключена для удаленных файлов"
+  },
+  "toolbar_print_title": {
+    "message": "Печать",
+    "description": "Подсказка кнопки печати"
+  },
+  "toolbar_toggle_toc_title": {
+    "message": "Показать или скрыть содержание",
+    "description": "Подсказка кнопки содержания"
+  },
+  "toolbar_zoom_in_title": {
+    "message": "Увеличить",
+    "description": "Подсказка кнопки увеличения"
+  },
+  "toolbar_zoom_out_title": {
+    "message": "Уменьшить",
+    "description": "Подсказка кнопки уменьшения"
+  },
+  "welcome_message": {
+    "message": "Откройте файл markdown, чтобы начать",
+    "description": "Welcome message on empty state"
+  },
+  "zoom": {
+    "message": "Масштаб",
+    "description": "Menu item for zoom"
+  }
+}

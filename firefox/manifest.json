@@ -1,0 +1,110 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extensionName__",
+  "version": "1.5.1",
+  "default_locale": "en",
+  "description": "__MSG_extensionDescription__",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "markdown-viewer@xicilion",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "downloads",
+    "tabs",
+    "activeTab",
+    "scripting",
+    "webRequest",
+    "webRequestBlocking",
+    "menus",
+    "clipboardRead"
+  ],
+  "host_permissions": [
+    "file:///*",
+    "https://*/*",
+    "http://*/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "background": {
+    "page": "ui/background.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "file://*/*.md",
+        "file://*/*.markdown",
+        "file://*/*.mermaid",
+        "file://*/*.vega",
+        "file://*/*.vl",
+        "file://*/*.vega-lite",
+        "file://*/*.gv",
+        "file://*/*.infographic",
+        "file://*/*.canvas",
+        "file://*/*.drawio",
+        "*://*/*.md",
+        "*://*/*.markdown",
+        "*://*/*.mermaid",
+        "*://*/*.vega",
+        "*://*/*.vl",
+        "*://*/*.vega-lite",
+        "*://*/*.gv",
+        "*://*/*.infographic",
+        "*://*/*.canvas",
+        "*://*/*.drawio"
+      ],
+      "js": [
+        "core/content-detector.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "ui/styles.css",
+        "ui/background.html",
+        "core/main.js",
+        "icons/icon16.png",
+        "*.woff2",
+        "*.woff",
+        "*.ttf",
+        "_locales/*/messages.json",
+        "themes/font-config.json",
+        "themes/registry.json",
+        "themes/presets/*.json",
+        "themes/table-styles/*.json",
+        "themes/code-themes/*.json",
+        "themes/layout-schemes/*.json",
+        "themes/color-schemes/*.json"
+      ],
+      "matches": [
+        "file:///*",
+        "https://*/*",
+        "http://*/*"
+      ]
+    }
+  ],
+  "action": {
+    "default_popup": "ui/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

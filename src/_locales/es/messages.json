@@ -1,0 +1,642 @@
+{
+  "about": {
+    "message": "Acerca de",
+    "description": "Menu item for about"
+  },
+  "async_processing_error": {
+    "message": "Error de {0}: {1}",
+    "description": "Generic error message with type and detail"
+  },
+  "async_processing_message": {
+    "message": "Procesando {0}{1}...",
+    "description": "Texto durante el procesamiento asíncrono"
+  },
+  "async_task_processing_error": {
+    "message": "Error en la tarea: {0}",
+    "description": "Error cuando falla una tarea asíncrona"
+  },
+  "async_unknown_error": {
+    "message": "Error desconocido",
+    "description": "Texto de error sin detalles"
+  },
+  "cache_clear": {
+    "message": "Vaciar caché",
+    "description": "Botón para limpiar la caché"
+  },
+  "cache_clear_confirm": {
+    "message": "¿Vaciar todos los datos en caché? Esta acción no se puede deshacer.",
+    "description": "Confirmación para vaciar la caché"
+  },
+  "cache_clear_failed": {
+    "message": "No se pudo vaciar la caché",
+    "description": "Toast cuando falla la limpieza"
+  },
+  "cache_clear_success": {
+    "message": "Caché vaciada",
+    "description": "Toast cuando se limpia la caché"
+  },
+  "cache_error_message": {
+    "message": "Fallo en la comunicación con la caché — abre primero un archivo Markdown",
+    "description": "Mensaje cuando no se puede acceder a la caché"
+  },
+  "cache_hint_details": {
+    "message": "La caché se ejecuta automáticamente mientras las páginas Markdown están abiertas",
+    "description": "Pista adicional cuando la caché está vacía"
+  },
+  "cache_item_accessed_label": {
+    "message": "Último acceso",
+    "description": "Etiqueta para la fecha de último acceso"
+  },
+  "cache_item_created_label": {
+    "message": "Creado",
+    "description": "Etiqueta para la fecha de creación"
+  },
+  "cache_item_size_label": {
+    "message": "Tamaño",
+    "description": "Etiqueta para el tamaño del elemento"
+  },
+  "cache_item_type_label": {
+    "message": "Tipo",
+    "description": "Etiqueta para el tipo del elemento"
+  },
+  "cache_item_type_unknown": {
+    "message": "desconocido",
+    "description": "Etiqueta cuando falta el tipo"
+  },
+  "cache_items_empty": {
+    "message": "Todavía no hay elementos en caché",
+    "description": "Mensaje cuando no hay elementos"
+  },
+  "cache_items_title": {
+    "message": "Elementos en caché (últimos 20)",
+    "description": "Encabezado de la lista de elementos"
+  },
+  "cache_loading_failed": {
+    "message": "No se pudo cargar la caché: {0}",
+    "description": "Mensaje cuando ocurre un error al cargar la caché"
+  },
+  "cache_manual_clear_intro": {
+    "message": "Para vaciar la caché manualmente:",
+    "description": "Introducción de la sección de limpieza"
+  },
+  "cache_manual_clear_step_1": {
+    "message": "Abre cualquier archivo Markdown",
+    "description": "Paso de limpieza"
+  },
+  "cache_manual_clear_step_2": {
+    "message": "Presiona F12 para abrir DevTools",
+    "description": "Paso de limpieza"
+  },
+  "cache_manual_clear_step_3": {
+    "message": "Ejecuta \"{0}\" en la consola",
+    "description": "Paso de limpieza"
+  },
+  "cache_manual_clear_title": {
+    "message": "🧹 Vaciar caché manualmente",
+    "description": "Título de la sección para limpiar"
+  },
+  "cache_manual_limit_desc_1": {
+    "message": "Por motivos de seguridad, el popup no puede acceder directamente a IndexedDB.",
+    "description": "Descripción informativa"
+  },
+  "cache_manual_limit_desc_2": {
+    "message": "La caché sigue funcionando al renderizar páginas Markdown, pero el popup no puede mostrar los detalles.",
+    "description": "Descripción informativa"
+  },
+  "cache_manual_limit_title": {
+    "message": "⚠️ Límites de acceso a la caché",
+    "description": "Título de la sección informativa"
+  },
+  "cache_manual_status_intro": {
+    "message": "Para asegurarte de que la caché funciona:",
+    "description": "Introducción de la sección de estado"
+  },
+  "cache_manual_status_step_console": {
+    "message": "Busca registros \"⚡ Using cached\" en DevTools",
+    "description": "Paso de verificación"
+  },
+  "cache_manual_status_step_open": {
+    "message": "Abre un archivo Markdown",
+    "description": "Paso de verificación"
+  },
+  "cache_manual_status_step_speed": {
+    "message": "Observa un renderizado más rápido cuando la caché está caliente",
+    "description": "Paso de verificación"
+  },
+  "cache_manual_status_title": {
+    "message": "📊 Verificar estado de la caché",
+    "description": "Título de la sección de estado"
+  },
+  "cache_refresh": {
+    "message": "Actualizar",
+    "description": "Botón para actualizar la caché"
+  },
+  "cache_stat_capacity_label": {
+    "message": "Capacidad máxima",
+    "description": "Etiqueta para capacidad"
+  },
+  "cache_stat_item_label": {
+    "message": "Elementos en caché",
+    "description": "Etiqueta para número de elementos"
+  },
+  "cache_stat_size_label": {
+    "message": "Espacio usado",
+    "description": "Etiqueta para tamaño de la caché"
+  },
+  "cache_stat_usage_label": {
+    "message": "Porcentaje usado",
+    "description": "Etiqueta para porcentaje de uso"
+  },
+  "cancel": {
+    "message": "Cancelar",
+    "description": "Cancel button text"
+  },
+  "clear_all": {
+    "message": "Borrar todo",
+    "description": "Button to clear all items"
+  },
+  "clear_recent_files": {
+    "message": "Borrar archivos recientes",
+    "description": "Dialog title for clearing recent files"
+  },
+  "clear_recent_files_confirm": {
+    "message": "¿Eliminar todos los archivos recientes de la lista?",
+    "description": "Confirmation message for clearing recent files"
+  },
+  "clipboard_empty": {
+    "message": "El portapapeles está vacío",
+    "description": "Error when clipboard is empty"
+  },
+  "clipboard_open": {
+    "message": "Abrir desde portapapeles",
+    "description": "Clipboard item title in history"
+  },
+  "clipboard_read_failed": {
+    "message": "Error al leer el portapapeles",
+    "description": "Error when clipboard read fails"
+  },
+  "close": {
+    "message": "Cerrar",
+    "description": "Close button text/tooltip"
+  },
+  "contextMenu_viewAsMarkdown": {
+    "message": "Ver como Markdown",
+    "description": "Context menu item to view any file as markdown"
+  },
+  "delete": {
+    "message": "Eliminar",
+    "description": "Delete button text"
+  },
+  "delete_file": {
+    "message": "Eliminar archivo",
+    "description": "Menu item to delete a file"
+  },
+  "delete_file_confirm": {
+    "message": "¿Está seguro de que desea eliminar \"{0}\"? Esta acción no se puede deshacer.",
+    "description": "Confirmation message for deleting a file"
+  },
+  "docx_export_failed_alert": {
+    "message": "Error al exportar{0}",
+    "description": "Alerta al fallar la exportación"
+  },
+  "docx_export_failed_default": {
+    "message": "Error al exportar",
+    "description": "Mensaje de respaldo cuando falla la exportación"
+  },
+  "export_docx": {
+    "message": "Compartir como Word",
+    "description": "Menu item for exporting to DOCX"
+  },
+  "exporting": {
+    "message": "Preparando documento Word...",
+    "description": "Toast shown during export"
+  },
+  "extensionDescription": {
+    "message": "Markdown a Word perfecto con un clic — Mermaid, Graphviz, Vega, infografía, LaTeX (editable), resaltado de código, procesamiento local",
+    "description": "Descripción de la extensión mostrada en la Chrome Web Store"
+  },
+  "extensionName": {
+    "message": "Visor de Markdown",
+    "description": "Nombre de la extensión"
+  },
+  "failed_to_open_file": {
+    "message": "Error al abrir archivo: {0}",
+    "description": "Toast when file open fails"
+  },
+  "failed_to_open_url": {
+    "message": "No se pudo abrir la URL: {0}",
+    "description": "Error message when URL cannot be opened"
+  },
+  "failed_to_share": {
+    "message": "Error al compartir: {0}",
+    "description": "Toast when sharing fails"
+  },
+  "file_access_disabled": {
+    "message": "Deshabilitado",
+    "description": "Status text when file access is disabled"
+  },
+  "file_access_disabled_desc_short": {
+    "message": "Para ver archivos locales, visite",
+    "description": "Short description prefix for file access warning"
+  },
+  "file_access_disabled_suffix": {
+    "message": "y habilite 'Permitir acceso a URL de archivos'",
+    "description": "Suffix for file access warning"
+  },
+  "file_access_settings_link": {
+    "message": "página de configuración de la extensión",
+    "description": "Link text to extension settings"
+  },
+  "file_deleted": {
+    "message": "Archivo eliminado",
+    "description": "Toast when file is deleted"
+  },
+  "file_not_found": {
+    "message": "Archivo no encontrado",
+    "description": "Error message when file doesn't exist"
+  },
+  "file_removed": {
+    "message": "Eliminado de la lista",
+    "description": "Toast when file is removed from list"
+  },
+  "file_url_copied": {
+    "message": "URL copiada. Pega en la barra de direcciones para abrir.",
+    "description": "Message shown when file URL is copied to clipboard in Firefox"
+  },
+  "heading_h2_format": {
+    "message": "Capítulo {0}",
+    "description": "Format for h2 headings. {0} is the chapter number."
+  },
+  "heading_h2_numerals": {
+    "message": "arabic",
+    "description": "Numeral system for h2: chinese, arabic, roman"
+  },
+  "history_clear": {
+    "message": "Borrar historial",
+    "description": "Botón borrar historial"
+  },
+  "history_clear_confirm": {
+    "message": "¿Borrar todo el historial? Esta acción no se puede deshacer.",
+    "description": "Mensaje de confirmación de borrar historial"
+  },
+  "history_clear_failed": {
+    "message": "Error al borrar el historial",
+    "description": "Mensaje de error de borrar historial"
+  },
+  "history_clear_success": {
+    "message": "Historial borrado",
+    "description": "Mensaje de éxito de borrar historial"
+  },
+  "history_description": {
+    "message": "Muestra documentos Markdown abiertos recientemente, haga clic para volver a abrir",
+    "description": "Descripción de documentos de historial"
+  },
+  "history_items_empty": {
+    "message": "No hay historial todavía",
+    "description": "Mensaje de lista de historial vacía"
+  },
+  "history_loading_failed": {
+    "message": "Error al cargar el historial",
+    "description": "Mensaje de error de cargar historial"
+  },
+  "history_open_failed": {
+    "message": "Error al abrir el documento",
+    "description": "Mensaje de error de abrir documento del historial"
+  },
+  "history_refresh": {
+    "message": "Actualizar",
+    "description": "Botón actualizar historial"
+  },
+  "history_title": {
+    "message": "Documentos recientes",
+    "description": "Título de documentos de historial"
+  },
+  "language": {
+    "message": "Idioma",
+    "description": "Menu item for language"
+  },
+  "more": {
+    "message": "Más",
+    "description": "More menu tooltip"
+  },
+  "no_file_opened": {
+    "message": "Ningún archivo abierto",
+    "description": "Message when trying to perform action without file"
+  },
+  "no_file_to_share": {
+    "message": "No hay archivo para compartir",
+    "description": "Toast when no file is open for sharing"
+  },
+  "no_headings": {
+    "message": "No se encontraron encabezados",
+    "description": "Toast when document has no headings"
+  },
+  "no_recent_files": {
+    "message": "No hay archivos recientes",
+    "description": "Toast when there are no recent files"
+  },
+  "open_file": {
+    "message": "Abrir archivo",
+    "description": "Menu item to open file"
+  },
+  "popup_review_link": {
+    "message": "Valorar",
+    "description": "Texto del enlace para valorar la extensión"
+  },
+  "popup_title": {
+    "message": "Visor de Markdown",
+    "description": "Título del popup"
+  },
+  "popup_version_label": {
+    "message": "Versión {0}",
+    "description": "Muestra la versión de la extensión en el encabezado"
+  },
+  "preparing_share": {
+    "message": "Preparando para compartir...",
+    "description": "Progress text when preparing to share"
+  },
+  "recent_files": {
+    "message": "Archivos recientes",
+    "description": "Title for recent files section"
+  },
+  "remove_from_list": {
+    "message": "Eliminar de la lista",
+    "description": "Menu item to remove file from recent list"
+  },
+  "reset": {
+    "message": "Restablecer",
+    "description": "Reset button"
+  },
+  "search_case_sensitive": {
+    "message": "Coincidir mayúsculas",
+    "description": "Toggle case sensitive search"
+  },
+  "search_next": {
+    "message": "Siguiente",
+    "description": "Navigate to next search match"
+  },
+  "search_placeholder": {
+    "message": "Buscar",
+    "description": "Placeholder text for search input"
+  },
+  "search_previous": {
+    "message": "Anterior",
+    "description": "Navigate to previous search match"
+  },
+  "search_whole_word": {
+    "message": "Palabra completa",
+    "description": "Toggle whole word search"
+  },
+  "settings_auto_refresh": {
+    "message": "Actualización automática",
+    "description": "Label for auto refresh checkbox"
+  },
+  "settings_auto_refresh_interval": {
+    "message": "Intervalo de actualización:",
+    "description": "Label for refresh interval selector"
+  },
+  "settings_auto_refresh_note": {
+    "message": "Recargar automáticamente cuando el archivo local cambie (solo file://).",
+    "description": "Helper note for auto refresh option"
+  },
+  "settings_docx_emoji_style": {
+    "message": "Estilo de emoji",
+    "description": "Label for the emoji style selector in DOCX export settings"
+  },
+  "settings_docx_emoji_style_apple": {
+    "message": "Estilo Apple",
+    "description": "Option for Apple emoji style"
+  },
+  "settings_docx_emoji_style_note": {
+    "message": "Seleccione el estilo de fuente emoji para la exportación DOCX",
+    "description": "Note explaining the emoji style setting"
+  },
+  "settings_docx_emoji_style_system": {
+    "message": "Estilo del sistema",
+    "description": "Option to use system emoji (no font processing)"
+  },
+  "settings_docx_emoji_style_windows": {
+    "message": "Estilo Windows",
+    "description": "Option for Windows emoji style"
+  },
+  "settings_docx_hr_display": {
+    "message": "DOCX: Manejo de líneas horizontales",
+    "description": "Label for DOCX horizontal rule handling selector"
+  },
+  "settings_docx_hr_display_hide": {
+    "message": "Ocultar (línea vacía)",
+    "description": "Option to hide horizontal rules in DOCX"
+  },
+  "settings_docx_hr_display_line": {
+    "message": "Línea horizontal",
+    "description": "Option to export horizontal rules as a line in DOCX"
+  },
+  "settings_docx_hr_display_note": {
+    "message": "Elija cómo se exportan los separadores Markdown (---) en DOCX.",
+    "description": "Helper note for DOCX horizontal rule handling"
+  },
+  "settings_docx_hr_display_page_break": {
+    "message": "Salto de página",
+    "description": "Option to export horizontal rules as page breaks in DOCX"
+  },
+  "settings_docx_hr_page_break": {
+    "message": "DOCX: Tratar las líneas horizontales como saltos de página",
+    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
+  },
+  "settings_docx_hr_page_break_note": {
+    "message": "Cuando está activado, los separadores de Markdown (---) crearán una nueva página en los documentos de Word exportados.",
+    "description": "Helper note for the DOCX hr page break option"
+  },
+  "settings_frontmatter_display": {
+    "message": "Visualización de Frontmatter:",
+    "description": "Label for frontmatter display mode selector"
+  },
+  "settings_frontmatter_hide": {
+    "message": "Ocultar",
+    "description": "Option to hide frontmatter"
+  },
+  "settings_frontmatter_note": {
+    "message": "Elija cómo mostrar el frontmatter YAML al inicio de los archivos Markdown.",
+    "description": "Helper note for frontmatter display option"
+  },
+  "settings_frontmatter_raw": {
+    "message": "Original (cita)",
+    "description": "Option to display frontmatter as blockquote"
+  },
+  "settings_frontmatter_table": {
+    "message": "Tabla",
+    "description": "Option to display frontmatter as table"
+  },
+  "settings_general_title": {
+    "message": "Configuración de extensión",
+    "description": "Encabezado de la sección de configuración"
+  },
+  "settings_interface_title": {
+    "message": "Configuración de interfaz",
+    "description": "Heading for interface settings section"
+  },
+  "settings_invalid_max_cache": {
+    "message": "Introduce un tamaño válido entre {0} y {1}",
+    "description": "Mensaje cuando el tamaño no es válido"
+  },
+  "settings_language_auto": {
+    "message": "Idioma del sistema",
+    "description": "Opción para idioma automático"
+  },
+  "settings_language_changed": {
+    "message": "Idioma de interfaz cambiado",
+    "description": "Toast when language is changed successfully"
+  },
+  "settings_language_label": {
+    "message": "Idioma de la interfaz:",
+    "description": "Etiqueta para el selector de idioma"
+  },
+  "settings_language_note": {
+    "message": "Cambiar esto anula el idioma del sistema para la extensión.",
+    "description": "Nota de ayuda para el selector"
+  },
+  "settings_max_cache_label": {
+    "message": "Máximo de elementos en caché:",
+    "description": "Etiqueta para el campo de caché"
+  },
+  "settings_reset_btn": {
+    "message": "Restablecer",
+    "description": "Botón restablecer"
+  },
+  "settings_reset_confirm": {
+    "message": "¿Restablecer todos los ajustes a sus valores predeterminados?",
+    "description": "Confirmación para restablecer"
+  },
+  "settings_reset_failed": {
+    "message": "No se pudieron restablecer los ajustes",
+    "description": "Toast cuando falla el restablecimiento"
+  },
+  "settings_reset_success": {
+    "message": "Ajustes restablecidos",
+    "description": "Toast cuando se restablece"
+  },
+  "settings_save_failed": {
+    "message": "No se pudieron guardar los ajustes",
+    "description": "Toast cuando falla el guardado"
+  },
+  "settings_save_success": {
+    "message": "Ajustes guardados",
+    "description": "Toast cuando se guardan los ajustes"
+  },
+  "settings_support_canvas": {
+    "message": "Diagramas JSON Canvas (.canvas)",
+    "description": "Checkbox label for enabling JSON Canvas file support"
+  },
+  "settings_support_dot": {
+    "message": "Diagramas Graphviz DOT (.gv)",
+    "description": "Checkbox label for Graphviz DOT format support"
+  },
+  "settings_support_drawio": {
+    "message": "Diagramas Draw.io (.drawio)",
+    "description": "Checkbox label for enabling Draw.io file support"
+  },
+  "settings_support_infographic": {
+    "message": "Infografías (.infographic)",
+    "description": "Checkbox label for Infographic format support"
+  },
+  "settings_support_mermaid": {
+    "message": "Diagramas Mermaid (.mermaid)",
+    "description": "Checkbox label for Mermaid format support"
+  },
+  "settings_support_vega": {
+    "message": "Gráficos Vega (.vega)",
+    "description": "Checkbox label for Vega format support"
+  },
+  "settings_support_vega_lite": {
+    "message": "Gráficos Vega-Lite (.vl, .vega-lite)",
+    "description": "Checkbox label for Vega-Lite format support"
+  },
+  "settings_supported_formats_title": {
+    "message": "Formatos compatibles",
+    "description": "Title for supported file formats section in settings"
+  },
+  "settings_table_merge_empty": {
+    "message": "Combinación inteligente de celdas",
+    "description": "Checkbox label for enabling automatic vertical merging of empty table cells"
+  },
+  "settings_table_merge_empty_note": {
+    "message": "Cuando está habilitado, se analizará la estructura de la tabla y las celdas vacías se combinarán inteligentemente.",
+    "description": "Helper note for the table merge option"
+  },
+  "settings_theme_changed": {
+    "message": "Tema cambiado con éxito. Por favor, recargue la página para ver los cambios.",
+    "description": "Mensaje cuando se cambia el tema"
+  },
+  "settings_theme_label": {
+    "message": "Seleccionar tema:",
+    "description": "Etiqueta para el selector de tema"
+  },
+  "share": {
+    "message": "Compartir",
+    "description": "Share button tooltip"
+  },
+  "tab_cache": {
+    "message": "Caché",
+    "description": "Etiqueta para la pestaña de caché"
+  },
+  "tab_history": {
+    "message": "Historial",
+    "description": "Etiqueta para la pestaña de historial"
+  },
+  "tab_settings": {
+    "message": "Opciones",
+    "description": "Etiqueta para la pestaña de configuración"
+  },
+  "theme": {
+    "message": "Tema",
+    "description": "Menu item for theme"
+  },
+  "toc": {
+    "message": "Tabla de contenidos",
+    "description": "TOC drawer title"
+  },
+  "toolbar_download_title": {
+    "message": "Descargar",
+    "description": "Tooltip del botón de descarga"
+  },
+  "toolbar_layout_title_fullscreen": {
+    "message": "Diseño pantalla completa",
+    "description": "Tooltip del botón de diseño a pantalla completa"
+  },
+  "toolbar_layout_title_narrow": {
+    "message": "Diseño estrecho",
+    "description": "Tooltip del botón de diseño estrecho"
+  },
+  "toolbar_layout_title_normal": {
+    "message": "Diseño normal",
+    "description": "Tooltip del botón de diseño normal"
+  },
+  "toolbar_print_disabled_title": {
+    "message": "La impresión solo está disponible para archivos locales",
+    "description": "Tooltip cuando el botón de impresión está deshabilitado para archivos remotos"
+  },
+  "toolbar_print_title": {
+    "message": "Imprimir",
+    "description": "Tooltip del botón de impresión"
+  },
+  "toolbar_toggle_toc_title": {
+    "message": "Mostrar u ocultar la tabla de contenidos",
+    "description": "Tooltip del botón de TOC"
+  },
+  "toolbar_zoom_in_title": {
+    "message": "Acercar",
+    "description": "Tooltip del botón de acercar"
+  },
+  "toolbar_zoom_out_title": {
+    "message": "Alejar",
+    "description": "Tooltip del botón de alejar"
+  },
+  "welcome_message": {
+    "message": "Abre un archivo markdown para comenzar",
+    "description": "Welcome message on empty state"
+  },
+  "zoom": {
+    "message": "Zoom",
+    "description": "Menu item for zoom"
+  }
+}

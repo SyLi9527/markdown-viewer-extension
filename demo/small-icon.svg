@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simple info icon -->
+  <circle cx="8" cy="8" r="7" fill="#3b82f6" stroke="#1e40af" stroke-width="1"/>
+  <circle cx="8" cy="5" r="1" fill="white"/>
+  <rect x="7" y="7" width="2" height="5" rx="1" fill="white"/>
+</svg>

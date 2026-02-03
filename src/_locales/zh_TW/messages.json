@@ -1,0 +1,642 @@
+{
+  "about": {
+    "message": "關於",
+    "description": "Menu item for about"
+  },
+  "async_processing_error": {
+    "message": "{0} 錯誤：{1}",
+    "description": "Generic error message with type and detail"
+  },
+  "async_processing_message": {
+    "message": "正在處理 {0}{1}...",
+    "description": "異步佔位加載提示"
+  },
+  "async_task_processing_error": {
+    "message": "任務處理錯誤: {0}",
+    "description": "異步任務失敗提示"
+  },
+  "async_unknown_error": {
+    "message": "未知錯誤",
+    "description": "錯誤信息缺失時的提示"
+  },
+  "cache_clear": {
+    "message": "清空快取",
+    "description": "清空按鈕"
+  },
+  "cache_clear_confirm": {
+    "message": "確定要清空所有快取嗎？該操作不可撤銷。",
+    "description": "清空快取確認提示"
+  },
+  "cache_clear_failed": {
+    "message": "清空快取失敗",
+    "description": "清空快取失敗提示"
+  },
+  "cache_clear_success": {
+    "message": "快取已清空",
+    "description": "清空快取成功提示"
+  },
+  "cache_error_message": {
+    "message": "快取通信失敗，請先開啟 Markdown 檔案",
+    "description": "快取錯誤提示"
+  },
+  "cache_hint_details": {
+    "message": "快取功能會在開啟 Markdown 頁面時自動運行",
+    "description": "快取提示補充"
+  },
+  "cache_item_accessed_label": {
+    "message": "存取",
+    "description": "快取條目存取時間標籤"
+  },
+  "cache_item_created_label": {
+    "message": "建立",
+    "description": "快取條目建立時間標籤"
+  },
+  "cache_item_size_label": {
+    "message": "大小",
+    "description": "快取條目大小標籤"
+  },
+  "cache_item_type_label": {
+    "message": "類型",
+    "description": "快取條目類型標籤"
+  },
+  "cache_item_type_unknown": {
+    "message": "未知",
+    "description": "快取條目類型未知時的提示"
+  },
+  "cache_items_empty": {
+    "message": "暫無快取項目",
+    "description": "快取列表為空提示"
+  },
+  "cache_items_title": {
+    "message": "快取項目（最近存取的 20 項）",
+    "description": "快取列表標題"
+  },
+  "cache_loading_failed": {
+    "message": "載入快取資訊失敗: {0}",
+    "description": "快取載入異常提示"
+  },
+  "cache_manual_clear_intro": {
+    "message": "如需手動清空：",
+    "description": "手動清空快取引導"
+  },
+  "cache_manual_clear_step_1": {
+    "message": "開啟任意 Markdown 檔案",
+    "description": "手動清空快取步驟"
+  },
+  "cache_manual_clear_step_2": {
+    "message": "按 F12 開啟開發者工具",
+    "description": "手動清空快取步驟"
+  },
+  "cache_manual_clear_step_3": {
+    "message": "在主控台執行 \"{0}\"",
+    "description": "手動清空快取步驟"
+  },
+  "cache_manual_clear_title": {
+    "message": "🧹 手動清空快取",
+    "description": "手動清空快取標題"
+  },
+  "cache_manual_limit_desc_1": {
+    "message": "出於安全限制，popup 無法直接存取 IndexedDB。",
+    "description": "快取手動說明內容"
+  },
+  "cache_manual_limit_desc_2": {
+    "message": "快取功能在 Markdown 頁面中正常運行，但在此無法顯示詳情。",
+    "description": "快取手動說明內容"
+  },
+  "cache_manual_limit_title": {
+    "message": "⚠️ 快取存取限制",
+    "description": "Manual cache info section title"
+  },
+  "cache_manual_status_intro": {
+    "message": "確認快取工作情況：",
+    "description": "快取狀態章節引導"
+  },
+  "cache_manual_status_step_console": {
+    "message": "在開發者工具中檢視 \"⚡ Using cached\" 日誌",
+    "description": "快取狀態檢查步驟"
+  },
+  "cache_manual_status_step_open": {
+    "message": "開啟一個 Markdown 檔案",
+    "description": "快取狀態檢查步驟"
+  },
+  "cache_manual_status_step_speed": {
+    "message": "觀察渲染速度（有快取時更快）",
+    "description": "快取狀態檢查步驟"
+  },
+  "cache_manual_status_title": {
+    "message": "📊 快取狀態檢查",
+    "description": "快取狀態章節標題"
+  },
+  "cache_refresh": {
+    "message": "重新整理",
+    "description": "重新整理按鈕"
+  },
+  "cache_stat_capacity_label": {
+    "message": "最大容量",
+    "description": "快取統計標籤"
+  },
+  "cache_stat_item_label": {
+    "message": "快取項目",
+    "description": "快取統計標籤"
+  },
+  "cache_stat_size_label": {
+    "message": "佔用空間",
+    "description": "快取統計標籤"
+  },
+  "cache_stat_usage_label": {
+    "message": "容量使用",
+    "description": "快取統計標籤"
+  },
+  "cancel": {
+    "message": "取消",
+    "description": "Cancel button text"
+  },
+  "clear_all": {
+    "message": "清除全部",
+    "description": "Button to clear all items"
+  },
+  "clear_recent_files": {
+    "message": "清除最近檔案",
+    "description": "Dialog title for clearing recent files"
+  },
+  "clear_recent_files_confirm": {
+    "message": "確定要清除所有最近開啟的檔案記錄嗎？",
+    "description": "Confirmation message for clearing recent files"
+  },
+  "clipboard_empty": {
+    "message": "剪貼簿為空",
+    "description": "Error when clipboard is empty"
+  },
+  "clipboard_open": {
+    "message": "從剪貼簿開啟",
+    "description": "Clipboard item title in history"
+  },
+  "clipboard_read_failed": {
+    "message": "讀取剪貼簿失敗",
+    "description": "Error when clipboard read fails"
+  },
+  "close": {
+    "message": "關閉",
+    "description": "Close button text/tooltip"
+  },
+  "contextMenu_viewAsMarkdown": {
+    "message": "以 Markdown 格式檢視",
+    "description": "Context menu item to view any file as markdown"
+  },
+  "delete": {
+    "message": "刪除",
+    "description": "Delete button text"
+  },
+  "delete_file": {
+    "message": "刪除檔案",
+    "description": "Menu item to delete a file"
+  },
+  "delete_file_confirm": {
+    "message": "確定要刪除 \"{0}\" 嗎？此操作無法復原。",
+    "description": "Confirmation message for deleting a file"
+  },
+  "docx_export_failed_alert": {
+    "message": "匯出失敗{0}",
+    "description": "DOCX 匯出失敗警告"
+  },
+  "docx_export_failed_default": {
+    "message": "匯出失敗",
+    "description": "DOCX 匯出失敗的預設提示"
+  },
+  "export_docx": {
+    "message": "分享為 Word",
+    "description": "Menu item for exporting to DOCX"
+  },
+  "exporting": {
+    "message": "正在準備 Word 文件...",
+    "description": "Toast shown during export"
+  },
+  "extensionDescription": {
+    "message": "Markdown 一鍵匯出完美 Word — Mermaid 流程圖、Graphviz、Vega 圖表、資訊圖、LaTeX 公式自動轉為可編輯格式，程式碼高亮，本地處理",
+    "description": "擴充功能簡介"
+  },
+  "extensionName": {
+    "message": "Markdown Viewer",
+    "description": "擴充功能名稱"
+  },
+  "failed_to_open_file": {
+    "message": "開啟檔案失敗: {0}",
+    "description": "Toast when file open fails"
+  },
+  "failed_to_open_url": {
+    "message": "無法打開URL: {0}",
+    "description": "Error message when URL cannot be opened"
+  },
+  "failed_to_share": {
+    "message": "分享失敗: {0}",
+    "description": "Toast when sharing fails"
+  },
+  "file_access_disabled": {
+    "message": "未啟用",
+    "description": "Status text when file access is disabled"
+  },
+  "file_access_disabled_desc_short": {
+    "message": "要檢視本機檔案，請造訪",
+    "description": "Short description prefix for file access warning"
+  },
+  "file_access_disabled_suffix": {
+    "message": "並啟用「允許存取檔案網址」選項",
+    "description": "Suffix for file access warning"
+  },
+  "file_access_settings_link": {
+    "message": "擴充功能設定頁面",
+    "description": "Link text to extension settings"
+  },
+  "file_deleted": {
+    "message": "檔案已刪除",
+    "description": "Toast when file is deleted"
+  },
+  "file_not_found": {
+    "message": "檔案不存在",
+    "description": "Error message when file doesn't exist"
+  },
+  "file_removed": {
+    "message": "已從列表移除",
+    "description": "Toast when file is removed from list"
+  },
+  "file_url_copied": {
+    "message": "連結已複製，請貼上到網址列開啟",
+    "description": "Message shown when file URL is copied to clipboard in Firefox"
+  },
+  "heading_h2_format": {
+    "message": "第{0}章",
+    "description": "Format for h2 headings. {0} is the chapter number."
+  },
+  "heading_h2_numerals": {
+    "message": "chinese",
+    "description": "Numeral system for h2: chinese, arabic, roman"
+  },
+  "history_clear": {
+    "message": "清空歷史記錄",
+    "description": "清空歷史記錄按鈕"
+  },
+  "history_clear_confirm": {
+    "message": "確定要清空所有歷史記錄嗎？該操作不可撤銷。",
+    "description": "清空歷史記錄確認提示"
+  },
+  "history_clear_failed": {
+    "message": "清空歷史記錄失敗",
+    "description": "清空歷史記錄失敗提示"
+  },
+  "history_clear_success": {
+    "message": "歷史記錄已清空",
+    "description": "清空歷史記錄成功提示"
+  },
+  "history_description": {
+    "message": "顯示最近開啟過的 Markdown 文件，點擊可以重新開啟",
+    "description": "歷史文件描述"
+  },
+  "history_items_empty": {
+    "message": "暫無歷史記錄",
+    "description": "歷史記錄列表為空提示"
+  },
+  "history_loading_failed": {
+    "message": "載入歷史記錄失敗",
+    "description": "載入歷史記錄失敗提示"
+  },
+  "history_open_failed": {
+    "message": "開啟文件失敗",
+    "description": "開啟歷史記錄文件失敗提示"
+  },
+  "history_refresh": {
+    "message": "重新整理",
+    "description": "重新整理歷史記錄按鈕"
+  },
+  "history_title": {
+    "message": "最近存取的文件",
+    "description": "歷史文件標題"
+  },
+  "language": {
+    "message": "語言",
+    "description": "Menu item for language"
+  },
+  "more": {
+    "message": "更多",
+    "description": "More options menu"
+  },
+  "no_file_opened": {
+    "message": "未開啟任何文件",
+    "description": "Message when trying to perform action without file"
+  },
+  "no_file_to_share": {
+    "message": "沒有可分享的檔案",
+    "description": "Toast when no file is open for sharing"
+  },
+  "no_headings": {
+    "message": "未找到標題",
+    "description": "Toast when document has no headings"
+  },
+  "no_recent_files": {
+    "message": "沒有最近檔案",
+    "description": "Toast when there are no recent files"
+  },
+  "open_file": {
+    "message": "開啟檔案",
+    "description": "Menu item to open file"
+  },
+  "popup_review_link": {
+    "message": "評分",
+    "description": "評價擴充功能的連結文字"
+  },
+  "popup_title": {
+    "message": "Markdown Viewer",
+    "description": "彈出視窗標題"
+  },
+  "popup_version_label": {
+    "message": "版本 {0}",
+    "description": "彈出視窗中的版本文字"
+  },
+  "preparing_share": {
+    "message": "準備分享...",
+    "description": "Progress text when preparing to share"
+  },
+  "recent_files": {
+    "message": "最近檔案",
+    "description": "Title for recent files section"
+  },
+  "remove_from_list": {
+    "message": "從列表移除",
+    "description": "Menu item to remove file from recent list"
+  },
+  "reset": {
+    "message": "重置",
+    "description": "Reset button"
+  },
+  "search_case_sensitive": {
+    "message": "區分大小寫",
+    "description": "Match case sensitivity toggle tooltip"
+  },
+  "search_next": {
+    "message": "下一個",
+    "description": "Next match button tooltip"
+  },
+  "search_placeholder": {
+    "message": "尋找",
+    "description": "Search input placeholder text"
+  },
+  "search_previous": {
+    "message": "上一個",
+    "description": "Previous match button tooltip"
+  },
+  "search_whole_word": {
+    "message": "全字匹配",
+    "description": "Match whole word toggle tooltip"
+  },
+  "settings_auto_refresh": {
+    "message": "自動重新整理",
+    "description": "Label for auto refresh checkbox"
+  },
+  "settings_auto_refresh_interval": {
+    "message": "重新整理間隔:",
+    "description": "Label for refresh interval selector"
+  },
+  "settings_auto_refresh_note": {
+    "message": "本機檔案變更時自動重新載入（僅限 file:// 協定）。",
+    "description": "Helper note for auto refresh option"
+  },
+  "settings_docx_emoji_style": {
+    "message": "表情符號樣式",
+    "description": "Label for the emoji style selector in DOCX export settings"
+  },
+  "settings_docx_emoji_style_apple": {
+    "message": "Apple 樣式",
+    "description": "Option for Apple emoji style"
+  },
+  "settings_docx_emoji_style_note": {
+    "message": "選擇 DOCX 匯出的表情符號字型樣式",
+    "description": "Note explaining the emoji style setting"
+  },
+  "settings_docx_emoji_style_system": {
+    "message": "系統樣式",
+    "description": "Option to use system emoji (no font processing)"
+  },
+  "settings_docx_emoji_style_windows": {
+    "message": "Windows 樣式",
+    "description": "Option for Windows emoji style"
+  },
+  "settings_docx_hr_display": {
+    "message": "DOCX：分隔線處理",
+    "description": "Label for DOCX horizontal rule handling selector"
+  },
+  "settings_docx_hr_display_hide": {
+    "message": "隱藏（空行）",
+    "description": "Option to hide horizontal rules in DOCX"
+  },
+  "settings_docx_hr_display_line": {
+    "message": "分割線",
+    "description": "Option to export horizontal rules as a line in DOCX"
+  },
+  "settings_docx_hr_display_note": {
+    "message": "選擇 Markdown 分隔線（---）在匯出的 Word 文件中的處理方式。",
+    "description": "Helper note for DOCX horizontal rule handling"
+  },
+  "settings_docx_hr_display_page_break": {
+    "message": "分頁",
+    "description": "Option to export horizontal rules as page breaks in DOCX"
+  },
+  "settings_docx_hr_page_break": {
+    "message": "DOCX：將分隔線(hr)匯出為分頁",
+    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
+  },
+  "settings_docx_hr_page_break_note": {
+    "message": "開啟後，Markdown 分隔線（---）在匯出的 Word 文件中會產生分頁。",
+    "description": "Helper note for the DOCX hr page break option"
+  },
+  "settings_frontmatter_display": {
+    "message": "Frontmatter 顯示:",
+    "description": "Label for frontmatter display mode selector"
+  },
+  "settings_frontmatter_hide": {
+    "message": "隱藏",
+    "description": "Option to hide frontmatter"
+  },
+  "settings_frontmatter_note": {
+    "message": "選擇如何顯示 Markdown 檔案開頭的 YAML frontmatter。",
+    "description": "Helper note for frontmatter display option"
+  },
+  "settings_frontmatter_raw": {
+    "message": "原始資訊",
+    "description": "Option to display frontmatter as blockquote"
+  },
+  "settings_frontmatter_table": {
+    "message": "資料表格",
+    "description": "Option to display frontmatter as table"
+  },
+  "settings_general_title": {
+    "message": "擴充功能設定",
+    "description": "設定區標題"
+  },
+  "settings_interface_title": {
+    "message": "介面設定",
+    "description": "介面設定區標題"
+  },
+  "settings_invalid_max_cache": {
+    "message": "請輸入 {0}-{1} 之間的有效快取數量",
+    "description": "最大快取輸入無效提示"
+  },
+  "settings_language_auto": {
+    "message": "跟隨系統語言",
+    "description": "自動語言選項"
+  },
+  "settings_language_changed": {
+    "message": "介面語言已變更",
+    "description": "語言變更成功提示"
+  },
+  "settings_language_label": {
+    "message": "介面語言:",
+    "description": "語言選擇標籤"
+  },
+  "settings_language_note": {
+    "message": "設定後將覆蓋系統介面語言，僅影響擴充功能介面。",
+    "description": "語言選擇說明"
+  },
+  "settings_max_cache_label": {
+    "message": "最大快取項目數:",
+    "description": "最大快取標籤"
+  },
+  "settings_reset_btn": {
+    "message": "重設為預設",
+    "description": "重設按鈕"
+  },
+  "settings_reset_confirm": {
+    "message": "確定要重設所有設定為預設值嗎？",
+    "description": "重設設定確認提示"
+  },
+  "settings_reset_failed": {
+    "message": "重設設定失敗",
+    "description": "設定重設失敗提示"
+  },
+  "settings_reset_success": {
+    "message": "設定已重設",
+    "description": "設定重設成功提示"
+  },
+  "settings_save_failed": {
+    "message": "儲存設定失敗",
+    "description": "儲存設定失敗提示"
+  },
+  "settings_save_success": {
+    "message": "設定已儲存",
+    "description": "儲存設定成功提示"
+  },
+  "settings_support_canvas": {
+    "message": "JSON Canvas 圖表 (.canvas)",
+    "description": "Checkbox label for enabling JSON Canvas file support"
+  },
+  "settings_support_dot": {
+    "message": "Graphviz DOT 圖表 (.gv)",
+    "description": "Checkbox label for Graphviz DOT format support"
+  },
+  "settings_support_drawio": {
+    "message": "Draw.io 圖表 (.drawio)",
+    "description": "Checkbox label for enabling Draw.io file support"
+  },
+  "settings_support_infographic": {
+    "message": "資訊圖表 (.infographic)",
+    "description": "Checkbox label for Infographic format support"
+  },
+  "settings_support_mermaid": {
+    "message": "Mermaid 圖表 (.mermaid)",
+    "description": "Checkbox label for Mermaid format support"
+  },
+  "settings_support_vega": {
+    "message": "Vega 圖表 (.vega)",
+    "description": "Checkbox label for Vega format support"
+  },
+  "settings_support_vega_lite": {
+    "message": "Vega-Lite 圖表 (.vl, .vega-lite)",
+    "description": "Checkbox label for Vega-Lite format support"
+  },
+  "settings_supported_formats_title": {
+    "message": "支援的格式",
+    "description": "Title for supported file formats section in settings"
+  },
+  "settings_table_merge_empty": {
+    "message": "智慧表格儲存格合併",
+    "description": "Checkbox label for enabling automatic vertical merging of empty table cells"
+  },
+  "settings_table_merge_empty_note": {
+    "message": "啟用後，將分析表格結構並智慧合併空儲存格。",
+    "description": "Helper note for the table merge option"
+  },
+  "settings_theme_changed": {
+    "message": "主題已成功切換，請重新整理頁面檢視變化。",
+    "description": "主題切換成功時顯示的訊息"
+  },
+  "settings_theme_label": {
+    "message": "選擇主題：",
+    "description": "主題選擇器標籤"
+  },
+  "share": {
+    "message": "分享",
+    "description": "Share button tooltip"
+  },
+  "tab_cache": {
+    "message": "快取",
+    "description": "快取標籤"
+  },
+  "tab_history": {
+    "message": "歷史記錄",
+    "description": "歷史記錄標籤"
+  },
+  "tab_settings": {
+    "message": "設定",
+    "description": "設定標籤"
+  },
+  "theme": {
+    "message": "主題",
+    "description": "Menu item for theme"
+  },
+  "toc": {
+    "message": "目錄",
+    "description": "TOC drawer title"
+  },
+  "toolbar_download_title": {
+    "message": "下載",
+    "description": "下載按鈕提示"
+  },
+  "toolbar_layout_title_fullscreen": {
+    "message": "滿版佈局",
+    "description": "佈局按鈕滿版模式提示"
+  },
+  "toolbar_layout_title_narrow": {
+    "message": "窄版佈局",
+    "description": "佈局按鈕窄版模式提示"
+  },
+  "toolbar_layout_title_normal": {
+    "message": "正常佈局",
+    "description": "佈局按鈕正常模式提示"
+  },
+  "toolbar_print_disabled_title": {
+    "message": "列印功能僅適用於本機檔案",
+    "description": "遠端檔案時列印按鈕停用提示"
+  },
+  "toolbar_print_title": {
+    "message": "列印",
+    "description": "列印按鈕提示"
+  },
+  "toolbar_toggle_toc_title": {
+    "message": "顯示/隱藏目錄",
+    "description": "目錄按鈕提示"
+  },
+  "toolbar_zoom_in_title": {
+    "message": "放大",
+    "description": "放大按鈕提示"
+  },
+  "toolbar_zoom_out_title": {
+    "message": "縮小",
+    "description": "縮小按鈕提示"
+  },
+  "welcome_message": {
+    "message": "開啟一個 Markdown 檔案開始",
+    "description": "Welcome message on empty state"
+  },
+  "zoom": {
+    "message": "縮放",
+    "description": "Menu item for zoom"
+  }
+}

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14" height="14" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simple arrow icon -->
+  <path d="M7 2v8M4 7l3 3 3-3" stroke="#6366f1" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

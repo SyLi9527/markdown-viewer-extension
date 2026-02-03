@@ -1,0 +1,642 @@
+{
+  "about": {
+    "message": "Giới thiệu",
+    "description": "Menu item for about"
+  },
+  "async_processing_error": {
+    "message": "Lỗi {0}: {1}",
+    "description": "Generic error message with type and detail"
+  },
+  "async_processing_message": {
+    "message": "Đang xử lý {0}{1}...",
+    "description": "Async placeholder processing text"
+  },
+  "async_task_processing_error": {
+    "message": "Lỗi xử lý tác vụ: {0}",
+    "description": "Error when async task fails"
+  },
+  "async_unknown_error": {
+    "message": "Lỗi không xác định",
+    "description": "Fallback when error message missing"
+  },
+  "cache_clear": {
+    "message": "Xóa bộ nhớ đệm",
+    "description": "Clear cache button"
+  },
+  "cache_clear_confirm": {
+    "message": "Xóa tất cả dữ liệu bộ nhớ đệm? Hành động này không thể hoàn tác.",
+    "description": "Confirmation text for clearing cache"
+  },
+  "cache_clear_failed": {
+    "message": "Xóa bộ nhớ đệm thất bại",
+    "description": "Toast when cache clear fails"
+  },
+  "cache_clear_success": {
+    "message": "Đã xóa bộ nhớ đệm",
+    "description": "Toast when cache clear succeeds"
+  },
+  "cache_error_message": {
+    "message": "Giao tiếp bộ nhớ đệm thất bại — hãy mở tệp Markdown trước",
+    "description": "Shown when cache cannot be reached"
+  },
+  "cache_hint_details": {
+    "message": "Bộ nhớ đệm chạy tự động khi các trang Markdown đang mở",
+    "description": "Additional hint when cache is empty"
+  },
+  "cache_item_accessed_label": {
+    "message": "Truy cập lần cuối",
+    "description": "Label for cache item last access time"
+  },
+  "cache_item_created_label": {
+    "message": "Đã tạo",
+    "description": "Label for cache item created time"
+  },
+  "cache_item_size_label": {
+    "message": "Kích thước",
+    "description": "Label for cache item size"
+  },
+  "cache_item_type_label": {
+    "message": "Loại",
+    "description": "Label for cache item type"
+  },
+  "cache_item_type_unknown": {
+    "message": "không xác định",
+    "description": "Fallback label when cache type is missing"
+  },
+  "cache_items_empty": {
+    "message": "Chưa có mục nào được lưu",
+    "description": "Shown when the cache list is empty"
+  },
+  "cache_items_title": {
+    "message": "Mục đã lưu (20 mới nhất)",
+    "description": "Heading for cache items list"
+  },
+  "cache_loading_failed": {
+    "message": "Tải bộ nhớ đệm thất bại: {0}",
+    "description": "Displayed when cache loading throws an error"
+  },
+  "cache_manual_clear_intro": {
+    "message": "Để xóa bộ nhớ đệm thủ công:",
+    "description": "Manual cache clear intro"
+  },
+  "cache_manual_clear_step_1": {
+    "message": "Mở bất kỳ tệp Markdown nào",
+    "description": "Manual cache clear step"
+  },
+  "cache_manual_clear_step_2": {
+    "message": "Nhấn F12 để mở DevTools",
+    "description": "Manual cache clear step"
+  },
+  "cache_manual_clear_step_3": {
+    "message": "Chạy \"{0}\" trong console",
+    "description": "Manual cache clear step with code placeholder"
+  },
+  "cache_manual_clear_title": {
+    "message": "🧹 Xóa bộ nhớ đệm thủ công",
+    "description": "Manual cache clear title"
+  },
+  "cache_manual_limit_desc_1": {
+    "message": "Vì lý do bảo mật, popup không thể truy cập trực tiếp IndexedDB.",
+    "description": "Manual cache info description"
+  },
+  "cache_manual_limit_desc_2": {
+    "message": "Bộ nhớ đệm vẫn hoạt động khi hiển thị trang Markdown, nhưng popup không thể hiển thị chi tiết.",
+    "description": "Manual cache info description"
+  },
+  "cache_manual_limit_title": {
+    "message": "⚠️ Giới hạn truy cập bộ nhớ đệm",
+    "description": "Manual cache info section title"
+  },
+  "cache_manual_status_intro": {
+    "message": "Để đảm bảo bộ nhớ đệm hoạt động:",
+    "description": "Manual cache status intro"
+  },
+  "cache_manual_status_step_console": {
+    "message": "Kiểm tra log \"⚡ Using cached\" trong DevTools",
+    "description": "Manual cache status checklist"
+  },
+  "cache_manual_status_step_open": {
+    "message": "Mở một tệp Markdown",
+    "description": "Manual cache status checklist"
+  },
+  "cache_manual_status_step_speed": {
+    "message": "Nhận thấy hiển thị nhanh hơn khi bộ nhớ đệm đã khởi động",
+    "description": "Manual cache status checklist"
+  },
+  "cache_manual_status_title": {
+    "message": "📊 Kiểm tra trạng thái bộ nhớ đệm",
+    "description": "Manual cache status section title"
+  },
+  "cache_refresh": {
+    "message": "Làm mới",
+    "description": "Refresh cache button"
+  },
+  "cache_stat_capacity_label": {
+    "message": "Dung lượng tối đa",
+    "description": "Label for max cache entries"
+  },
+  "cache_stat_item_label": {
+    "message": "Mục đã lưu",
+    "description": "Label for number of cached items"
+  },
+  "cache_stat_size_label": {
+    "message": "Dung lượng đã dùng",
+    "description": "Label for cache size"
+  },
+  "cache_stat_usage_label": {
+    "message": "Dung lượng đã sử dụng",
+    "description": "Label for usage percentage"
+  },
+  "cancel": {
+    "message": "Hủy",
+    "description": "Cancel button text"
+  },
+  "clear_all": {
+    "message": "Xóa tất cả",
+    "description": "Button to clear all items"
+  },
+  "clear_recent_files": {
+    "message": "Xóa tệp gần đây",
+    "description": "Dialog title for clearing recent files"
+  },
+  "clear_recent_files_confirm": {
+    "message": "Xóa tất cả tệp gần đây khỏi danh sách?",
+    "description": "Confirmation message for clearing recent files"
+  },
+  "clipboard_empty": {
+    "message": "Bộ nhớ tạm trống",
+    "description": "Error when clipboard is empty"
+  },
+  "clipboard_open": {
+    "message": "Mở từ bộ nhớ tạm",
+    "description": "Clipboard item title in history"
+  },
+  "clipboard_read_failed": {
+    "message": "Không thể đọc bộ nhớ tạm",
+    "description": "Error when clipboard read fails"
+  },
+  "close": {
+    "message": "Đóng",
+    "description": "Close button text/tooltip"
+  },
+  "contextMenu_viewAsMarkdown": {
+    "message": "Xem dưới dạng Markdown",
+    "description": "Context menu item to view any file as markdown"
+  },
+  "delete": {
+    "message": "Delete",
+    "description": "Delete button text"
+  },
+  "delete_file": {
+    "message": "Delete file",
+    "description": "Menu item to delete a file"
+  },
+  "delete_file_confirm": {
+    "message": "Are you sure you want to delete \"{0}\"? This action cannot be undone.",
+    "description": "Confirmation message for deleting a file"
+  },
+  "docx_export_failed_alert": {
+    "message": "Xuất thất bại{0}",
+    "description": "Alert shown when DOCX export fails"
+  },
+  "docx_export_failed_default": {
+    "message": "Xuất thất bại",
+    "description": "Fallback message when DOCX export fails"
+  },
+  "export_docx": {
+    "message": "Chia sẻ dưới dạng Word",
+    "description": "Menu item for exporting to DOCX"
+  },
+  "exporting": {
+    "message": "Đang chuẩn bị tài liệu Word...",
+    "description": "Toast shown during export"
+  },
+  "extensionDescription": {
+    "message": "Markdown sang Word hoàn hảo chỉ với một click — Mermaid, Graphviz, Vega, infographic, LaTeX (có thể chỉnh sửa), tô sáng mã, xử lý cục bộ",
+    "description": "Extension description shown in Chrome Web Store"
+  },
+  "extensionName": {
+    "message": "Markdown Viewer",
+    "description": "Extension name"
+  },
+  "failed_to_open_file": {
+    "message": "Không thể mở tệp: {0}",
+    "description": "Toast when file open fails"
+  },
+  "failed_to_open_url": {
+    "message": "Không thể mở URL: {0}",
+    "description": "Error message when URL cannot be opened"
+  },
+  "failed_to_share": {
+    "message": "Không thể chia sẻ: {0}",
+    "description": "Toast when sharing fails"
+  },
+  "file_access_disabled": {
+    "message": "Đã tắt",
+    "description": "Status text when file access is disabled"
+  },
+  "file_access_disabled_desc_short": {
+    "message": "Để xem tệp cục bộ, hãy truy cập",
+    "description": "Short description prefix for file access warning"
+  },
+  "file_access_disabled_suffix": {
+    "message": "và bật 'Cho phép truy cập URL tệp'",
+    "description": "Suffix for file access warning"
+  },
+  "file_access_settings_link": {
+    "message": "trang cài đặt tiện ích",
+    "description": "Link text to extension settings"
+  },
+  "file_deleted": {
+    "message": "File deleted",
+    "description": "Toast when file is deleted"
+  },
+  "file_not_found": {
+    "message": "Không tìm thấy tệp",
+    "description": "Error message when file doesn't exist"
+  },
+  "file_removed": {
+    "message": "Removed from list",
+    "description": "Toast when file is removed from list"
+  },
+  "file_url_copied": {
+    "message": "Đã sao chép URL. Dán vào thanh địa chỉ để mở.",
+    "description": "Message shown when file URL is copied to clipboard in Firefox"
+  },
+  "heading_h2_format": {
+    "message": "Chương {0}",
+    "description": "Format for h2 headings. {0} is the chapter number."
+  },
+  "heading_h2_numerals": {
+    "message": "arabic",
+    "description": "Numeral system for h2: chinese, arabic, roman"
+  },
+  "history_clear": {
+    "message": "Xóa lịch sử",
+    "description": "Clear history button"
+  },
+  "history_clear_confirm": {
+    "message": "Xóa tất cả lịch sử? Hành động này không thể hoàn tác.",
+    "description": "Clear history confirmation message"
+  },
+  "history_clear_failed": {
+    "message": "Xóa lịch sử thất bại",
+    "description": "Clear history failed message"
+  },
+  "history_clear_success": {
+    "message": "Đã xóa lịch sử",
+    "description": "Clear history success message"
+  },
+  "history_description": {
+    "message": "Hiển thị các tài liệu Markdown đã mở gần đây, nhấp để mở lại",
+    "description": "History documents description"
+  },
+  "history_items_empty": {
+    "message": "Chưa có lịch sử",
+    "description": "Empty history list message"
+  },
+  "history_loading_failed": {
+    "message": "Tải lịch sử thất bại",
+    "description": "Load history failed message"
+  },
+  "history_open_failed": {
+    "message": "Mở tài liệu thất bại",
+    "description": "Open history document failed message"
+  },
+  "history_refresh": {
+    "message": "Làm mới",
+    "description": "Refresh history button"
+  },
+  "history_title": {
+    "message": "Tài liệu gần đây",
+    "description": "History documents title"
+  },
+  "language": {
+    "message": "Ngôn ngữ",
+    "description": "Menu item for language"
+  },
+  "more": {
+    "message": "More",
+    "description": "More menu tooltip"
+  },
+  "no_file_opened": {
+    "message": "Không có tệp nào được mở",
+    "description": "Message when trying to perform action without file"
+  },
+  "no_file_to_share": {
+    "message": "Không có tệp để chia sẻ",
+    "description": "Toast when no file is open for sharing"
+  },
+  "no_headings": {
+    "message": "Không tìm thấy tiêu đề",
+    "description": "Toast when document has no headings"
+  },
+  "no_recent_files": {
+    "message": "No recent files",
+    "description": "Toast when there are no recent files"
+  },
+  "open_file": {
+    "message": "Mở tệp",
+    "description": "Menu item to open file"
+  },
+  "popup_review_link": {
+    "message": "Đánh giá",
+    "description": "Link text to rate and review the extension"
+  },
+  "popup_title": {
+    "message": "Markdown Viewer",
+    "description": "Popup title"
+  },
+  "popup_version_label": {
+    "message": "Phiên bản {0}",
+    "description": "Shows the extension version in the header"
+  },
+  "preparing_share": {
+    "message": "Đang chuẩn bị chia sẻ...",
+    "description": "Progress text when preparing to share"
+  },
+  "recent_files": {
+    "message": "Tệp gần đây",
+    "description": "Title for recent files section"
+  },
+  "remove_from_list": {
+    "message": "Remove from list",
+    "description": "Menu item to remove file from recent list"
+  },
+  "reset": {
+    "message": "Đặt lại",
+    "description": "Reset button"
+  },
+  "search_case_sensitive": {
+    "message": "Phân biệt chữ hoa/thường",
+    "description": "Toggle case sensitive search"
+  },
+  "search_next": {
+    "message": "Sau",
+    "description": "Navigate to next search match"
+  },
+  "search_placeholder": {
+    "message": "Tìm kiếm",
+    "description": "Placeholder text for search input"
+  },
+  "search_previous": {
+    "message": "Trước",
+    "description": "Navigate to previous search match"
+  },
+  "search_whole_word": {
+    "message": "Toàn bộ từ",
+    "description": "Toggle whole word search"
+  },
+  "settings_auto_refresh": {
+    "message": "Tự động làm mới",
+    "description": "Label for auto refresh checkbox"
+  },
+  "settings_auto_refresh_interval": {
+    "message": "Khoảng thời gian làm mới:",
+    "description": "Label for refresh interval selector"
+  },
+  "settings_auto_refresh_note": {
+    "message": "Tự động tải lại khi tệp cục bộ thay đổi (chỉ file://).",
+    "description": "Helper note for auto refresh option"
+  },
+  "settings_docx_emoji_style": {
+    "message": "Kiểu emoji",
+    "description": "Label for the emoji style selector in DOCX export settings"
+  },
+  "settings_docx_emoji_style_apple": {
+    "message": "Kiểu Apple",
+    "description": "Option for Apple emoji style"
+  },
+  "settings_docx_emoji_style_note": {
+    "message": "Chọn kiểu phông chữ emoji cho xuất DOCX",
+    "description": "Note explaining the emoji style setting"
+  },
+  "settings_docx_emoji_style_system": {
+    "message": "Kiểu hệ thống",
+    "description": "Option to use system emoji (no font processing)"
+  },
+  "settings_docx_emoji_style_windows": {
+    "message": "Kiểu Windows",
+    "description": "Option for Windows emoji style"
+  },
+  "settings_docx_hr_display": {
+    "message": "DOCX: Xử lý đường kẻ ngang",
+    "description": "Label for DOCX horizontal rule handling selector"
+  },
+  "settings_docx_hr_display_hide": {
+    "message": "Ẩn (dòng trống)",
+    "description": "Option to hide horizontal rules in DOCX"
+  },
+  "settings_docx_hr_display_line": {
+    "message": "Đường kẻ ngang",
+    "description": "Option to export horizontal rules as a line in DOCX"
+  },
+  "settings_docx_hr_display_note": {
+    "message": "Chọn cách xuất dấu phân cách Markdown (---) trong DOCX.",
+    "description": "Helper note for DOCX horizontal rule handling"
+  },
+  "settings_docx_hr_display_page_break": {
+    "message": "Ngắt trang",
+    "description": "Option to export horizontal rules as page breaks in DOCX"
+  },
+  "settings_docx_hr_page_break": {
+    "message": "DOCX: Xem đường kẻ ngang như ngắt trang",
+    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
+  },
+  "settings_docx_hr_page_break_note": {
+    "message": "Khi bật, dấu phân cách Markdown (---) sẽ tạo trang mới trong tài liệu Word xuất ra.",
+    "description": "Helper note for the DOCX hr page break option"
+  },
+  "settings_frontmatter_display": {
+    "message": "Hiển thị Frontmatter:",
+    "description": "Label for frontmatter display mode selector"
+  },
+  "settings_frontmatter_hide": {
+    "message": "Ẩn",
+    "description": "Option to hide frontmatter"
+  },
+  "settings_frontmatter_note": {
+    "message": "Chọn cách hiển thị YAML frontmatter ở đầu tệp Markdown.",
+    "description": "Helper note for frontmatter display option"
+  },
+  "settings_frontmatter_raw": {
+    "message": "Thô (trích dẫn)",
+    "description": "Option to display frontmatter as blockquote"
+  },
+  "settings_frontmatter_table": {
+    "message": "Bảng",
+    "description": "Option to display frontmatter as table"
+  },
+  "settings_general_title": {
+    "message": "Cài đặt tiện ích mở rộng",
+    "description": "Tiêu đề phần cài đặt"
+  },
+  "settings_interface_title": {
+    "message": "Cài đặt giao diện",
+    "description": "Heading for interface settings section"
+  },
+  "settings_invalid_max_cache": {
+    "message": "Nhập kích thước bộ nhớ đệm hợp lệ từ {0} đến {1}",
+    "description": "Shown when max cache input is invalid"
+  },
+  "settings_language_auto": {
+    "message": "Ngôn ngữ hệ thống",
+    "description": "Tùy chọn ngôn ngữ tự động"
+  },
+  "settings_language_changed": {
+    "message": "Đã thay đổi ngôn ngữ giao diện",
+    "description": "Toast when language is changed successfully"
+  },
+  "settings_language_label": {
+    "message": "Ngôn ngữ giao diện:",
+    "description": "Label for language selector"
+  },
+  "settings_language_note": {
+    "message": "Thay đổi này sẽ ghi đè ngôn ngữ hệ thống cho tiện ích mở rộng.",
+    "description": "Helper note for language selector"
+  },
+  "settings_max_cache_label": {
+    "message": "Số mục tối đa trong bộ nhớ đệm:",
+    "description": "Label for max cache input"
+  },
+  "settings_reset_btn": {
+    "message": "Đặt lại về mặc định",
+    "description": "Reset button"
+  },
+  "settings_reset_confirm": {
+    "message": "Đặt lại tất cả cài đặt về giá trị mặc định?",
+    "description": "Confirmation text for resetting settings"
+  },
+  "settings_reset_failed": {
+    "message": "Đặt lại cài đặt thất bại",
+    "description": "Toast when resetting settings fails"
+  },
+  "settings_reset_success": {
+    "message": "Đã đặt lại cài đặt",
+    "description": "Toast when settings reset succeeds"
+  },
+  "settings_save_failed": {
+    "message": "Lưu cài đặt thất bại",
+    "description": "Toast when saving settings fails"
+  },
+  "settings_save_success": {
+    "message": "Đã lưu cài đặt",
+    "description": "Toast when settings saved"
+  },
+  "settings_support_canvas": {
+    "message": "Biểu đồ JSON Canvas (.canvas)",
+    "description": "Checkbox label for enabling JSON Canvas file support"
+  },
+  "settings_support_dot": {
+    "message": "Biểu đồ Graphviz DOT (.gv)",
+    "description": "Checkbox label for Graphviz DOT format support"
+  },
+  "settings_support_drawio": {
+    "message": "Biểu đồ Draw.io (.drawio)",
+    "description": "Checkbox label for enabling Draw.io file support"
+  },
+  "settings_support_infographic": {
+    "message": "Infographic (.infographic)",
+    "description": "Checkbox label for Infographic format support"
+  },
+  "settings_support_mermaid": {
+    "message": "Biểu đồ Mermaid (.mermaid)",
+    "description": "Checkbox label for Mermaid format support"
+  },
+  "settings_support_vega": {
+    "message": "Biểu đồ Vega (.vega)",
+    "description": "Checkbox label for Vega format support"
+  },
+  "settings_support_vega_lite": {
+    "message": "Biểu đồ Vega-Lite (.vl, .vega-lite)",
+    "description": "Checkbox label for Vega-Lite format support"
+  },
+  "settings_supported_formats_title": {
+    "message": "Định dạng được hỗ trợ",
+    "description": "Title for supported file formats section in settings"
+  },
+  "settings_table_merge_empty": {
+    "message": "Hợp nhất ô bảng thông minh",
+    "description": "Checkbox label for enabling automatic vertical merging of empty table cells"
+  },
+  "settings_table_merge_empty_note": {
+    "message": "Khi được bật, cấu trúc bảng sẽ được phân tích và các ô trống sẽ được hợp nhất một cách thông minh.",
+    "description": "Helper note for the table merge option"
+  },
+  "settings_theme_changed": {
+    "message": "Đã thay đổi giao diện thành công. Vui lòng tải lại trang để xem thay đổi.",
+    "description": "Message shown when theme is changed"
+  },
+  "settings_theme_label": {
+    "message": "Chọn Giao diện:",
+    "description": "Label for theme selector"
+  },
+  "share": {
+    "message": "Chia sẻ",
+    "description": "Share button tooltip"
+  },
+  "tab_cache": {
+    "message": "Bộ nhớ đệm",
+    "description": "Label for cache tab"
+  },
+  "tab_history": {
+    "message": "Lịch sử",
+    "description": "Label for history tab"
+  },
+  "tab_settings": {
+    "message": "Cài đặt",
+    "description": "Label for settings tab"
+  },
+  "theme": {
+    "message": "Chủ đề",
+    "description": "Menu item for theme"
+  },
+  "toc": {
+    "message": "Mục lục",
+    "description": "TOC drawer title"
+  },
+  "toolbar_download_title": {
+    "message": "Tải xuống",
+    "description": "Toolbar download tooltip"
+  },
+  "toolbar_layout_title_fullscreen": {
+    "message": "Bố cục toàn màn hình",
+    "description": "Toolbar layout toggle tooltip for fullscreen mode"
+  },
+  "toolbar_layout_title_narrow": {
+    "message": "Bố cục hẹp",
+    "description": "Toolbar layout toggle tooltip for narrow mode"
+  },
+  "toolbar_layout_title_normal": {
+    "message": "Bố cục thông thường",
+    "description": "Toolbar layout toggle tooltip for normal mode"
+  },
+  "toolbar_print_disabled_title": {
+    "message": "Chỉ có thể in cho tệp cục bộ",
+    "description": "Tooltip when print button is disabled for remote files"
+  },
+  "toolbar_print_title": {
+    "message": "In",
+    "description": "Toolbar print tooltip"
+  },
+  "toolbar_toggle_toc_title": {
+    "message": "Hiện hoặc ẩn mục lục",
+    "description": "Toolbar button title for toggling TOC"
+  },
+  "toolbar_zoom_in_title": {
+    "message": "Phóng to",
+    "description": "Toolbar zoom in tooltip"
+  },
+  "toolbar_zoom_out_title": {
+    "message": "Thu nhỏ",
+    "description": "Toolbar zoom out tooltip"
+  },
+  "welcome_message": {
+    "message": "Mở tệp markdown để bắt đầu",
+    "description": "Welcome message on empty state"
+  },
+  "zoom": {
+    "message": "Thu phóng",
+    "description": "Menu item for zoom"
+  }
+}
