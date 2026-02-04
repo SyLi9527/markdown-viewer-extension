@@ -64,7 +64,7 @@ function getCellText(cell: HTMLTableCellElement): string {
   return clone.textContent?.trim() || '';
 }
 
-function computeMaxColumns(rows: HTMLTableRowElement[]): number {
+function computeMaxColumns(rows: HTMLTableRowElement[], rowGroupEnds: number[]): number {
   const spanTracker: number[] = [];
   let maxColumns = 0;
 
@@ -78,7 +78,10 @@ function computeMaxColumns(rows: HTMLTableRowElement[]): number {
     for (const cell of cells) {
       while (spanTracker[col] > 0) col += 1;
 
-      const rowspan = normalizeSpanValue(parseSpan(cell.getAttribute('rowspan')));
+      const rowspanValue = parseSpan(cell.getAttribute('rowspan'));
+      const rowGroupEnd = rowGroupEnds[r] ?? r;
+      const rowspan =
+        rowspanValue === 0 ? rowGroupEnd - r + 1 : normalizeSpanValue(rowspanValue);
       const colspan = normalizeSpanValue(parseSpan(cell.getAttribute('colspan')));
 
       maxColumns = Math.max(maxColumns, col + colspan);
@@ -99,7 +102,7 @@ export function normalizeTableElement(table: HTMLTableElement): TableDomNormaliz
   const grid: TableDomCell[][] = [];
   const spanTracker: number[] = [];
   const rowGroupEnds = getRowGroupEnds(rows);
-  const maxColumns = computeMaxColumns(rows);
+  const maxColumns = computeMaxColumns(rows, rowGroupEnds);
 
   for (let r = 0; r < rows.length; r++) {
     const cells = getRowCells(rows[r]);
