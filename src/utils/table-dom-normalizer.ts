@@ -134,6 +134,8 @@ export function normalizeTableElement(table: HTMLTableElement): TableDomNormaliz
           grid[rr][cc] = {
             row: rr,
             col: cc,
+            originRow: r,
+            originCol: col,
             rowspan,
             colspan,
             text,
@@ -156,7 +158,16 @@ export function normalizeTableElement(table: HTMLTableElement): TableDomNormaliz
     grid[r] = grid[r] || [];
     for (let c = 0; c < colCount; c++) {
       if (!grid[r][c]) {
-        grid[r][c] = { row: r, col: c, rowspan: 1, colspan: 1, text: '', nestedTables: [] };
+        grid[r][c] = {
+          row: r,
+          col: c,
+          originRow: r,
+          originCol: c,
+          rowspan: 1,
+          colspan: 1,
+          text: '',
+          nestedTables: []
+        };
       }
     }
   }
