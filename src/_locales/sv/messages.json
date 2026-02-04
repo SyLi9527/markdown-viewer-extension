@@ -439,14 +439,6 @@
     "message": "Sidbrytning",
     "description": "Option to export horizontal rules as page breaks in DOCX"
   },
-  "settings_docx_hr_page_break": {
-    "message": "DOCX: Behandla horisontella linjer som sidbrytningar",
-    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
-  },
-  "settings_docx_hr_page_break_note": {
-    "message": "När detta är aktiverat skapar Markdown-avgränsare (---) en ny sida i exporterade Word-dokument.",
-    "description": "Helper note for the DOCX hr page break option"
-  },
   "settings_frontmatter_display": {
     "message": "Frontmatter-visning:",
     "description": "Label for frontmatter display mode selector"
@@ -563,6 +555,30 @@
     "message": "När aktiverat kommer tabellstrukturen att analyseras och tomma celler slås samman intelligent.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Tabelljustering:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Vänster",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Centrerad",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Höger",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Justerad",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Gäller förhandsvisning och DOCX-export.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Tema ändrat. Vänligen ladda om sidan för att se ändringarna.",
     "description": "Message shown when theme is changed"
@@ -638,5 +654,45 @@
   "zoom": {
     "message": "Zoom",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "Skalning av rubrikstorlek (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Avst?nd f?re rubriker (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Avst?nd efter rubriker (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "Rubrikjustering",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Temastandard",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Kodens teckenstorlek (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Tabellkantens bredd (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Cellutfyllnad i tabell (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX-temamappning",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "L?mna tomt f?r att anv?nda temats standardv?rden. Anv?nd 0 f?r att tvinga noll.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

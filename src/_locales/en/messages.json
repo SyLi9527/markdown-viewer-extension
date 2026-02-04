@@ -439,14 +439,6 @@
     "message": "Page break",
     "description": "Option to export horizontal rules as page breaks in DOCX"
   },
-  "settings_docx_hr_page_break": {
-    "message": "DOCX: Treat horizontal rules as page breaks",
-    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
-  },
-  "settings_docx_hr_page_break_note": {
-    "message": "When enabled, Markdown separators (---) will create a new page in exported Word documents.",
-    "description": "Helper note for the DOCX hr page break option"
-  },
   "settings_frontmatter_display": {
     "message": "Frontmatter display:",
     "description": "Label for frontmatter display mode selector"
@@ -563,6 +555,30 @@
     "message": "When enabled, table structure will be analyzed and empty cells will be intelligently merged.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Table alignment:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Left",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Center",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Right",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Justify",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Applies to preview and DOCX export.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Theme changed successfully. Please reload the page to see the changes.",
     "description": "Message shown when theme is changed"
@@ -634,6 +650,46 @@
   "welcome_message": {
     "message": "Open a markdown file to get started",
     "description": "Welcome message on empty state"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX theme mapping",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "Leave empty to use theme defaults. Use 0 to force zero.",
+    "description": "Note explaining DOCX theme mapping overrides"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "Headings size scale (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Headings spacing before (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Headings spacing after (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "Headings alignment",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Theme default",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Code font size (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Table border width (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Table cell padding (pt)",
+    "description": "Numeric override for table cell padding"
   },
   "zoom": {
     "message": "Zoom",

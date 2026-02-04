@@ -439,14 +439,6 @@
     "message": "Ngắt trang",
     "description": "Option to export horizontal rules as page breaks in DOCX"
   },
-  "settings_docx_hr_page_break": {
-    "message": "DOCX: Xem đường kẻ ngang như ngắt trang",
-    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
-  },
-  "settings_docx_hr_page_break_note": {
-    "message": "Khi bật, dấu phân cách Markdown (---) sẽ tạo trang mới trong tài liệu Word xuất ra.",
-    "description": "Helper note for the DOCX hr page break option"
-  },
   "settings_frontmatter_display": {
     "message": "Hiển thị Frontmatter:",
     "description": "Label for frontmatter display mode selector"
@@ -563,6 +555,30 @@
     "message": "Khi được bật, cấu trúc bảng sẽ được phân tích và các ô trống sẽ được hợp nhất một cách thông minh.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Căn chỉnh bảng:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Trái",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Giữa",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Phải",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Căn đều",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Áp dụng cho bản xem trước và xuất DOCX.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Đã thay đổi giao diện thành công. Vui lòng tải lại trang để xem thay đổi.",
     "description": "Message shown when theme is changed"
@@ -638,5 +654,45 @@
   "zoom": {
     "message": "Thu phóng",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "T? l? k��ch th??c ti��u ?? (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Kho?ng c��ch tr??c ti��u ?? (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Kho?ng c��ch sau ti��u ?? (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "C?n ch?nh ti��u ??",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "M?c ??nh c?a ch? ??",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "K��ch th??c ph?ng ch? m? (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "?? r?ng vi?n b?ng (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Kho?ng ??m ? b?ng (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "��nh x? ch? ?? DOCX",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "?? tr?ng ?? d��ng gi�� tr? m?c ??nh c?a ch? ??. D��ng 0 ?? ��p v? 0.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

@@ -7,6 +7,7 @@ import Localization, { DEFAULT_SETTING_LOCALE } from '../../utils/localization';
 import { translate, applyI18nText, getUiLocale } from './i18n-helpers';
 import { storageGet, storageSet } from './storage-helper';
 import type { EmojiStyle } from '../../types/docx.js';
+import type { TableAlignment } from '../../types/settings';
 
 // Helper: Send message compatible with both Chrome and Firefox
 function safeSendMessage(message: unknown): void {
@@ -155,9 +156,17 @@ interface Settings {
   preferredLocale: string;
   docxHrDisplay: 'pageBreak' | 'line' | 'hide';
   docxEmojiStyle?: EmojiStyle;
+  docxHeadingScalePct?: number | null;
+  docxHeadingSpacingBeforePt?: number | null;
+  docxHeadingSpacingAfterPt?: number | null;
+  docxHeadingAlignment?: TableAlignment | null;
+  docxCodeFontSizePt?: number | null;
+  docxTableBorderWidthPt?: number | null;
+  docxTableCellPaddingPt?: number | null;
   supportedExtensions?: SupportedExtensions;
   frontmatterDisplay?: FrontmatterDisplay;
   tableMergeEmpty?: boolean;
+  tableAlignment?: TableAlignment;
 }
 
 /**
@@ -196,6 +205,13 @@ export function createSettingsTabManager({
     preferredLocale: DEFAULT_SETTING_LOCALE,
     docxHrDisplay: 'hide',
     docxEmojiStyle: 'system',
+    docxHeadingScalePct: null,
+    docxHeadingSpacingBeforePt: null,
+    docxHeadingSpacingAfterPt: null,
+    docxHeadingAlignment: null,
+    docxCodeFontSizePt: null,
+    docxTableBorderWidthPt: null,
+    docxTableCellPaddingPt: null,
     supportedExtensions: {
       mermaid: true,
       vega: true,
@@ -207,11 +223,30 @@ export function createSettingsTabManager({
     },
     frontmatterDisplay: 'hide',
     tableMergeEmpty: true,
+    tableAlignment: 'center',
   };
   let currentTheme = 'default';
   let themes: ThemeDefinition[] = [];
   let registry: ThemeRegistry | null = null;
   let localeRegistry: LocaleRegistry | null = null;
+
+  function parseOptionalNumber(value: unknown, min?: number): number | null {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+    const parsed = typeof value === 'number' ? value : Number(value);
+    if (!Number.isFinite(parsed)) {
+      return null;
+    }
+    if (typeof min === 'number' && parsed < min) {
+      return null;
+    }
+    return parsed;
+  }
+
+  function setNumberInputValue(el: HTMLInputElement, value: number | null | undefined): void {
+    el.value = (typeof value === 'number' && Number.isFinite(value)) ? String(value) : '';
+  }
 
   /**
    * Load settings from storage
@@ -225,6 +260,20 @@ export function createSettingsTabManager({
 
       if (!settings.docxHrDisplay) {
         settings.docxHrDisplay = 'hide';
+      }
+      settings.docxHeadingScalePct = parseOptionalNumber(settings.docxHeadingScalePct, 1);
+      settings.docxHeadingSpacingBeforePt = parseOptionalNumber(settings.docxHeadingSpacingBeforePt, 0);
+      settings.docxHeadingSpacingAfterPt = parseOptionalNumber(settings.docxHeadingSpacingAfterPt, 0);
+      settings.docxHeadingAlignment = (settings.docxHeadingAlignment === 'left' || settings.docxHeadingAlignment === 'center' ||
+        settings.docxHeadingAlignment === 'right' || settings.docxHeadingAlignment === 'justify')
+        ? settings.docxHeadingAlignment
+        : null;
+      settings.docxCodeFontSizePt = parseOptionalNumber(settings.docxCodeFontSizePt, 0);
+      settings.docxTableBorderWidthPt = parseOptionalNumber(settings.docxTableBorderWidthPt, 0);
+      settings.docxTableCellPaddingPt = parseOptionalNumber(settings.docxTableCellPaddingPt, 0);
+      if (settings.tableAlignment !== 'left' && settings.tableAlignment !== 'center' &&
+          settings.tableAlignment !== 'right' && settings.tableAlignment !== 'justify') {
+        settings.tableAlignment = 'center';
       }
 
       // Load selected theme
@@ -327,6 +376,94 @@ export function createSettingsTabManager({
       }
     }
 
+    // DOCX: Theme mapping overrides
+    const docxHeadingScaleEl = document.getElementById('docx-heading-scale-pct') as HTMLInputElement | null;
+    if (docxHeadingScaleEl) {
+      setNumberInputValue(docxHeadingScaleEl, settings.docxHeadingScalePct);
+      if (!docxHeadingScaleEl.dataset.listenerAdded) {
+        docxHeadingScaleEl.dataset.listenerAdded = 'true';
+        docxHeadingScaleEl.addEventListener('change', async () => {
+          settings.docxHeadingScalePct = parseOptionalNumber(docxHeadingScaleEl.value, 1);
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    const docxHeadingSpacingBeforeEl = document.getElementById('docx-heading-spacing-before-pt') as HTMLInputElement | null;
+    if (docxHeadingSpacingBeforeEl) {
+      setNumberInputValue(docxHeadingSpacingBeforeEl, settings.docxHeadingSpacingBeforePt);
+      if (!docxHeadingSpacingBeforeEl.dataset.listenerAdded) {
+        docxHeadingSpacingBeforeEl.dataset.listenerAdded = 'true';
+        docxHeadingSpacingBeforeEl.addEventListener('change', async () => {
+          settings.docxHeadingSpacingBeforePt = parseOptionalNumber(docxHeadingSpacingBeforeEl.value, 0);
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    const docxHeadingSpacingAfterEl = document.getElementById('docx-heading-spacing-after-pt') as HTMLInputElement | null;
+    if (docxHeadingSpacingAfterEl) {
+      setNumberInputValue(docxHeadingSpacingAfterEl, settings.docxHeadingSpacingAfterPt);
+      if (!docxHeadingSpacingAfterEl.dataset.listenerAdded) {
+        docxHeadingSpacingAfterEl.dataset.listenerAdded = 'true';
+        docxHeadingSpacingAfterEl.addEventListener('change', async () => {
+          settings.docxHeadingSpacingAfterPt = parseOptionalNumber(docxHeadingSpacingAfterEl.value, 0);
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    const docxHeadingAlignmentEl = document.getElementById('docx-heading-alignment') as HTMLSelectElement | null;
+    if (docxHeadingAlignmentEl) {
+      docxHeadingAlignmentEl.value = settings.docxHeadingAlignment ?? '';
+      if (!docxHeadingAlignmentEl.dataset.listenerAdded) {
+        docxHeadingAlignmentEl.dataset.listenerAdded = 'true';
+        docxHeadingAlignmentEl.addEventListener('change', async () => {
+          const value = docxHeadingAlignmentEl.value;
+          settings.docxHeadingAlignment = (value === 'left' || value === 'center' || value === 'right' || value === 'justify')
+            ? value as TableAlignment
+            : null;
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    const docxCodeFontSizeEl = document.getElementById('docx-code-font-size-pt') as HTMLInputElement | null;
+    if (docxCodeFontSizeEl) {
+      setNumberInputValue(docxCodeFontSizeEl, settings.docxCodeFontSizePt);
+      if (!docxCodeFontSizeEl.dataset.listenerAdded) {
+        docxCodeFontSizeEl.dataset.listenerAdded = 'true';
+        docxCodeFontSizeEl.addEventListener('change', async () => {
+          settings.docxCodeFontSizePt = parseOptionalNumber(docxCodeFontSizeEl.value, 0);
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    const docxTableBorderWidthEl = document.getElementById('docx-table-border-width-pt') as HTMLInputElement | null;
+    if (docxTableBorderWidthEl) {
+      setNumberInputValue(docxTableBorderWidthEl, settings.docxTableBorderWidthPt);
+      if (!docxTableBorderWidthEl.dataset.listenerAdded) {
+        docxTableBorderWidthEl.dataset.listenerAdded = 'true';
+        docxTableBorderWidthEl.addEventListener('change', async () => {
+          settings.docxTableBorderWidthPt = parseOptionalNumber(docxTableBorderWidthEl.value, 0);
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    const docxTableCellPaddingEl = document.getElementById('docx-table-cell-padding-pt') as HTMLInputElement | null;
+    if (docxTableCellPaddingEl) {
+      setNumberInputValue(docxTableCellPaddingEl, settings.docxTableCellPaddingPt);
+      if (!docxTableCellPaddingEl.dataset.listenerAdded) {
+        docxTableCellPaddingEl.dataset.listenerAdded = 'true';
+        docxTableCellPaddingEl.addEventListener('change', async () => {
+          settings.docxTableCellPaddingPt = parseOptionalNumber(docxTableCellPaddingEl.value, 0);
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
     // Frontmatter display mode
     const frontmatterDisplayEl = document.getElementById('frontmatter-display') as HTMLSelectElement | null;
     if (frontmatterDisplayEl) {
@@ -353,6 +490,21 @@ export function createSettingsTabManager({
           await saveSettingsToStorage();
           // Notify all tabs to re-render
           notifySettingChanged('tableMergeEmpty', settings.tableMergeEmpty);
+        });
+      }
+    }
+
+    // Table alignment
+    const tableAlignmentEl = document.getElementById('table-alignment') as HTMLSelectElement | null;
+    if (tableAlignmentEl) {
+      tableAlignmentEl.value = settings.tableAlignment || 'center';
+      if (!tableAlignmentEl.dataset.listenerAdded) {
+        tableAlignmentEl.dataset.listenerAdded = 'true';
+        tableAlignmentEl.addEventListener('change', async () => {
+          settings.tableAlignment = tableAlignmentEl.value as TableAlignment;
+          await saveSettingsToStorage();
+          // Notify all tabs to re-render
+          notifySettingChanged('tableAlignment', settings.tableAlignment);
         });
       }
     }
@@ -727,6 +879,49 @@ export function createSettingsTabManager({
         settings.docxEmojiStyle = docxEmojiStyleEl.value as EmojiStyle;
       }
 
+      const docxHeadingScaleEl = document.getElementById('docx-heading-scale-pct') as HTMLInputElement | null;
+      if (docxHeadingScaleEl) {
+        settings.docxHeadingScalePct = parseOptionalNumber(docxHeadingScaleEl.value, 1);
+      }
+
+      const docxHeadingSpacingBeforeEl = document.getElementById('docx-heading-spacing-before-pt') as HTMLInputElement | null;
+      if (docxHeadingSpacingBeforeEl) {
+        settings.docxHeadingSpacingBeforePt = parseOptionalNumber(docxHeadingSpacingBeforeEl.value, 0);
+      }
+
+      const docxHeadingSpacingAfterEl = document.getElementById('docx-heading-spacing-after-pt') as HTMLInputElement | null;
+      if (docxHeadingSpacingAfterEl) {
+        settings.docxHeadingSpacingAfterPt = parseOptionalNumber(docxHeadingSpacingAfterEl.value, 0);
+      }
+
+      const docxHeadingAlignmentEl = document.getElementById('docx-heading-alignment') as HTMLSelectElement | null;
+      if (docxHeadingAlignmentEl) {
+        const value = docxHeadingAlignmentEl.value;
+        settings.docxHeadingAlignment = (value === 'left' || value === 'center' || value === 'right' || value === 'justify')
+          ? value as TableAlignment
+          : null;
+      }
+
+      const docxCodeFontSizeEl = document.getElementById('docx-code-font-size-pt') as HTMLInputElement | null;
+      if (docxCodeFontSizeEl) {
+        settings.docxCodeFontSizePt = parseOptionalNumber(docxCodeFontSizeEl.value, 0);
+      }
+
+      const docxTableBorderWidthEl = document.getElementById('docx-table-border-width-pt') as HTMLInputElement | null;
+      if (docxTableBorderWidthEl) {
+        settings.docxTableBorderWidthPt = parseOptionalNumber(docxTableBorderWidthEl.value, 0);
+      }
+
+      const docxTableCellPaddingEl = document.getElementById('docx-table-cell-padding-pt') as HTMLInputElement | null;
+      if (docxTableCellPaddingEl) {
+        settings.docxTableCellPaddingPt = parseOptionalNumber(docxTableCellPaddingEl.value, 0);
+      }
+
+      const tableAlignmentEl = document.getElementById('table-alignment') as HTMLSelectElement | null;
+      if (tableAlignmentEl) {
+        settings.tableAlignment = tableAlignmentEl.value as TableAlignment;
+      }
+
       // Load supported file extensions from checkboxes
       const supportMermaidEl = document.getElementById('support-mermaid') as HTMLInputElement | null;
       const supportVegaEl = document.getElementById('support-vega') as HTMLInputElement | null;
@@ -781,6 +976,13 @@ export function createSettingsTabManager({
         preferredLocale: DEFAULT_SETTING_LOCALE,
         docxHrDisplay: 'hide',
         docxEmojiStyle: 'system',
+        docxHeadingScalePct: null,
+        docxHeadingSpacingBeforePt: null,
+        docxHeadingSpacingAfterPt: null,
+        docxHeadingAlignment: null,
+        docxCodeFontSizePt: null,
+        docxTableBorderWidthPt: null,
+        docxTableCellPaddingPt: null,
         supportedExtensions: {
           mermaid: true,
           vega: true,
@@ -791,6 +993,7 @@ export function createSettingsTabManager({
           drawio: true,
         },
         tableMergeEmpty: true,
+        tableAlignment: 'center',
       };
 
       await storageSet({

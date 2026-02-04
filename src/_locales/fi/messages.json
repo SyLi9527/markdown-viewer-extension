@@ -439,14 +439,6 @@
     "message": "Sivunvaihto",
     "description": "Option to export horizontal rules as page breaks in DOCX"
   },
-  "settings_docx_hr_page_break": {
-    "message": "DOCX: Käsittele vaakaviivat sivunvaihtoina",
-    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
-  },
-  "settings_docx_hr_page_break_note": {
-    "message": "Kun käytössä, Markdown-erottimet (---) luovat uuden sivun viedyissä Word-asiakirjoissa.",
-    "description": "Helper note for the DOCX hr page break option"
-  },
   "settings_frontmatter_display": {
     "message": "Frontmatter-näyttö:",
     "description": "Label for frontmatter display mode selector"
@@ -563,6 +555,30 @@
     "message": "Kun käytössä, taulukon rakenne analysoidaan ja tyhjät solut yhdistetään älykkäästi.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Taulukon tasaus:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Vasen",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Keskelle",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Oikea",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Tasattu",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Koskee esikatselua ja DOCX-vientiä.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Teema vaihdettu onnistuneesti. Päivitä sivu nähdäksesi muutokset.",
     "description": "Message shown when theme is changed"
@@ -638,5 +654,45 @@
   "zoom": {
     "message": "Zoomaus",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "Otsikoiden koon skaala (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "V?li ennen otsikoita (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "V?li otsikoiden j?lkeen (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "Otsikoiden tasaus",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Teeman oletus",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Koodin fonttikoko (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Taulukon reunuksen leveys (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Taulukon solun sis?marginaali (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX-teemakartoitus",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "J?t? tyhj?ksi, jotta k?ytet??n teeman oletuksia. 0 pakottaa nollan.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

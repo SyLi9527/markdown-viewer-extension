@@ -21,7 +21,7 @@ import {
   type IParagraphStylePropertiesOptions,
 } from 'docx';
 import { mathJaxReady, convertLatex2Math } from './docx-math-converter';
-import { unified } from 'unified';
+import { unified, type Processor } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkInlineHtml from '../plugins/remark-inline-html';
 import remarkCjkFriendly from 'remark-cjk-friendly';
@@ -29,6 +29,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkGemoji from 'remark-gemoji';
 import remarkSuperSub from '../plugins/remark-super-sub';
+import remarkObsidianExcalidraw from '../plugins/remark-obsidian-excalidraw';
 import { visit } from 'unist-util-visit';
 import { loadThemeForDOCX } from './theme-to-docx';
 import type { FrontmatterDisplay } from '../ui/popup/settings-tab';
@@ -49,6 +50,7 @@ import type {
   DOCXExportResult,
   EmojiStyle,
 } from '../types/docx';
+import type { TableAlignment } from '../types/settings';
 
 // Import refactored modules
 import { createCodeHighlighter, type CodeHighlighter } from './docx-code-highlighter';
@@ -58,6 +60,7 @@ import { createBlockquoteConverter, type BlockquoteConverter } from './docx-bloc
 import { createListConverter, createNumberingLevels, type ListConverter } from './docx-list-converter';
 import { createInlineConverter, type InlineConverter, type InlineNode } from './docx-inline-converter';
 import { parseHtmlTablesToDocxNodes } from '../utils/html-table-to-docx';
+import { applyDocxThemeOverrides } from './docx-theme-mapping';
 
 // Re-export for external use
 export { convertPluginResultToDOCX } from './docx-image-utils';
@@ -90,11 +93,20 @@ class DocxExporter {
   private progressCallback: DOCXProgressCallback | null = null;
   private totalResources = 0;
   private processedResources = 0;
+  private orderedListStarts: Set<string> = new Set();
 
   private docxHrDisplay: 'pageBreak' | 'line' | 'hide' = 'hide';
   private docxEmojiStyle: EmojiStyle = 'windows';
   private frontmatterDisplay: FrontmatterDisplay = 'hide';
   private tableMergeEmpty = true;  // Default: enabled
+  private tableAlignment: TableAlignment = 'center';
+  private docxHeadingScalePct: number | null = null;
+  private docxHeadingSpacingBeforePt: number | null = null;
+  private docxHeadingSpacingAfterPt: number | null = null;
+  private docxHeadingAlignment: TableAlignment | null = null;
+  private docxCodeFontSizePt: number | null = null;
+  private docxTableBorderWidthPt: number | null = null;
+  private docxTableCellPaddingPt: number | null = null;
   
   // Converters (initialized in exportToDocx)
   private tableConverter: TableConverter | null = null;
@@ -122,6 +134,18 @@ class DocxExporter {
    */
   private getDocumentService(): DocumentService | undefined {
     return (globalThis.platform as { document?: DocumentService } | undefined)?.document;
+  }
+
+  private getOrderedListReference(start: number, level: number): string {
+    const safeStart = Number.isFinite(start) ? Math.max(1, Math.floor(start)) : 1;
+    const safeLevel = Number.isFinite(level) ? Math.max(0, Math.floor(level)) : 0;
+    return `ordered-list-start-${safeStart}-level-${safeLevel}`;
+  }
+
+  private registerOrderedListStart(start: number, level: number): void {
+    const safeStart = Number.isFinite(start) ? Math.max(1, Math.floor(start)) : 1;
+    const safeLevel = Number.isFinite(level) ? Math.max(0, Math.floor(level)) : 0;
+    this.orderedListStarts.add(`${safeLevel}:${safeStart}`);
   }
 
   async initializeMathJax(): Promise<void> {
@@ -175,11 +199,22 @@ class DocxExporter {
       linkColor: this.themeStyles.linkColor,
     });
 
+    this.listConverter = createListConverter({
+      themeStyles: this.themeStyles,
+      convertInlineNodes: (nodes, style) => this.inlineConverter!.convertInlineNodes(nodes, style),
+      getListInstanceCounter: () => this.listInstanceCounter,
+      incrementListInstanceCounter: () => this.listInstanceCounter++,
+      registerOrderedListStart: (start: number, level: number) => this.registerOrderedListStart(start, level),
+      getOrderedListReference: (start: number, level: number) => this.getOrderedListReference(start, level),
+    });
+
     // Create other converters
     this.tableConverter = createTableConverter({
       themeStyles: this.themeStyles,
       convertInlineNodes: (nodes, style) => this.inlineConverter!.convertInlineNodes(nodes, style),
       mergeEmptyCells: this.tableMergeEmpty,
+      defaultTableAlignment: this.tableAlignment,
+      listConverter: this.listConverter,
     });
 
     this.blockquoteConverter = createBlockquoteConverter({
@@ -190,13 +225,6 @@ class DocxExporter {
     // Set up the child node converter for blockquote (allows blockquotes to contain any content)
     // Pass blockquoteNestLevel to child nodes for proper right margin compensation
     this.blockquoteConverter.setConvertChildNode((node, blockquoteNestLevel) => this.convertNode(node, {}, 0, blockquoteNestLevel));
-
-    this.listConverter = createListConverter({
-      themeStyles: this.themeStyles,
-      convertInlineNodes: (nodes, style) => this.inlineConverter!.convertInlineNodes(nodes, style),
-      getListInstanceCounter: () => this.listInstanceCounter,
-      incrementListInstanceCounter: () => this.listInstanceCounter++
-    });
 
     // Set up the child node converter for list (allows lists to contain blockquotes and other content)
     this.listConverter.setConvertChildNode((node, listLevel) => this.convertNode(node, {}, listLevel));
@@ -214,25 +242,74 @@ class DocxExporter {
       try {
         const settings = globalThis.platform?.settings;
         if (settings) {
-          const [hrDisplay, emojiStyle, frontmatterDisplay, tableMergeEmpty] = await Promise.all([
+          const [
+            hrDisplay,
+            emojiStyle,
+            frontmatterDisplay,
+            tableMergeEmpty,
+            tableAlignment,
+            docxHeadingScalePct,
+            docxHeadingSpacingBeforePt,
+            docxHeadingSpacingAfterPt,
+            docxHeadingAlignment,
+            docxCodeFontSizePt,
+            docxTableBorderWidthPt,
+            docxTableCellPaddingPt
+          ] = await Promise.all([
             settings.get('docxHrDisplay'),
             settings.get('docxEmojiStyle'),
             settings.get('frontmatterDisplay'),
             settings.get('tableMergeEmpty'),
+            settings.get('tableAlignment'),
+            settings.get('docxHeadingScalePct'),
+            settings.get('docxHeadingSpacingBeforePt'),
+            settings.get('docxHeadingSpacingAfterPt'),
+            settings.get('docxHeadingAlignment'),
+            settings.get('docxCodeFontSizePt'),
+            settings.get('docxTableBorderWidthPt'),
+            settings.get('docxTableCellPaddingPt'),
           ]);
           this.docxHrDisplay = hrDisplay;
           this.docxEmojiStyle = emojiStyle === 'native' ? 'system' : 'system'; // Map to internal naming
           this.frontmatterDisplay = frontmatterDisplay;
           this.tableMergeEmpty = tableMergeEmpty;
+          this.tableAlignment = (tableAlignment === 'left' || tableAlignment === 'center' || tableAlignment === 'right' || tableAlignment === 'justify')
+            ? tableAlignment
+            : 'center';
+          this.docxHeadingScalePct = (typeof docxHeadingScalePct === 'number' && !Number.isNaN(docxHeadingScalePct)) ? docxHeadingScalePct : null;
+          this.docxHeadingSpacingBeforePt = (typeof docxHeadingSpacingBeforePt === 'number' && !Number.isNaN(docxHeadingSpacingBeforePt)) ? docxHeadingSpacingBeforePt : null;
+          this.docxHeadingSpacingAfterPt = (typeof docxHeadingSpacingAfterPt === 'number' && !Number.isNaN(docxHeadingSpacingAfterPt)) ? docxHeadingSpacingAfterPt : null;
+          this.docxHeadingAlignment = (docxHeadingAlignment === 'left' || docxHeadingAlignment === 'center' || docxHeadingAlignment === 'right' || docxHeadingAlignment === 'justify')
+            ? docxHeadingAlignment
+            : null;
+          this.docxCodeFontSizePt = (typeof docxCodeFontSizePt === 'number' && !Number.isNaN(docxCodeFontSizePt)) ? docxCodeFontSizePt : null;
+          this.docxTableBorderWidthPt = (typeof docxTableBorderWidthPt === 'number' && !Number.isNaN(docxTableBorderWidthPt)) ? docxTableBorderWidthPt : null;
+          this.docxTableCellPaddingPt = (typeof docxTableCellPaddingPt === 'number' && !Number.isNaN(docxTableCellPaddingPt)) ? docxTableCellPaddingPt : null;
         } else {
           this.docxHrDisplay = 'hide';
           this.frontmatterDisplay = 'hide';
           this.tableMergeEmpty = true;
+          this.tableAlignment = 'center';
+          this.docxHeadingScalePct = null;
+          this.docxHeadingSpacingBeforePt = null;
+          this.docxHeadingSpacingAfterPt = null;
+          this.docxHeadingAlignment = null;
+          this.docxCodeFontSizePt = null;
+          this.docxTableBorderWidthPt = null;
+          this.docxTableCellPaddingPt = null;
         }
       } catch {
         this.docxHrDisplay = 'hide';
         this.frontmatterDisplay = 'hide';
         this.tableMergeEmpty = true;
+        this.tableAlignment = 'center';
+        this.docxHeadingScalePct = null;
+        this.docxHeadingSpacingBeforePt = null;
+        this.docxHeadingSpacingAfterPt = null;
+        this.docxHeadingAlignment = null;
+        this.docxCodeFontSizePt = null;
+        this.docxTableBorderWidthPt = null;
+        this.docxTableCellPaddingPt = null;
       }
 
       const selectedThemeId = await themeManager.loadSelectedTheme();
@@ -240,11 +317,21 @@ class DocxExporter {
       if (!this.themeStyles) {
         throw new Error('Failed to load DOCX theme');
       }
+      this.themeStyles = applyDocxThemeOverrides(this.themeStyles, {
+        headingScalePct: this.docxHeadingScalePct,
+        headingSpacingBeforePt: this.docxHeadingSpacingBeforePt,
+        headingSpacingAfterPt: this.docxHeadingSpacingAfterPt,
+        headingAlignment: this.docxHeadingAlignment,
+        codeFontSizePt: this.docxCodeFontSizePt,
+        tableBorderWidthPt: this.docxTableBorderWidthPt,
+        tableCellPaddingPt: this.docxTableCellPaddingPt
+      });
       this.codeHighlighter = createCodeHighlighter(this.themeStyles);
 
       this.progressCallback = onProgress;
       this.totalResources = 0;
       this.processedResources = 0;
+      this.orderedListStarts = new Set();
 
       await this.initializeMathJax();
 
@@ -276,16 +363,33 @@ class DocxExporter {
         paragraphStyles,
       };
 
+      const orderedStartEntries = Array.from(this.orderedListStarts)
+        .map((entry) => {
+          const [levelStr, startStr] = entry.split(':');
+          return {
+            level: Number(levelStr),
+            start: Number(startStr),
+          };
+        })
+        .filter((entry) => Number.isFinite(entry.level) && Number.isFinite(entry.start))
+        .sort((a, b) => (a.level - b.level) || (a.start - b.start));
+
+      const numberingConfig = [
+        {
+          reference: 'default-ordered-list',
+          levels: createNumberingLevels(),
+        },
+        ...orderedStartEntries.map((entry) => ({
+          reference: this.getOrderedListReference(entry.start, entry.level),
+          levels: createNumberingLevels(entry.start, entry.level),
+        })),
+      ];
+
       const doc = new Document({
         creator: 'Markdown Viewer Extension',
         lastModifiedBy: 'Markdown Viewer Extension',
         numbering: {
-          config: [
-            {
-              reference: 'default-ordered-list',
-              levels: createNumberingLevels(),
-            },
-          ],
+          config: numberingConfig,
         },
         styles,
         sections: [
@@ -440,14 +544,15 @@ class DocxExporter {
     const [frontmatter, cleanMarkdown] = this.extractFrontmatter(markdown);
     this.frontmatterContent = frontmatter;
 
-    const processor = unified()
+    const processor = (unified as unknown as () => Processor)()
       .use(remarkParse)
       .use(remarkInlineHtml)  // Convert inline HTML to MDAST nodes
       .use(remarkCjkFriendly)
       .use(remarkGfm, { singleTilde: false })
       .use(remarkMath)
       .use(remarkGemoji)
-      .use(remarkSuperSub);
+      .use(remarkSuperSub)
+      .use(remarkObsidianExcalidraw);
 
     const ast = processor.parse(cleanMarkdown);
     const transformed = processor.runSync(ast);

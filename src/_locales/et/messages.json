@@ -439,14 +439,6 @@
     "message": "Leheküljevahetus",
     "description": "Option to export horizontal rules as page breaks in DOCX"
   },
-  "settings_docx_hr_page_break": {
-    "message": "DOCX: Käsitle horisontaalseid jooni lehepiiridena",
-    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
-  },
-  "settings_docx_hr_page_break_note": {
-    "message": "Kui lubatud, loovad Markdown eraldajad (---) eksporditud Word dokumentides uue lehe.",
-    "description": "Helper note for the DOCX hr page break option"
-  },
   "settings_frontmatter_display": {
     "message": "Frontmatteri kuvamine:",
     "description": "Label for frontmatter display mode selector"
@@ -563,6 +555,30 @@
     "message": "Kui see on lubatud, analüüsitakse tabeli struktuuri ja tühjad lahtrid ühendatakse nutikalt.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Tabeli joondus:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Vasak",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Keskel",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Parem",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Rööpjoondus",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Rakendub eelvaatele ja DOCX-eksportimisele.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Teema edukalt muudetud. Muudatuste nägemiseks laadige leht uuesti.",
     "description": "Message shown when theme is changed"
@@ -638,5 +654,45 @@
   "zoom": {
     "message": "Suum",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "Pealkirjade suuruse skaleering (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Vahe enne pealkirju (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Vahe p?rast pealkirju (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "Pealkirjade joondus",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Teema vaikev??rtus",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Koodifondi suurus (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Tabeli ??rise laius (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Tabelilahtri siset?ide (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX-teema vastendamine",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "J?ta t��hjaks, et kasutada teema vaikev??rtusi. 0 sunnib nulli.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

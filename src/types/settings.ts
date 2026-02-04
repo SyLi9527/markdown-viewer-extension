@@ -10,10 +10,20 @@
 export type SettingKey = 
   | 'themeId'
   | 'tableMergeEmpty'
+  | 'tableAlignment'
   | 'frontmatterDisplay'
   | 'preferredLocale'
   | 'docxHrDisplay'
-  | 'docxEmojiStyle';
+  | 'docxEmojiStyle'
+  | 'docxHeadingScalePct'
+  | 'docxHeadingSpacingBeforePt'
+  | 'docxHeadingSpacingAfterPt'
+  | 'docxHeadingAlignment'
+  | 'docxCodeFontSizePt'
+  | 'docxTableBorderWidthPt'
+  | 'docxTableCellPaddingPt';
+
+export type TableAlignment = 'left' | 'center' | 'right' | 'justify';
 
 /**
  * Setting value types mapped by key
@@ -21,10 +31,18 @@ export type SettingKey =
 export interface SettingTypes {
   themeId: string;
   tableMergeEmpty: boolean;
+  tableAlignment: TableAlignment;
   frontmatterDisplay: 'hide' | 'table' | 'raw';
   preferredLocale: string;
   docxHrDisplay: 'pageBreak' | 'line' | 'hide';
   docxEmojiStyle: 'native' | 'twemoji';
+  docxHeadingScalePct: number | null;
+  docxHeadingSpacingBeforePt: number | null;
+  docxHeadingSpacingAfterPt: number | null;
+  docxHeadingAlignment: TableAlignment | null;
+  docxCodeFontSizePt: number | null;
+  docxTableBorderWidthPt: number | null;
+  docxTableCellPaddingPt: number | null;
 }
 
 /**
@@ -33,10 +51,18 @@ export interface SettingTypes {
 export const DEFAULT_SETTINGS: SettingTypes = {
   themeId: 'default',
   tableMergeEmpty: true,
+  tableAlignment: 'center',
   frontmatterDisplay: 'hide',
   preferredLocale: 'auto',
   docxHrDisplay: 'hide',
   docxEmojiStyle: 'twemoji',
+  docxHeadingScalePct: null,
+  docxHeadingSpacingBeforePt: null,
+  docxHeadingSpacingAfterPt: null,
+  docxHeadingAlignment: null,
+  docxCodeFontSizePt: null,
+  docxTableBorderWidthPt: null,
+  docxTableCellPaddingPt: null,
 };
 
 /**

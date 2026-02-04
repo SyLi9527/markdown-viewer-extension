@@ -439,14 +439,6 @@
     "message": "Pagina-einde",
     "description": "Option to export horizontal rules as page breaks in DOCX"
   },
-  "settings_docx_hr_page_break": {
-    "message": "DOCX: Horizontale lijnen als pagina-einde behandelen",
-    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
-  },
-  "settings_docx_hr_page_break_note": {
-    "message": "Wanneer ingeschakeld maken Markdown-scheidingstekens (---) een nieuwe pagina in geëxporteerde Word-documenten.",
-    "description": "Helper note for the DOCX hr page break option"
-  },
   "settings_frontmatter_display": {
     "message": "Frontmatter weergave:",
     "description": "Label for frontmatter display mode selector"
@@ -563,6 +555,30 @@
     "message": "Indien ingeschakeld, wordt de tabelstructuur geanalyseerd en worden lege cellen slim samengevoegd.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Tabeluitlijning:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Links",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Midden",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Rechts",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Uitvullen",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Van toepassing op voorbeeldweergave en DOCX-export.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Thema succesvol gewijzigd. Herlaad de pagina om de wijzigingen te zien.",
     "description": "Message shown when theme is changed"
@@ -638,5 +654,45 @@
   "zoom": {
     "message": "Zoomen",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "Schaal voor kopgrootte (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Afstand v����r koppen (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Afstand na koppen (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "Uitlijning van koppen",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Themastandaard",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Codelettergrootte (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Tabelrandbreedte (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Celopvulling van tabel (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX-themamapping",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "Laat leeg om de themastandaard te gebruiken. Gebruik 0 om nul te forceren.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

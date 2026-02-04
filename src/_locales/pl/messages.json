@@ -439,14 +439,6 @@
     "message": "Podział strony",
     "description": "Option to export horizontal rules as page breaks in DOCX"
   },
-  "settings_docx_hr_page_break": {
-    "message": "DOCX: Traktuj linie poziome jako podziały stron",
-    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
-  },
-  "settings_docx_hr_page_break_note": {
-    "message": "Po włączeniu separatory Markdown (---) utworzą nową stronę w wyeksportowanych dokumentach Word.",
-    "description": "Helper note for the DOCX hr page break option"
-  },
   "settings_frontmatter_display": {
     "message": "Wyświetlanie Frontmatter:",
     "description": "Label for frontmatter display mode selector"
@@ -563,6 +555,30 @@
     "message": "Po włączeniu struktura tabeli zostanie przeanalizowana, a puste komórki zostaną inteligentnie scalone.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Wyrównanie tabeli:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Lewo",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Środek",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Prawo",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Wyjustowane",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Dotyczy podglądu i eksportu DOCX.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Motyw zmieniony pomyślnie. Odśwież stronę, aby zobaczyć zmiany.",
     "description": "Message shown when theme is changed"
@@ -638,5 +654,45 @@
   "zoom": {
     "message": "Powiększenie",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "Skala rozmiaru nag?��wk��w (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Odst?p przed nag?��wkami (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Odst?p po nag?��wkach (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "Wyr��wnanie nag?��wk��w",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Domy?lne motywu",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Rozmiar czcionki kodu (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Szeroko?? obramowania tabeli (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Wype?nienie kom��rki tabeli (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "Mapowanie motywu DOCX",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "Pozostaw puste, aby u?y? ustawie�� motywu. 0 wymusza zero.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

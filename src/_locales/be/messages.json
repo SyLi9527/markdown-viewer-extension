@@ -439,14 +439,6 @@
     "message": "Разрыў старонкі",
     "description": "Option to export horizontal rules as page breaks in DOCX"
   },
-  "settings_docx_hr_page_break": {
-    "message": "DOCX: Лічыць гарызантальныя лініі разрывамі старонак",
-    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
-  },
-  "settings_docx_hr_page_break_note": {
-    "message": "Калі ўключана, падзяляльнікі Markdown (---) створаць новую старонку ў экспартаваных дакументах Word.",
-    "description": "Helper note for the DOCX hr page break option"
-  },
   "settings_frontmatter_display": {
     "message": "Адлюстраванне Frontmatter:",
     "description": "Label for frontmatter display mode selector"
@@ -563,6 +555,30 @@
     "message": "Калі ўключана, структура табліцы будзе прааналізавана і пустыя вочкі будуць разумна аб'яднаны.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Выраўноўванне табліцы:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Злева",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Па цэнтры",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Справа",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Па шырыні",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Ужываецца для прагляду і экспарту DOCX.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Тэма паспяхова зменена. Калі ласка, абнавіце старонку, каб убачыць змены.",
     "description": "Message shown when theme is changed"
@@ -638,5 +654,45 @@
   "zoom": {
     "message": "Маштаб",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "���ѧ��ѧ� ��ѧާ֧�� �٧ѧԧѧݧ�?�ܧ�? (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "?�ߧ���ӧѧ� ��֧�ѧ� �٧ѧԧѧݧ�?�ܧѧ�? (���)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "?�ߧ���ӧѧ� ��ѧ�ݧ� �٧ѧԧѧݧ�?�ܧ�? (���)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "�������?�ߧ�?�ӧѧߧߧ� �٧ѧԧѧݧ�?�ܧ�?",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "���� �٧ާ�?��ѧߧ�? ���ާ�",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "���ѧާ֧� �������� �ܧ�է� (���)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "��������ߧ� �ާ֧ا�? ��ѧҧ�?��� (���)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "���ߧ���ѧߧ� �ӧ�է���� ����ۧ�? ��ѧҧ�?��� (���)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "�����ѧ���?�ݧ֧ߧߧ� ���ާ� DOCX",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "���ѧ�?�ߧ��� ��������, �ܧѧ� �ӧ��ܧѧ������?�ӧѧ�� �ߧѧݧѧէ� ���ާ�. 0 �����ާ���ӧ� ?���ѧݧ�� �ߧ�ݧ�.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

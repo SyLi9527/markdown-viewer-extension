@@ -439,14 +439,6 @@
     "message": "Saut de page",
     "description": "Option to export horizontal rules as page breaks in DOCX"
   },
-  "settings_docx_hr_page_break": {
-    "message": "DOCX : Traiter les séparateurs horizontaux comme des sauts de page",
-    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
-  },
-  "settings_docx_hr_page_break_note": {
-    "message": "Lorsque activé, les séparateurs Markdown (---) créent une nouvelle page dans les documents Word exportés.",
-    "description": "Helper note for the DOCX hr page break option"
-  },
   "settings_frontmatter_display": {
     "message": "Affichage du Frontmatter :",
     "description": "Label for frontmatter display mode selector"
@@ -563,6 +555,30 @@
     "message": "Lorsque cette option est activée, la structure du tableau sera analysée et les cellules vides seront fusionnées intelligemment.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Alignement du tableau :",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Gauche",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Centré",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Droite",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Justifié",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "S’applique à l’aperçu et à l’export DOCX.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Thème modifié avec succès. Veuillez recharger la page pour voir les modifications.",
     "description": "Message lors du changement de thème"
@@ -638,5 +654,45 @@
   "zoom": {
     "message": "Zoom",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "��chelle de taille des titres (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Espacement avant les titres (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Espacement apr��s les titres (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "Alignement des titres",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Par d��faut du th��me",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Taille de police du code (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Largeur de bordure du tableau (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Marge interne des cellules du tableau (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "Mappage du th��me DOCX",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "Laissez vide pour utiliser les valeurs du th��me. Utilisez 0 pour forcer z��ro.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

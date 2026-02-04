@@ -439,14 +439,6 @@
     "message": "Batas halaman",
     "description": "Option to export horizontal rules as page breaks in DOCX"
   },
-  "settings_docx_hr_page_break": {
-    "message": "DOCX: Perlakukan garis horizontal sebagai pemisah halaman",
-    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
-  },
-  "settings_docx_hr_page_break_note": {
-    "message": "Jika diaktifkan, pemisah Markdown (---) akan membuat halaman baru di dokumen Word yang diekspor.",
-    "description": "Helper note for the DOCX hr page break option"
-  },
   "settings_frontmatter_display": {
     "message": "Tampilan Frontmatter:",
     "description": "Label for frontmatter display mode selector"
@@ -563,6 +555,30 @@
     "message": "Jika diaktifkan, struktur tabel akan dianalisis dan sel kosong akan digabungkan secara cerdas.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Perataan tabel:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Kiri",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Tengah",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Kanan",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Rata kiri-kanan",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Berlaku untuk pratinjau dan ekspor DOCX.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Tema berhasil diubah. Silakan muat ulang halaman untuk melihat perubahan.",
     "description": "Message shown when theme is changed"
@@ -638,5 +654,45 @@
   "zoom": {
     "message": "Zoom",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "Skala ukuran judul (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Spasi sebelum judul (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Spasi setelah judul (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "Perataan judul",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Default tema",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Ukuran font kode (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Lebar border tabel (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Padding sel tabel (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "Pemetaan tema DOCX",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "Biarkan kosong untuk memakai default tema. Gunakan 0 untuk memaksa nol.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

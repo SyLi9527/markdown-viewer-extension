@@ -206,6 +206,17 @@
           </div>
 
           <div style="margin: 10px 0;">
+            <label for="table-alignment" data-i18n="settings_table_alignment"></label>
+            <select id="table-alignment">
+              <option value="left" data-i18n="settings_table_alignment_left"></option>
+              <option value="center" selected data-i18n="settings_table_alignment_center"></option>
+              <option value="right" data-i18n="settings_table_alignment_right"></option>
+              <option value="justify" data-i18n="settings_table_alignment_justify"></option>
+            </select>
+            <div class="settings-note" data-i18n="settings_table_alignment_note"></div>
+          </div>
+
+          <div style="margin: 10px 0;">
             <label for="docx-hr-display" data-i18n="settings_docx_hr_display"></label>
             <select id="docx-hr-display">
               <option value="hide" data-i18n="settings_docx_hr_display_hide"></option>
@@ -225,6 +236,52 @@
               <option value="2000">2000</option>
               <option value="5000">5000</option>
             </select>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3 data-i18n="settings_docx_theme_mapping_title"></h3>
+          <div class="settings-note" data-i18n="settings_docx_theme_mapping_note"></div>
+
+          <div style="margin: 10px 0;">
+            <label for="docx-heading-scale-pct" data-i18n="settings_docx_heading_scale_pct"></label>
+            <input type="number" id="docx-heading-scale-pct" step="1" min="1">
+          </div>
+
+          <div style="margin: 10px 0;">
+            <label for="docx-heading-spacing-before-pt" data-i18n="settings_docx_heading_spacing_before_pt"></label>
+            <input type="number" id="docx-heading-spacing-before-pt" step="1" min="0">
+          </div>
+
+          <div style="margin: 10px 0;">
+            <label for="docx-heading-spacing-after-pt" data-i18n="settings_docx_heading_spacing_after_pt"></label>
+            <input type="number" id="docx-heading-spacing-after-pt" step="1" min="0">
+          </div>
+
+          <div style="margin: 10px 0;">
+            <label for="docx-heading-alignment" data-i18n="settings_docx_heading_alignment"></label>
+            <select id="docx-heading-alignment">
+              <option value="" data-i18n="settings_docx_heading_alignment_default"></option>
+              <option value="left" data-i18n="settings_table_alignment_left"></option>
+              <option value="center" data-i18n="settings_table_alignment_center"></option>
+              <option value="right" data-i18n="settings_table_alignment_right"></option>
+              <option value="justify" data-i18n="settings_table_alignment_justify"></option>
+            </select>
+          </div>
+
+          <div style="margin: 10px 0;">
+            <label for="docx-code-font-size-pt" data-i18n="settings_docx_code_font_size_pt"></label>
+            <input type="number" id="docx-code-font-size-pt" step="0.5" min="0">
+          </div>
+
+          <div style="margin: 10px 0;">
+            <label for="docx-table-border-width-pt" data-i18n="settings_docx_table_border_width_pt"></label>
+            <input type="number" id="docx-table-border-width-pt" step="0.25" min="0">
+          </div>
+
+          <div style="margin: 10px 0;">
+            <label for="docx-table-cell-padding-pt" data-i18n="settings_docx_table_cell_padding_pt"></label>
+            <input type="number" id="docx-table-cell-padding-pt" step="1" min="0">
           </div>
         </div>
 

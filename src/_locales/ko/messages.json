@@ -439,14 +439,6 @@
     "message": "페이지 나누기",
     "description": "Option to export horizontal rules as page breaks in DOCX"
   },
-  "settings_docx_hr_page_break": {
-    "message": "DOCX: 가로줄을 페이지 나눔으로 처리",
-    "description": "Checkbox label for exporting Markdown horizontal rules (---) as page breaks in DOCX"
-  },
-  "settings_docx_hr_page_break_note": {
-    "message": "활성화하면 Markdown 구분선(---)이 내보낸 Word 문서에서 새 페이지를 만듭니다.",
-    "description": "Helper note for the DOCX hr page break option"
-  },
   "settings_frontmatter_display": {
     "message": "Frontmatter 표시:",
     "description": "Label for frontmatter display mode selector"
@@ -563,6 +555,30 @@
     "message": "활성화되면 테이블 구조를 분석하고 빈 셀을 스마트하게 병합합니다.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "표 정렬:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "왼쪽",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "가운데",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "오른쪽",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "양쪽 맞춤",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "미리보기와 DOCX 내보내기에 적용됩니다.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "테마가 성공적으로 변경되었습니다. 변경 사항을 보려면 페이지를 새로 고침하세요.",
     "description": "테마 변경 시 표시되는 메시지"
@@ -638,5 +654,45 @@
   "zoom": {
     "message": "확대/축소",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "?? ?? ?? (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "?? ? ?? (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "?? ? ?? (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "?? ??",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "?? ???",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "?? ?? ?? (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "? ??? ?? (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "? ? ?? ?? (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX ?? ??",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "???? ?? ???? ?????. 0? ???? 0?? ?????.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }
