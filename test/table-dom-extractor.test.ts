@@ -31,3 +31,63 @@ test('extractTableDomModel captures border and padding via resolver', () => {
   assert.equal(model.cells[0][0].padding.left, 6);
   assert.equal(model.cells[0][0].border.top.widthPx, 2);
 });
+
+test('extractTableDomModel maps span cells to source element styles', () => {
+  const { document } = parseHTML(`
+    <table>
+      <tr>
+        <td rowspan="2" data-style="origin">A</td>
+        <td data-style="b">B</td>
+        <td data-style="c">C</td>
+      </tr>
+      <tr>
+        <td colspan="2" data-style="span">D</td>
+      </tr>
+    </table>
+  `);
+  const table = document.querySelector('table') as HTMLTableElement;
+
+  const model = extractTableDomModel(table, {
+    getStyle: (node) => {
+      const key = (node as HTMLElement).getAttribute('data-style') || 'table';
+      const paddingLeftMap: Record<string, string> = {
+        origin: '11px',
+        span: '22px',
+        table: '99px',
+        b: '5px',
+        c: '6px'
+      };
+
+      return {
+        paddingTop: '0px',
+        paddingRight: '0px',
+        paddingBottom: '0px',
+        paddingLeft: paddingLeftMap[key] || '0px',
+        borderTopWidth: '0px',
+        borderTopStyle: 'none',
+        borderTopColor: '#000000',
+        borderRightWidth: '0px',
+        borderRightStyle: 'none',
+        borderRightColor: '#000000',
+        borderBottomWidth: '0px',
+        borderBottomStyle: 'none',
+        borderBottomColor: '#000000',
+        borderLeftWidth: '0px',
+        borderLeftStyle: 'none',
+        borderLeftColor: '#000000',
+        fontFamily: 'Arial',
+        fontSize: '12px',
+        fontWeight: '400',
+        fontStyle: 'normal',
+        color: '#000000',
+        lineHeight: '16px',
+        textAlign: 'left',
+        verticalAlign: 'middle',
+        backgroundColor: '#ffffff'
+      } as any;
+    }
+  });
+
+  assert.equal(model.cells[1][0].padding.left, 11);
+  assert.equal(model.cells[1][2].padding.left, 22);
+});
