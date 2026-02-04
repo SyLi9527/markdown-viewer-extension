@@ -8,6 +8,8 @@ import { translate, applyI18nText, getUiLocale } from './i18n-helpers';
 import { storageGet, storageSet } from './storage-helper';
 import type { EmojiStyle } from '../../types/docx.js';
 import type { TableAlignment } from '../../types/settings';
+import type { CustomThemeBundle, Theme, LayoutScheme, ColorScheme, TableStyleConfig, CodeThemeConfig } from '../../types/index';
+import { mergeCustomTheme, validateCustomThemeInputs } from '../../utils/custom-theme';
 
 // Helper: Send message compatible with both Chrome and Firefox
 function safeSendMessage(message: unknown): void {
@@ -95,6 +97,10 @@ interface ThemeDefinition {
   description_en: string;
   category: string;
   featured: boolean;
+  layoutScheme?: string;
+  colorScheme?: string;
+  tableStyle?: string;
+  codeTheme?: string;
 }
 
 /**
@@ -155,6 +161,14 @@ interface LocaleInfo {
 interface LocaleRegistry {
   version: string;
   locales: LocaleInfo[];
+}
+
+interface ThemeBundle {
+  theme: Theme;
+  layout: LayoutScheme;
+  color: ColorScheme;
+  table: TableStyleConfig;
+  code: CodeThemeConfig;
 }
 
 /**
@@ -260,6 +274,10 @@ export function createSettingsTabManager({
   let tableStyleRegistry: TableStyleRegistry | null = null;
   let tableStyles: TableStyleDefinition[] = [];
   let localeRegistry: LocaleRegistry | null = null;
+  let customThemeBundle: CustomThemeBundle | null = null;
+  let fontOptions: Array<{ id: string; label: string }> = [];
+  let codeThemeOptions: Array<{ id: string; label: string }> = [];
+  const themeBundleCache = new Map<string, ThemeBundle>();
 
   function parseOptionalNumber(value: unknown, min?: number): number | null {
     if (value === null || value === undefined || value === '') {
@@ -285,6 +303,753 @@ export function createSettingsTabManager({
     }
     const trimmed = value.trim();
     return trimmed ? trimmed : 'theme';
+  }
+
+  function normalizeHexColor(value: string | null | undefined): string | undefined {
+    if (!value) {
+      return undefined;
+    }
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return undefined;
+    }
+    return trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+  }
+
+  function stripPt(value: string | undefined): number | null {
+    if (!value) {
+      return null;
+    }
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+    const numeric = trimmed.endsWith('pt') ? trimmed.slice(0, -2) : trimmed;
+    const parsed = Number(numeric);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  function toPtString(value: number | null | undefined): string | undefined {
+    if (value === null || value === undefined || Number.isNaN(value)) {
+      return undefined;
+    }
+    return `${value}pt`;
+  }
+
+  function getInputValue(id: string): string {
+    const el = document.getElementById(id) as HTMLInputElement | null;
+    return el?.value ?? '';
+  }
+
+  function getNumberValue(id: string): number | null {
+    const value = getInputValue(id);
+    if (!value) {
+      return null;
+    }
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  function getSelectValue(id: string): string {
+    const el = document.getElementById(id) as HTMLSelectElement | null;
+    return el?.value ?? '';
+  }
+
+  function getCheckboxValue(id: string): boolean {
+    const el = document.getElementById(id) as HTMLInputElement | null;
+    return Boolean(el?.checked);
+  }
+
+  function setInputValueById(id: string, value: string | null | undefined): void {
+    const el = document.getElementById(id) as HTMLInputElement | null;
+    if (el) {
+      el.value = value ?? '';
+    }
+  }
+
+  function setNumberValueById(id: string, value: number | null | undefined): void {
+    const el = document.getElementById(id) as HTMLInputElement | null;
+    if (el) {
+      el.value = (typeof value === 'number' && Number.isFinite(value)) ? String(value) : '';
+    }
+  }
+
+  function setSelectValueById(id: string, value: string | null | undefined): void {
+    const el = document.getElementById(id) as HTMLSelectElement | null;
+    if (el && typeof value === 'string') {
+      el.value = value;
+    }
+  }
+
+  function setCheckboxValueById(id: string, value: boolean | null | undefined): void {
+    const el = document.getElementById(id) as HTMLInputElement | null;
+    if (el) {
+      el.checked = Boolean(value);
+    }
+  }
+
+  const headingLevels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
+
+  const codeTokenFields = [
+    { id: 'custom-code-token-keyword', token: 'keyword' },
+    { id: 'custom-code-token-string', token: 'string' },
+    { id: 'custom-code-token-comment', token: 'comment' },
+    { id: 'custom-code-token-number', token: 'number' },
+    { id: 'custom-code-token-title', token: 'title' },
+    { id: 'custom-code-token-attr', token: 'attr' },
+    { id: 'custom-code-token-built-in', token: 'built_in' },
+    { id: 'custom-code-token-literal', token: 'literal' },
+    { id: 'custom-code-token-type', token: 'type' },
+    { id: 'custom-code-token-variable', token: 'variable' },
+    { id: 'custom-code-token-property', token: 'property' }
+  ];
+
+  async function loadCustomThemeBundle(): Promise<void> {
+    try {
+      const result = await storageGet(['customThemeBundle']);
+      customThemeBundle = (result.customThemeBundle as CustomThemeBundle) || null;
+    } catch (error) {
+      console.error('Failed to load custom theme bundle:', error);
+      customThemeBundle = null;
+    }
+  }
+
+  async function fetchJson<T>(path: string): Promise<T> {
+    const response = await fetch(chrome.runtime.getURL(path));
+    return await response.json() as T;
+  }
+
+  async function fetchThemeBundle(themeId: string): Promise<ThemeBundle> {
+    const cached = themeBundleCache.get(themeId);
+    if (cached) {
+      return cached;
+    }
+    const theme = await fetchJson<Theme>(`themes/presets/${themeId}.json`);
+    const [layout, color, table, code] = await Promise.all([
+      fetchJson<LayoutScheme>(`themes/layout-schemes/${theme.layoutScheme}.json`),
+      fetchJson<ColorScheme>(`themes/color-schemes/${theme.colorScheme}.json`),
+      fetchJson<TableStyleConfig>(`themes/table-styles/${theme.tableStyle}.json`),
+      fetchJson<CodeThemeConfig>(`themes/code-themes/${theme.codeTheme}.json`)
+    ]);
+    const bundle = { theme, layout, color, table, code };
+    themeBundleCache.set(themeId, bundle);
+    return bundle;
+  }
+
+  async function loadFontOptions(): Promise<void> {
+    if (fontOptions.length > 0) {
+      return;
+    }
+    try {
+      const fontConfig = await fetchJson<{ fonts: Record<string, { displayName?: string }> }>('themes/font-config.json');
+      fontOptions = Object.keys(fontConfig.fonts).map((key) => ({
+        id: key,
+        label: fontConfig.fonts[key].displayName || key
+      }));
+    } catch (error) {
+      console.error('Failed to load font config:', error);
+      fontOptions = [];
+    }
+  }
+
+  function populateFontSelect(selectEl: HTMLSelectElement, allowEmpty: boolean): void {
+    selectEl.innerHTML = '';
+    if (allowEmpty) {
+      const emptyOption = document.createElement('option');
+      emptyOption.value = '';
+      emptyOption.textContent = '--';
+      selectEl.appendChild(emptyOption);
+    }
+    fontOptions.forEach((font) => {
+      const option = document.createElement('option');
+      option.value = font.id;
+      option.textContent = font.label;
+      selectEl.appendChild(option);
+    });
+  }
+
+  function populateFontSelects(): void {
+    const selectIds = [
+      { id: 'custom-font-body', allowEmpty: false },
+      { id: 'custom-font-headings', allowEmpty: true },
+      { id: 'custom-font-code', allowEmpty: false },
+      { id: 'custom-font-h1', allowEmpty: true },
+      { id: 'custom-font-h2', allowEmpty: true },
+      { id: 'custom-font-h3', allowEmpty: true },
+      { id: 'custom-font-h4', allowEmpty: true },
+      { id: 'custom-font-h5', allowEmpty: true },
+      { id: 'custom-font-h6', allowEmpty: true }
+    ];
+    selectIds.forEach(({ id, allowEmpty }) => {
+      const el = document.getElementById(id) as HTMLSelectElement | null;
+      if (el) {
+        populateFontSelect(el, allowEmpty);
+      }
+    });
+  }
+
+  async function loadCodeThemeOptions(): Promise<void> {
+    if (codeThemeOptions.length > 0) {
+      return;
+    }
+    const ids = Array.from(
+      new Set(themes.map((theme) => theme.codeTheme).filter((id): id is string => Boolean(id)))
+    );
+    const options: Array<{ id: string; label: string }> = [];
+    for (const id of ids) {
+      try {
+        const codeTheme = await fetchJson<CodeThemeConfig & { name?: string }>(`themes/code-themes/${id}.json`);
+        options.push({ id, label: codeTheme.name || id });
+      } catch (error) {
+        options.push({ id, label: id });
+      }
+    }
+    codeThemeOptions = options;
+  }
+
+  function populateCodeThemeSelect(): void {
+    const select = document.getElementById('custom-code-theme') as HTMLSelectElement | null;
+    if (!select) {
+      return;
+    }
+    select.innerHTML = '';
+    codeThemeOptions.forEach((theme) => {
+      const option = document.createElement('option');
+      option.value = theme.id;
+      option.textContent = theme.label;
+      select.appendChild(option);
+    });
+  }
+
+  function populateCustomThemeBaseSelect(): void {
+    const select = document.getElementById('custom-theme-base') as HTMLSelectElement | null;
+    if (!select) {
+      return;
+    }
+    select.innerHTML = '';
+    const locale = getUiLocale();
+    const useEnglish = !locale.startsWith('zh');
+    themes.forEach((theme) => {
+      if (theme.id === 'custom') return;
+      const option = document.createElement('option');
+      option.value = theme.id;
+      option.textContent = useEnglish ? theme.name_en : theme.name;
+      select.appendChild(option);
+    });
+  }
+
+  function setupAdvancedToggles(): void {
+    document.querySelectorAll<HTMLButtonElement>('.custom-theme-advanced-toggle').forEach((button) => {
+      if (button.dataset.listenerAdded) {
+        return;
+      }
+      button.dataset.listenerAdded = 'true';
+      button.addEventListener('click', () => {
+        const targetId = button.dataset.target;
+        if (!targetId) return;
+        const target = document.getElementById(targetId);
+        if (target) {
+          target.classList.toggle('is-open');
+        }
+      });
+    });
+  }
+
+  function setCustomThemeError(message: string): void {
+    const errorEl = document.getElementById('custom-theme-error');
+    if (errorEl) {
+      errorEl.textContent = message;
+    }
+  }
+
+  function applyThemeBundleToForm(bundle: ThemeBundle): void {
+    const { theme, layout, color, table, code } = bundle;
+
+    setSelectValueById('custom-font-body', theme.fontScheme.body.fontFamily);
+    setSelectValueById('custom-font-headings', theme.fontScheme.headings?.fontFamily || '');
+    setSelectValueById('custom-font-code', theme.fontScheme.code.fontFamily);
+    headingLevels.forEach((level) => {
+      const heading = theme.fontScheme.headings?.[level] as { fontFamily?: string } | undefined;
+      setSelectValueById(`custom-font-${level}`, heading?.fontFamily || '');
+    });
+
+    setNumberValueById('custom-body-font-size', stripPt(layout.body.fontSize));
+    setNumberValueById('custom-body-line-height', layout.body.lineHeight);
+    setNumberValueById('custom-heading-h1-size', stripPt(layout.headings.h1.fontSize));
+    setNumberValueById('custom-heading-h2-size', stripPt(layout.headings.h2.fontSize));
+    headingLevels.forEach((level) => {
+      const heading = layout.headings[level];
+      setNumberValueById(`custom-heading-${level}-size`, stripPt(heading.fontSize));
+      setNumberValueById(`custom-heading-${level}-before`, stripPt(heading.spacingBefore));
+      setNumberValueById(`custom-heading-${level}-after`, stripPt(heading.spacingAfter));
+      setSelectValueById(`custom-heading-${level}-align`, heading.alignment || 'left');
+    });
+    setNumberValueById('custom-code-font-size', stripPt(layout.code.fontSize));
+    setNumberValueById('custom-block-paragraph-after', stripPt(layout.blocks.paragraph?.spacingAfter));
+    setNumberValueById('custom-block-list-after', stripPt(layout.blocks.list?.spacingAfter));
+    setNumberValueById('custom-block-list-item-after', stripPt(layout.blocks.listItem?.spacingAfter));
+    setNumberValueById('custom-block-blockquote-before', stripPt(layout.blocks.blockquote?.spacingBefore));
+    setNumberValueById('custom-block-blockquote-after', stripPt(layout.blocks.blockquote?.spacingAfter));
+    setNumberValueById('custom-block-blockquote-pad-v', stripPt(layout.blocks.blockquote?.paddingVertical));
+    setNumberValueById('custom-block-blockquote-pad-h', stripPt(layout.blocks.blockquote?.paddingHorizontal));
+    setNumberValueById('custom-block-code-after', stripPt(layout.blocks.codeBlock?.spacingAfter));
+    setNumberValueById('custom-block-table-after', stripPt(layout.blocks.table?.spacingAfter));
+    setNumberValueById('custom-block-hr-before', stripPt(layout.blocks.horizontalRule?.spacingBefore));
+    setNumberValueById('custom-block-hr-after', stripPt(layout.blocks.horizontalRule?.spacingAfter));
+
+    setInputValueById('custom-color-text-primary', color.text.primary);
+    setInputValueById('custom-color-text-secondary', color.text.secondary);
+    setInputValueById('custom-color-text-muted', color.text.muted);
+    setInputValueById('custom-color-link', color.accent.link);
+    setInputValueById('custom-color-link-hover', color.accent.linkHover);
+    setInputValueById('custom-color-code-bg', color.background.code);
+    setInputValueById('custom-color-blockquote-border', color.blockquote.border);
+    setInputValueById('custom-color-table-border', color.table.border);
+    setInputValueById('custom-color-table-header-bg', color.table.headerBackground);
+    setInputValueById('custom-color-table-header-text', color.table.headerText);
+    setInputValueById('custom-color-table-zebra-even', color.table.zebraEven);
+    setInputValueById('custom-color-table-zebra-odd', color.table.zebraOdd);
+    headingLevels.forEach((level) => {
+      setInputValueById(`custom-color-heading-${level}`, color.headings?.[level] || '');
+    });
+
+    setNumberValueById('custom-table-border-width', stripPt(table.border?.all?.width));
+    setSelectValueById('custom-table-border-style', table.border?.all?.style || 'single');
+    setCheckboxValueById('custom-table-header-bold', table.header?.fontWeight === 'bold');
+    setNumberValueById('custom-table-cell-padding', stripPt(table.cell.padding));
+    setCheckboxValueById('custom-table-zebra-enabled', Boolean(table.zebra?.enabled));
+    setNumberValueById('custom-table-header-font-size', stripPt(table.header?.fontSize));
+    setNumberValueById('custom-table-header-top-width', stripPt(table.border?.headerTop?.width));
+    setSelectValueById('custom-table-header-top-style', table.border?.headerTop?.style || 'single');
+    setNumberValueById('custom-table-header-bottom-width', stripPt(table.border?.headerBottom?.width));
+    setSelectValueById('custom-table-header-bottom-style', table.border?.headerBottom?.style || 'single');
+    setNumberValueById('custom-table-row-bottom-width', stripPt(table.border?.rowBottom?.width));
+    setSelectValueById('custom-table-row-bottom-style', table.border?.rowBottom?.style || 'single');
+    setNumberValueById('custom-table-last-row-bottom-width', stripPt(table.border?.lastRowBottom?.width));
+    setSelectValueById('custom-table-last-row-bottom-style', table.border?.lastRowBottom?.style || 'single');
+
+    const codeThemeId = (code as CodeThemeConfig & { id?: string }).id;
+    setSelectValueById('custom-code-theme', codeThemeId || '');
+    setInputValueById('custom-code-foreground', code.foreground || '');
+    codeTokenFields.forEach(({ id, token }) => {
+      setInputValueById(id, code.colors?.[token] || '');
+    });
+
+    setSelectValueById('custom-diagram-style', theme.diagramStyle || 'normal');
+  }
+
+  async function loadCustomThemeForm(bundle?: CustomThemeBundle | null): Promise<void> {
+    const basePresetId = bundle?.basePresetId || currentTheme || 'default';
+    setSelectValueById('custom-theme-base', basePresetId);
+    const baseBundle = await fetchThemeBundle(basePresetId);
+    const resolved = bundle
+      ? mergeCustomTheme(baseBundle.theme, baseBundle.layout, baseBundle.color, baseBundle.table, baseBundle.code, bundle)
+      : baseBundle;
+    applyThemeBundleToForm(resolved);
+  }
+
+  function getHeadingConfigFromForm(level: typeof headingLevels[number]): Partial<LayoutScheme['headings'][typeof level]> | null {
+    const size = getNumberValue(`custom-heading-${level}-size`);
+    const before = getNumberValue(`custom-heading-${level}-before`);
+    const after = getNumberValue(`custom-heading-${level}-after`);
+    const align = getSelectValue(`custom-heading-${level}-align`);
+    const heading: Partial<LayoutScheme['headings'][typeof level]> = {};
+    if (size !== null) heading.fontSize = toPtString(size);
+    if (before !== null) heading.spacingBefore = toPtString(before);
+    if (after !== null) heading.spacingAfter = toPtString(after);
+    if (align) heading.alignment = align as 'left' | 'center' | 'right';
+    return Object.keys(heading).length > 0 ? heading : null;
+  }
+
+  function getBlockConfigFromForm(prefix: string): Partial<LayoutScheme['blocks'][keyof LayoutScheme['blocks']]> | null {
+    const before = getNumberValue(`${prefix}-before`);
+    const after = getNumberValue(`${prefix}-after`);
+    const padV = getNumberValue(`${prefix}-pad-v`);
+    const padH = getNumberValue(`${prefix}-pad-h`);
+    const block: Partial<LayoutScheme['blocks'][keyof LayoutScheme['blocks']]> = {};
+    if (before !== null) block.spacingBefore = toPtString(before);
+    if (after !== null) block.spacingAfter = toPtString(after);
+    if (padV !== null) block.paddingVertical = toPtString(padV);
+    if (padH !== null) block.paddingHorizontal = toPtString(padH);
+    return Object.keys(block).length > 0 ? block : null;
+  }
+
+  async function buildCustomThemeBundleFromForm(): Promise<CustomThemeBundle | null> {
+    const basePresetId = getSelectValue('custom-theme-base') || 'default';
+
+    const colors = {
+      textPrimary: getInputValue('custom-color-text-primary'),
+      textSecondary: getInputValue('custom-color-text-secondary'),
+      textMuted: getInputValue('custom-color-text-muted'),
+      link: getInputValue('custom-color-link'),
+      linkHover: getInputValue('custom-color-link-hover'),
+      codeBg: getInputValue('custom-color-code-bg'),
+      blockquoteBorder: getInputValue('custom-color-blockquote-border'),
+      tableBorder: getInputValue('custom-color-table-border'),
+      tableHeaderBg: getInputValue('custom-color-table-header-bg'),
+      tableHeaderText: getInputValue('custom-color-table-header-text'),
+      tableZebraEven: getInputValue('custom-color-table-zebra-even'),
+      tableZebraOdd: getInputValue('custom-color-table-zebra-odd'),
+      headingH1: getInputValue('custom-color-heading-h1'),
+      headingH2: getInputValue('custom-color-heading-h2'),
+      headingH3: getInputValue('custom-color-heading-h3'),
+      headingH4: getInputValue('custom-color-heading-h4'),
+      headingH5: getInputValue('custom-color-heading-h5'),
+      headingH6: getInputValue('custom-color-heading-h6'),
+      codeForeground: getInputValue('custom-code-foreground'),
+      codeKeyword: getInputValue('custom-code-token-keyword'),
+      codeString: getInputValue('custom-code-token-string'),
+      codeComment: getInputValue('custom-code-token-comment'),
+      codeNumber: getInputValue('custom-code-token-number'),
+      codeTitle: getInputValue('custom-code-token-title'),
+      codeAttr: getInputValue('custom-code-token-attr'),
+      codeBuiltIn: getInputValue('custom-code-token-built-in'),
+      codeLiteral: getInputValue('custom-code-token-literal'),
+      codeType: getInputValue('custom-code-token-type'),
+      codeVariable: getInputValue('custom-code-token-variable'),
+      codeProperty: getInputValue('custom-code-token-property')
+    };
+
+    const ptValues = {
+      bodyFontSize: getNumberValue('custom-body-font-size'),
+      headingH1Size: getNumberValue('custom-heading-h1-size'),
+      headingH2Size: getNumberValue('custom-heading-h2-size'),
+      headingH3Size: getNumberValue('custom-heading-h3-size'),
+      headingH4Size: getNumberValue('custom-heading-h4-size'),
+      headingH5Size: getNumberValue('custom-heading-h5-size'),
+      headingH6Size: getNumberValue('custom-heading-h6-size'),
+      headingH1Before: getNumberValue('custom-heading-h1-before'),
+      headingH1After: getNumberValue('custom-heading-h1-after'),
+      headingH2Before: getNumberValue('custom-heading-h2-before'),
+      headingH2After: getNumberValue('custom-heading-h2-after'),
+      headingH3Before: getNumberValue('custom-heading-h3-before'),
+      headingH3After: getNumberValue('custom-heading-h3-after'),
+      headingH4Before: getNumberValue('custom-heading-h4-before'),
+      headingH4After: getNumberValue('custom-heading-h4-after'),
+      headingH5Before: getNumberValue('custom-heading-h5-before'),
+      headingH5After: getNumberValue('custom-heading-h5-after'),
+      headingH6Before: getNumberValue('custom-heading-h6-before'),
+      headingH6After: getNumberValue('custom-heading-h6-after'),
+      codeFontSize: getNumberValue('custom-code-font-size'),
+      blockParagraphAfter: getNumberValue('custom-block-paragraph-after'),
+      blockListAfter: getNumberValue('custom-block-list-after'),
+      blockListItemAfter: getNumberValue('custom-block-list-item-after'),
+      blockBlockquoteBefore: getNumberValue('custom-block-blockquote-before'),
+      blockBlockquoteAfter: getNumberValue('custom-block-blockquote-after'),
+      blockBlockquotePadV: getNumberValue('custom-block-blockquote-pad-v'),
+      blockBlockquotePadH: getNumberValue('custom-block-blockquote-pad-h'),
+      blockCodeAfter: getNumberValue('custom-block-code-after'),
+      blockTableAfter: getNumberValue('custom-block-table-after'),
+      blockHrBefore: getNumberValue('custom-block-hr-before'),
+      blockHrAfter: getNumberValue('custom-block-hr-after'),
+      tableBorderWidth: getNumberValue('custom-table-border-width'),
+      tableHeaderTopWidth: getNumberValue('custom-table-header-top-width'),
+      tableHeaderBottomWidth: getNumberValue('custom-table-header-bottom-width'),
+      tableRowBottomWidth: getNumberValue('custom-table-row-bottom-width'),
+      tableLastRowBottomWidth: getNumberValue('custom-table-last-row-bottom-width'),
+      tableCellPadding: getNumberValue('custom-table-cell-padding'),
+      tableHeaderFontSize: getNumberValue('custom-table-header-font-size')
+    };
+
+    const validation = validateCustomThemeInputs({
+      colors,
+      ptValues,
+      lineHeight: getNumberValue('custom-body-line-height')
+    });
+
+    if (!validation.ok) {
+      setCustomThemeError(validation.errors.join('; '));
+      return null;
+    }
+
+    setCustomThemeError('');
+
+    const fontScheme: Theme['fontScheme'] = { body: { fontFamily: getSelectValue('custom-font-body') }, headings: {}, code: { fontFamily: getSelectValue('custom-font-code') } };
+    const headingsFont = getSelectValue('custom-font-headings');
+    if (headingsFont) {
+      fontScheme.headings.fontFamily = headingsFont;
+    }
+    headingLevels.forEach((level) => {
+      const font = getSelectValue(`custom-font-${level}`);
+      if (font) {
+        fontScheme.headings[level] = { fontFamily: font };
+      }
+    });
+
+    const layoutScheme: Partial<LayoutScheme> = {};
+    const bodyFontSize = getNumberValue('custom-body-font-size');
+    const bodyLineHeight = getNumberValue('custom-body-line-height');
+    if (bodyFontSize !== null || bodyLineHeight !== null) {
+      const body: Partial<LayoutScheme['body']> = {};
+      if (bodyFontSize !== null) {
+        body.fontSize = toPtString(bodyFontSize);
+      }
+      if (bodyLineHeight !== null) {
+        body.lineHeight = bodyLineHeight;
+      }
+      layoutScheme.body = body as LayoutScheme['body'];
+    }
+    const headings: Partial<LayoutScheme['headings']> = {};
+    headingLevels.forEach((level) => {
+      const heading = getHeadingConfigFromForm(level);
+      if (heading) {
+        headings[level] = heading;
+      }
+    });
+    if (Object.keys(headings).length > 0) {
+      layoutScheme.headings = headings as LayoutScheme['headings'];
+    }
+    const codeFontSize = getNumberValue('custom-code-font-size');
+    if (codeFontSize !== null) {
+      layoutScheme.code = { fontSize: toPtString(codeFontSize) || '10pt' };
+    }
+    const blocks: Partial<LayoutScheme['blocks']> = {};
+    const paragraph = getBlockConfigFromForm('custom-block-paragraph');
+    if (paragraph) blocks.paragraph = paragraph;
+    const list = getBlockConfigFromForm('custom-block-list');
+    if (list) blocks.list = list;
+    const listItem = getBlockConfigFromForm('custom-block-list-item');
+    if (listItem) blocks.listItem = listItem;
+    const blockquote = getBlockConfigFromForm('custom-block-blockquote');
+    if (blockquote) blocks.blockquote = blockquote;
+    const codeBlock = getBlockConfigFromForm('custom-block-code');
+    if (codeBlock) blocks.codeBlock = codeBlock;
+    const tableBlock = getBlockConfigFromForm('custom-block-table');
+    if (tableBlock) blocks.table = tableBlock;
+    const hrBlock = getBlockConfigFromForm('custom-block-hr');
+    if (hrBlock) blocks.horizontalRule = hrBlock;
+    if (Object.keys(blocks).length > 0) {
+      layoutScheme.blocks = blocks as LayoutScheme['blocks'];
+    }
+
+    const colorScheme: Partial<ColorScheme> = {};
+    const text: Partial<ColorScheme['text']> = {};
+    const textPrimary = normalizeHexColor(colors.textPrimary);
+    const textSecondary = normalizeHexColor(colors.textSecondary);
+    const textMuted = normalizeHexColor(colors.textMuted);
+    if (textPrimary) text.primary = textPrimary;
+    if (textSecondary) text.secondary = textSecondary;
+    if (textMuted) text.muted = textMuted;
+    if (Object.keys(text).length > 0) {
+      colorScheme.text = text as ColorScheme['text'];
+    }
+    const accent: Partial<ColorScheme['accent']> = {};
+    const link = normalizeHexColor(colors.link);
+    const linkHover = normalizeHexColor(colors.linkHover);
+    if (link) accent.link = link;
+    if (linkHover) accent.linkHover = linkHover;
+    if (Object.keys(accent).length > 0) {
+      colorScheme.accent = accent as ColorScheme['accent'];
+    }
+    const background: Partial<ColorScheme['background']> = {};
+    const codeBg = normalizeHexColor(colors.codeBg);
+    if (codeBg) background.code = codeBg;
+    if (Object.keys(background).length > 0) {
+      colorScheme.background = background as ColorScheme['background'];
+    }
+    const blockquote: Partial<ColorScheme['blockquote']> = {};
+    const blockquoteBorder = normalizeHexColor(colors.blockquoteBorder);
+    if (blockquoteBorder) blockquote.border = blockquoteBorder;
+    if (Object.keys(blockquote).length > 0) {
+      colorScheme.blockquote = blockquote as ColorScheme['blockquote'];
+    }
+    const tableColors: Partial<ColorScheme['table']> = {};
+    const tableBorder = normalizeHexColor(colors.tableBorder);
+    const headerBg = normalizeHexColor(colors.tableHeaderBg);
+    const headerText = normalizeHexColor(colors.tableHeaderText);
+    const zebraEven = normalizeHexColor(colors.tableZebraEven);
+    const zebraOdd = normalizeHexColor(colors.tableZebraOdd);
+    if (tableBorder) tableColors.border = tableBorder;
+    if (headerBg) tableColors.headerBackground = headerBg;
+    if (headerText) tableColors.headerText = headerText;
+    if (zebraEven) tableColors.zebraEven = zebraEven;
+    if (zebraOdd) tableColors.zebraOdd = zebraOdd;
+    if (Object.keys(tableColors).length > 0) {
+      colorScheme.table = tableColors as ColorScheme['table'];
+    }
+    const headingColors: Partial<ColorScheme['headings']> = {};
+    const headingColorMap: Record<string, string | undefined> = {
+      h1: normalizeHexColor(colors.headingH1),
+      h2: normalizeHexColor(colors.headingH2),
+      h3: normalizeHexColor(colors.headingH3),
+      h4: normalizeHexColor(colors.headingH4),
+      h5: normalizeHexColor(colors.headingH5),
+      h6: normalizeHexColor(colors.headingH6)
+    };
+    headingLevels.forEach((level) => {
+      const color = headingColorMap[level];
+      if (color) {
+        headingColors[level] = color;
+      }
+    });
+    if (Object.keys(headingColors).length > 0) {
+      colorScheme.headings = headingColors as ColorScheme['headings'];
+    }
+
+    const tableStyle: Partial<TableStyleConfig> = {};
+    const borderStyle = getSelectValue('custom-table-border-style');
+    const borderWidth = getNumberValue('custom-table-border-width');
+    if (borderWidth !== null) {
+      tableStyle.border = {
+        all: { width: toPtString(borderWidth) || '1pt', style: borderStyle || 'single' }
+      };
+    }
+    const headerBold = getCheckboxValue('custom-table-header-bold');
+    tableStyle.header = { fontWeight: headerBold ? 'bold' : 'normal' };
+    const headerFontSize = getNumberValue('custom-table-header-font-size');
+    if (headerFontSize !== null) {
+      tableStyle.header.fontSize = toPtString(headerFontSize);
+    }
+    const cellPadding = getNumberValue('custom-table-cell-padding');
+    if (cellPadding !== null) {
+      tableStyle.cell = { padding: toPtString(cellPadding) || '8pt' };
+    } else {
+      tableStyle.cell = { padding: '8pt' };
+    }
+    tableStyle.zebra = { enabled: getCheckboxValue('custom-table-zebra-enabled') };
+    const headerTopWidth = getNumberValue('custom-table-header-top-width');
+    const headerTopStyle = getSelectValue('custom-table-header-top-style');
+    if (headerTopWidth !== null) {
+      tableStyle.border = { ...(tableStyle.border || {}), headerTop: { width: toPtString(headerTopWidth) || '1pt', style: headerTopStyle || 'single' } };
+    }
+    const headerBottomWidth = getNumberValue('custom-table-header-bottom-width');
+    const headerBottomStyle = getSelectValue('custom-table-header-bottom-style');
+    if (headerBottomWidth !== null) {
+      tableStyle.border = { ...(tableStyle.border || {}), headerBottom: { width: toPtString(headerBottomWidth) || '1pt', style: headerBottomStyle || 'single' } };
+    }
+    const rowBottomWidth = getNumberValue('custom-table-row-bottom-width');
+    const rowBottomStyle = getSelectValue('custom-table-row-bottom-style');
+    if (rowBottomWidth !== null) {
+      tableStyle.border = { ...(tableStyle.border || {}), rowBottom: { width: toPtString(rowBottomWidth) || '1pt', style: rowBottomStyle || 'single' } };
+    }
+    const lastRowWidth = getNumberValue('custom-table-last-row-bottom-width');
+    const lastRowStyle = getSelectValue('custom-table-last-row-bottom-style');
+    if (lastRowWidth !== null) {
+      tableStyle.border = { ...(tableStyle.border || {}), lastRowBottom: { width: toPtString(lastRowWidth) || '1pt', style: lastRowStyle || 'single' } };
+    }
+
+    const codeThemeId = getSelectValue('custom-code-theme');
+    let codeTheme: CodeThemeConfig = { colors: {}, foreground: '' };
+    try {
+      if (codeThemeId) {
+        codeTheme = await fetchJson<CodeThemeConfig>(`themes/code-themes/${codeThemeId}.json`);
+      }
+    } catch (error) {
+      console.warn('Failed to load code theme', codeThemeId, error);
+    }
+    const codeForeground = normalizeHexColor(colors.codeForeground);
+    if (codeForeground) {
+      codeTheme.foreground = codeForeground;
+    }
+    codeTokenFields.forEach(({ token, id }) => {
+      const value = normalizeHexColor(getInputValue(id));
+      if (value) {
+        codeTheme.colors = { ...codeTheme.colors, [token]: value };
+      }
+    });
+
+    const diagramStyle = getSelectValue('custom-diagram-style') as Theme['diagramStyle'];
+
+    return {
+      basePresetId,
+      overrides: {
+        fontScheme,
+        diagramStyle
+      },
+      schemes: {
+        layoutScheme,
+        colorScheme,
+        tableStyle,
+        codeTheme
+      }
+    };
+  }
+
+  async function saveCustomThemeBundle(bundle: CustomThemeBundle, apply: boolean): Promise<void> {
+    await storageSet({ customThemeBundle: bundle });
+    customThemeBundle = bundle;
+    if (apply) {
+      await storageSet({ selectedTheme: 'custom' });
+      currentTheme = 'custom';
+      notifySettingChanged('themeId', 'custom');
+      showMessage(translate('settings_custom_theme_applied'), 'success');
+    } else {
+      showMessage(translate('settings_custom_theme_saved'), 'success');
+    }
+    loadThemes();
+  }
+
+  async function initializeCustomThemeUI(): Promise<void> {
+    const detailsEl = document.getElementById('custom-theme-details');
+    if (!detailsEl) {
+      return;
+    }
+
+    setupAdvancedToggles();
+    await loadFontOptions();
+    populateFontSelects();
+    await loadCodeThemeOptions();
+    populateCodeThemeSelect();
+    populateCustomThemeBaseSelect();
+
+    const baseSelect = document.getElementById('custom-theme-base') as HTMLSelectElement | null;
+    if (baseSelect && !baseSelect.dataset.listenerAdded) {
+      baseSelect.dataset.listenerAdded = 'true';
+      baseSelect.addEventListener('change', async () => {
+        const basePresetId = baseSelect.value || 'default';
+        await loadCustomThemeForm({ basePresetId });
+      });
+    }
+
+    const generateBtn = document.getElementById('custom-theme-generate') as HTMLButtonElement | null;
+    if (generateBtn && !generateBtn.dataset.listenerAdded) {
+      generateBtn.dataset.listenerAdded = 'true';
+      generateBtn.addEventListener('click', async () => {
+        if (currentTheme === 'custom' && customThemeBundle) {
+          await loadCustomThemeForm(customThemeBundle);
+        } else {
+          await loadCustomThemeForm({ basePresetId: currentTheme || 'default' });
+        }
+      });
+    }
+
+    const applyBtn = document.getElementById('custom-theme-apply') as HTMLButtonElement | null;
+    if (applyBtn && !applyBtn.dataset.listenerAdded) {
+      applyBtn.dataset.listenerAdded = 'true';
+      applyBtn.addEventListener('click', async () => {
+        const bundle = await buildCustomThemeBundleFromForm();
+        if (!bundle) return;
+        await saveCustomThemeBundle(bundle, true);
+      });
+    }
+
+    const saveBtn = document.getElementById('custom-theme-save') as HTMLButtonElement | null;
+    if (saveBtn && !saveBtn.dataset.listenerAdded) {
+      saveBtn.dataset.listenerAdded = 'true';
+      saveBtn.addEventListener('click', async () => {
+        const bundle = await buildCustomThemeBundleFromForm();
+        if (!bundle) return;
+        await saveCustomThemeBundle(bundle, false);
+      });
+    }
+
+    const restoreBtn = document.getElementById('custom-theme-restore') as HTMLButtonElement | null;
+    if (restoreBtn && !restoreBtn.dataset.listenerAdded) {
+      restoreBtn.dataset.listenerAdded = 'true';
+      restoreBtn.addEventListener('click', async () => {
+        if (!customThemeBundle) {
+          showMessage(translate('settings_custom_theme_restore_empty'), 'info');
+          return;
+        }
+        await loadCustomThemeForm(customThemeBundle);
+      });
+    }
+
+    if (customThemeBundle) {
+      await loadCustomThemeForm(customThemeBundle);
+    } else {
+      await loadCustomThemeForm({ basePresetId: currentTheme || 'default' });
+    }
   }
 
   /**
@@ -319,6 +1084,11 @@ export function createSettingsTabManager({
       // Load selected theme
       const themeResult = await storageGet(['selectedTheme']);
       currentTheme = (themeResult.selectedTheme as string) || 'default';
+
+      await loadCustomThemeBundle();
+      if (currentTheme === 'custom' && !customThemeBundle) {
+        currentTheme = 'default';
+      }
     } catch (error) {
       console.error('Failed to load settings:', error);
     }
@@ -374,7 +1144,7 @@ export function createSettingsTabManager({
             applyI18nText();
 
             // Reload themes and table styles to update names
-            loadThemes();
+            void loadThemes().then(() => initializeCustomThemeUI());
             void loadTableStyles();
 
             showMessage(translate('settings_language_changed'), 'success');
@@ -387,7 +1157,7 @@ export function createSettingsTabManager({
     }
 
     // Load themes + table styles
-    loadThemes();
+    void loadThemes().then(() => initializeCustomThemeUI());
     void loadTableStyles();
 
     // DOCX: Horizontal rule display
@@ -797,7 +1567,11 @@ export function createSettingsTabManager({
             description: theme.description,
             description_en: theme.description_en,
             category: themeInfo.category,
-            featured: themeInfo.featured || false
+            featured: themeInfo.featured || false,
+            layoutScheme: theme.layoutScheme,
+            colorScheme: theme.colorScheme,
+            tableStyle: theme.tableStyle,
+            codeTheme: theme.codeTheme
           } as ThemeDefinition;
         } catch (error) {
           console.error(`Failed to load theme ${themeInfo.id}:`, error);
@@ -815,6 +1589,19 @@ export function createSettingsTabManager({
         // Get current locale to determine which name to use
         const locale = getUiLocale();
         const useEnglish = !locale.startsWith('zh');
+
+        if (customThemeBundle) {
+          const customGroup = document.createElement('optgroup');
+          customGroup.label = translate('settings_custom_theme_option');
+          const customOption = document.createElement('option');
+          customOption.value = 'custom';
+          customOption.textContent = translate('settings_custom_theme_option');
+          if (currentTheme === 'custom') {
+            customOption.selected = true;
+          }
+          customGroup.appendChild(customOption);
+          themeSelector.appendChild(customGroup);
+        }
 
         // Group themes by category
         const themesByCategory: Record<string, ThemeDefinition[]> = {};
@@ -863,6 +1650,11 @@ export function createSettingsTabManager({
           const target = event.target as HTMLSelectElement;
           switchTheme(target.value);
         });
+
+        populateCustomThemeBaseSelect();
+        if (codeThemeOptions.length === 0) {
+          void loadCodeThemeOptions().then(() => populateCodeThemeSelect());
+        }
       }
     } catch (error) {
       console.error('Failed to load themes:', error);
@@ -944,13 +1736,28 @@ export function createSettingsTabManager({
    * @param themeId - Theme ID
    */
   function updateThemeDescription(themeId: string): void {
-    const theme = themes.find(t => t.id === themeId);
     const descEl = document.getElementById('theme-description');
 
-    if (descEl && theme) {
+    if (!descEl) {
+      return;
+    }
+
+    if (themeId === 'custom' && customThemeBundle) {
+      const baseTheme = themes.find(t => t.id === customThemeBundle?.basePresetId);
+      const locale = getUiLocale();
+      const useEnglish = !locale.startsWith('zh');
+      const baseName = useEnglish ? (baseTheme?.name_en || customThemeBundle.basePresetId) : (baseTheme?.name || customThemeBundle.basePresetId);
+      descEl.textContent = translate('settings_custom_theme_based_on', [baseName]);
+      return;
+    }
+
+    const theme = themes.find(t => t.id === themeId);
+    if (theme) {
       const locale = getUiLocale();
       const useEnglish = !locale.startsWith('zh');
       descEl.textContent = useEnglish ? theme.description_en : theme.description;
+    } else {
+      descEl.textContent = '';
     }
   }
 
@@ -960,6 +1767,10 @@ export function createSettingsTabManager({
    */
   async function switchTheme(themeId: string): Promise<void> {
     try {
+      if (themeId === 'custom' && !customThemeBundle) {
+        showMessage(translate('settings_custom_theme_restore_empty'), 'error');
+        return;
+      }
       // Save theme selection
       await storageSet({ selectedTheme: themeId });
       currentTheme = themeId;
