@@ -90,6 +90,31 @@ export function parseHtmlTablesToDocxNodes(html: string): DOCXTableNode[] | null
   return nodes.length > 0 ? nodes : null;
 }
 
+export function parseHtmlTablesToDomElements(html: string): HTMLTableElement[] | null {
+  if (!html || typeof DOMParser === 'undefined') {
+    return null;
+  }
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const tables = Array.from(doc.querySelectorAll('table')) as HTMLTableElement[];
+  if (tables.length === 0) {
+    return null;
+  }
+
+  if (!containsOnlyTables(doc.body)) {
+    return null;
+  }
+
+  // Keep behavior consistent with DOCX node parsing: skip nested tables for now
+  if (tables.some((table) => table.querySelector('table'))) {
+    return null;
+  }
+
+  const topLevelTables = tables.filter((table) => !table.parentElement?.closest('table'));
+  return topLevelTables.length > 0 ? topLevelTables : null;
+}
+
 function buildTableNode(tableEl: HTMLTableElement): DOCXTableNode | null {
   const rows = Array.from(tableEl.querySelectorAll('tr'));
   if (rows.length === 0) {
