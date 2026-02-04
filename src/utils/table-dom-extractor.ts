@@ -121,7 +121,7 @@ function buildCellElementMatrix(
 ): (HTMLTableCellElement | null)[][] {
   const rows = getTableRows(table);
   const rowGroupEnds = getRowGroupEnds(rows);
-  const maxColumns = Math.max(normalized.colCount, computeMaxColumns(rows, rowGroupEnds));
+  const maxColumns = computeMaxColumns(rows, rowGroupEnds);
   const grid: (HTMLTableCellElement | null)[][] = [];
   const spanTracker: number[] = [];
 
@@ -161,15 +161,17 @@ function buildCellElementMatrix(
     }
   }
 
-  const rowCount = Math.max(normalized.rowCount, grid.length);
+  const rowCount = normalized.rowCount;
+  const colCount = normalized.colCount;
   for (let r = 0; r < rowCount; r++) {
     grid[r] = grid[r] || [];
-    for (let c = 0; c < maxColumns; c++) {
-      if (!grid[r][c]) {
+    for (let c = 0; c < colCount; c++) {
+      if (grid[r][c] === undefined) {
         grid[r][c] = null;
       }
     }
   }
+  grid.length = rowCount;
 
   return grid;
 }
