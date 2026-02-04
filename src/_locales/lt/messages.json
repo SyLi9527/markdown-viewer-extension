@@ -551,6 +551,30 @@
     "message": "Įjungus, lentelės struktūra bus išanalizuota ir tušti langeliai bus išmaniai sujungti.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Lentelės lygiavimas:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Kairė",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Centras",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Dešinė",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Lygiuoti iš abiejų pusių",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Taikoma peržiūrai ir DOCX eksportui.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Tema sėkmingai pakeista. Norėdami pamatyti pakeitimus, perkraukite puslapį.",
     "description": "Message shown when theme is changed"
@@ -626,5 +650,45 @@
   "zoom": {
     "message": "Mastelis",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "Antra??i? dyd?io mastelis (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Tarpas prie? antra?tes (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Tarpas po antra?t?mis (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "Antra??i? lygiavimas",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Numatytasis temos",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Kodo ?rifto dydis (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Lentel?s r?melio plotis (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Lentel?s langelio vidin?s para?t?s (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX temos susiejimas",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "Palikite tu??i?, kad naudotum?te temos numatytuosius nustatymus. 0 priverstinai nustato nul?.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

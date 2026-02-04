@@ -551,6 +551,30 @@
     "message": "Wenn aktiviert, wird die Tabellenstruktur analysiert und leere Zellen werden intelligent zusammengeführt.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Tabellenausrichtung:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Links",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Zentriert",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Rechts",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Blocksatz",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Gilt für Vorschau und DOCX-Export.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Theme erfolgreich geändert. Bitte laden Sie die Seite neu, um die Änderungen zu sehen.",
     "description": "Meldung bei Theme-Änderung"
@@ -626,5 +650,45 @@
   "zoom": {
     "message": "Zoom",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "��berschriftengr??enskalierung (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Abstand vor ��berschriften (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Abstand nach ��berschriften (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "��berschriftenausrichtung",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Theme-Standard",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Code-Schriftgr??e (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Tabellenrahmenbreite (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Zellinnenabstand der Tabelle (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX-Theme-Zuordnung",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "Leer lassen, um die Theme-Standards zu verwenden. 0 erzwingt Null.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

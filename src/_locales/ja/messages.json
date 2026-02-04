@@ -551,6 +551,30 @@
     "message": "有効にすると、テーブル構造を分析し、空のセルをスマートに結合します。",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "表の配置：",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "左揃え",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "中央揃え",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "右揃え",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "両端揃え",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "プレビューと DOCX 書き出しに適用されます。",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "テーマが正常に変更されました。変更を確認するにはページを再読み込みしてください。",
     "description": "テーマ変更時のメッセージ"
@@ -626,5 +650,45 @@
   "zoom": {
     "message": "ズーム",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "Ҋ�����Υ��������� (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Ҋ����ǰ���g�� (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Ҋ��������g�� (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "Ҋ����������",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "�Ʃ`�ޤμȶ�",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "���`�ɤΥե���ȥ����� (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "�����L����̫�� (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "��������ڂ���� (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX �Ʃ`�ޤΥޥåԥ�",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "�ՙڤˤ���ȥƩ`�޼ȶ���ʹ�ä��ޤ���0 ��ָ������� 0 �˹̶����ޤ���",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

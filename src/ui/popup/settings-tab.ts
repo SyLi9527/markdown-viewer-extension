@@ -7,6 +7,7 @@ import Localization, { DEFAULT_SETTING_LOCALE } from '../../utils/localization';
 import { translate, applyI18nText, getUiLocale } from './i18n-helpers';
 import { storageGet, storageSet } from './storage-helper';
 import type { EmojiStyle } from '../../types/docx.js';
+import type { TableAlignment } from '../../types/settings';
 
 // Helper: Send message compatible with both Chrome and Firefox
 function safeSendMessage(message: unknown): void {
@@ -148,11 +149,6 @@ interface SupportedExtensions {
 export type FrontmatterDisplay = 'hide' | 'table' | 'raw';
 
 /**
- * Table layout mode
- */
-export type TableLayout = 'left' | 'center';
-
-/**
  * User settings structure
  */
 interface Settings {
@@ -160,10 +156,17 @@ interface Settings {
   preferredLocale: string;
   docxHrDisplay: 'pageBreak' | 'line' | 'hide';
   docxEmojiStyle?: EmojiStyle;
+  docxHeadingScalePct?: number | null;
+  docxHeadingSpacingBeforePt?: number | null;
+  docxHeadingSpacingAfterPt?: number | null;
+  docxHeadingAlignment?: TableAlignment | null;
+  docxCodeFontSizePt?: number | null;
+  docxTableBorderWidthPt?: number | null;
+  docxTableCellPaddingPt?: number | null;
   supportedExtensions?: SupportedExtensions;
   frontmatterDisplay?: FrontmatterDisplay;
   tableMergeEmpty?: boolean;
-  tableLayout?: TableLayout;
+  tableAlignment?: TableAlignment;
 }
 
 /**
@@ -185,7 +188,6 @@ export interface SettingsTabManager {
   resetSettings: () => Promise<void>;
   getSettings: () => Settings;
   loadThemes: () => Promise<void>;
-  setupLanguageSelector: () => Promise<void>;
 }
 
 /**
@@ -203,6 +205,13 @@ export function createSettingsTabManager({
     preferredLocale: DEFAULT_SETTING_LOCALE,
     docxHrDisplay: 'hide',
     docxEmojiStyle: 'system',
+    docxHeadingScalePct: null,
+    docxHeadingSpacingBeforePt: null,
+    docxHeadingSpacingAfterPt: null,
+    docxHeadingAlignment: null,
+    docxCodeFontSizePt: null,
+    docxTableBorderWidthPt: null,
+    docxTableCellPaddingPt: null,
     supportedExtensions: {
       mermaid: true,
       vega: true,
@@ -214,12 +223,30 @@ export function createSettingsTabManager({
     },
     frontmatterDisplay: 'hide',
     tableMergeEmpty: true,
-    tableLayout: 'center',
+    tableAlignment: 'center',
   };
   let currentTheme = 'default';
   let themes: ThemeDefinition[] = [];
   let registry: ThemeRegistry | null = null;
   let localeRegistry: LocaleRegistry | null = null;
+
+  function parseOptionalNumber(value: unknown, min?: number): number | null {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+    const parsed = typeof value === 'number' ? value : Number(value);
+    if (!Number.isFinite(parsed)) {
+      return null;
+    }
+    if (typeof min === 'number' && parsed < min) {
+      return null;
+    }
+    return parsed;
+  }
+
+  function setNumberInputValue(el: HTMLInputElement, value: number | null | undefined): void {
+    el.value = (typeof value === 'number' && Number.isFinite(value)) ? String(value) : '';
+  }
 
   /**
    * Load settings from storage
@@ -233,6 +260,20 @@ export function createSettingsTabManager({
 
       if (!settings.docxHrDisplay) {
         settings.docxHrDisplay = 'hide';
+      }
+      settings.docxHeadingScalePct = parseOptionalNumber(settings.docxHeadingScalePct, 1);
+      settings.docxHeadingSpacingBeforePt = parseOptionalNumber(settings.docxHeadingSpacingBeforePt, 0);
+      settings.docxHeadingSpacingAfterPt = parseOptionalNumber(settings.docxHeadingSpacingAfterPt, 0);
+      settings.docxHeadingAlignment = (settings.docxHeadingAlignment === 'left' || settings.docxHeadingAlignment === 'center' ||
+        settings.docxHeadingAlignment === 'right' || settings.docxHeadingAlignment === 'justify')
+        ? settings.docxHeadingAlignment
+        : null;
+      settings.docxCodeFontSizePt = parseOptionalNumber(settings.docxCodeFontSizePt, 0);
+      settings.docxTableBorderWidthPt = parseOptionalNumber(settings.docxTableBorderWidthPt, 0);
+      settings.docxTableCellPaddingPt = parseOptionalNumber(settings.docxTableCellPaddingPt, 0);
+      if (settings.tableAlignment !== 'left' && settings.tableAlignment !== 'center' &&
+          settings.tableAlignment !== 'right' && settings.tableAlignment !== 'justify') {
+        settings.tableAlignment = 'center';
       }
 
       // Load selected theme
@@ -265,8 +306,44 @@ export function createSettingsTabManager({
       }
     }
 
-    // Language selector button (new compact design)
-    setupLanguageSelector();
+    // Locale selector
+    const localeSelect = document.getElementById('interface-language') as HTMLSelectElement | null;
+    if (localeSelect) {
+      void loadLocalesIntoSelect(localeSelect);
+
+      // Add change listener for immediate language change (only once)
+      if (!localeSelect.dataset.listenerAdded) {
+        localeSelect.dataset.listenerAdded = 'true';
+        localeSelect.addEventListener('change', async (event) => {
+          const target = event.target as HTMLSelectElement;
+          const newLocale = target.value;
+          try {
+            settings.preferredLocale = newLocale;
+            await storageSet({
+              markdownViewerSettings: settings
+            });
+
+            await Localization.setPreferredLocale(newLocale);
+            safeSendMessage({
+              id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+              type: 'LOCALE_CHANGED',
+              payload: { locale: newLocale },
+              timestamp: Date.now(),
+              source: 'popup-settings',
+            });
+            applyI18nText();
+
+            // Reload themes to update names
+            loadThemes();
+
+            showMessage(translate('settings_language_changed'), 'success');
+          } catch (error) {
+            console.error('Failed to change language:', error);
+            showMessage(translate('settings_save_failed'), 'error');
+          }
+        });
+      }
+    }
 
     // Load themes
     loadThemes();
@@ -294,6 +371,94 @@ export function createSettingsTabManager({
         docxEmojiStyleEl.dataset.listenerAdded = 'true';
         docxEmojiStyleEl.addEventListener('change', async () => {
           settings.docxEmojiStyle = docxEmojiStyleEl.value as EmojiStyle;
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    // DOCX: Theme mapping overrides
+    const docxHeadingScaleEl = document.getElementById('docx-heading-scale-pct') as HTMLInputElement | null;
+    if (docxHeadingScaleEl) {
+      setNumberInputValue(docxHeadingScaleEl, settings.docxHeadingScalePct);
+      if (!docxHeadingScaleEl.dataset.listenerAdded) {
+        docxHeadingScaleEl.dataset.listenerAdded = 'true';
+        docxHeadingScaleEl.addEventListener('change', async () => {
+          settings.docxHeadingScalePct = parseOptionalNumber(docxHeadingScaleEl.value, 1);
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    const docxHeadingSpacingBeforeEl = document.getElementById('docx-heading-spacing-before-pt') as HTMLInputElement | null;
+    if (docxHeadingSpacingBeforeEl) {
+      setNumberInputValue(docxHeadingSpacingBeforeEl, settings.docxHeadingSpacingBeforePt);
+      if (!docxHeadingSpacingBeforeEl.dataset.listenerAdded) {
+        docxHeadingSpacingBeforeEl.dataset.listenerAdded = 'true';
+        docxHeadingSpacingBeforeEl.addEventListener('change', async () => {
+          settings.docxHeadingSpacingBeforePt = parseOptionalNumber(docxHeadingSpacingBeforeEl.value, 0);
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    const docxHeadingSpacingAfterEl = document.getElementById('docx-heading-spacing-after-pt') as HTMLInputElement | null;
+    if (docxHeadingSpacingAfterEl) {
+      setNumberInputValue(docxHeadingSpacingAfterEl, settings.docxHeadingSpacingAfterPt);
+      if (!docxHeadingSpacingAfterEl.dataset.listenerAdded) {
+        docxHeadingSpacingAfterEl.dataset.listenerAdded = 'true';
+        docxHeadingSpacingAfterEl.addEventListener('change', async () => {
+          settings.docxHeadingSpacingAfterPt = parseOptionalNumber(docxHeadingSpacingAfterEl.value, 0);
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    const docxHeadingAlignmentEl = document.getElementById('docx-heading-alignment') as HTMLSelectElement | null;
+    if (docxHeadingAlignmentEl) {
+      docxHeadingAlignmentEl.value = settings.docxHeadingAlignment ?? '';
+      if (!docxHeadingAlignmentEl.dataset.listenerAdded) {
+        docxHeadingAlignmentEl.dataset.listenerAdded = 'true';
+        docxHeadingAlignmentEl.addEventListener('change', async () => {
+          const value = docxHeadingAlignmentEl.value;
+          settings.docxHeadingAlignment = (value === 'left' || value === 'center' || value === 'right' || value === 'justify')
+            ? value as TableAlignment
+            : null;
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    const docxCodeFontSizeEl = document.getElementById('docx-code-font-size-pt') as HTMLInputElement | null;
+    if (docxCodeFontSizeEl) {
+      setNumberInputValue(docxCodeFontSizeEl, settings.docxCodeFontSizePt);
+      if (!docxCodeFontSizeEl.dataset.listenerAdded) {
+        docxCodeFontSizeEl.dataset.listenerAdded = 'true';
+        docxCodeFontSizeEl.addEventListener('change', async () => {
+          settings.docxCodeFontSizePt = parseOptionalNumber(docxCodeFontSizeEl.value, 0);
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    const docxTableBorderWidthEl = document.getElementById('docx-table-border-width-pt') as HTMLInputElement | null;
+    if (docxTableBorderWidthEl) {
+      setNumberInputValue(docxTableBorderWidthEl, settings.docxTableBorderWidthPt);
+      if (!docxTableBorderWidthEl.dataset.listenerAdded) {
+        docxTableBorderWidthEl.dataset.listenerAdded = 'true';
+        docxTableBorderWidthEl.addEventListener('change', async () => {
+          settings.docxTableBorderWidthPt = parseOptionalNumber(docxTableBorderWidthEl.value, 0);
+          await saveSettingsToStorage();
+        });
+      }
+    }
+
+    const docxTableCellPaddingEl = document.getElementById('docx-table-cell-padding-pt') as HTMLInputElement | null;
+    if (docxTableCellPaddingEl) {
+      setNumberInputValue(docxTableCellPaddingEl, settings.docxTableCellPaddingPt);
+      if (!docxTableCellPaddingEl.dataset.listenerAdded) {
+        docxTableCellPaddingEl.dataset.listenerAdded = 'true';
+        docxTableCellPaddingEl.addEventListener('change', async () => {
+          settings.docxTableCellPaddingPt = parseOptionalNumber(docxTableCellPaddingEl.value, 0);
           await saveSettingsToStorage();
         });
       }
@@ -329,17 +494,17 @@ export function createSettingsTabManager({
       }
     }
 
-    // Table layout
-    const tableLayoutEl = document.getElementById('table-layout') as HTMLSelectElement | null;
-    if (tableLayoutEl) {
-      tableLayoutEl.value = settings.tableLayout || 'center';
-      if (!tableLayoutEl.dataset.listenerAdded) {
-        tableLayoutEl.dataset.listenerAdded = 'true';
-        tableLayoutEl.addEventListener('change', async () => {
-          settings.tableLayout = tableLayoutEl.value as TableLayout;
+    // Table alignment
+    const tableAlignmentEl = document.getElementById('table-alignment') as HTMLSelectElement | null;
+    if (tableAlignmentEl) {
+      tableAlignmentEl.value = settings.tableAlignment || 'center';
+      if (!tableAlignmentEl.dataset.listenerAdded) {
+        tableAlignmentEl.dataset.listenerAdded = 'true';
+        tableAlignmentEl.addEventListener('change', async () => {
+          settings.tableAlignment = tableAlignmentEl.value as TableAlignment;
           await saveSettingsToStorage();
           // Notify all tabs to re-render
-          notifySettingChanged('tableLayout', settings.tableLayout);
+          notifySettingChanged('tableAlignment', settings.tableAlignment);
         });
       }
     }
@@ -434,151 +599,6 @@ export function createSettingsTabManager({
       // Fallback: keep whatever is currently in the DOM
       localeSelect.value = settings.preferredLocale || DEFAULT_SETTING_LOCALE;
     }
-  }
-
-  /**
-   * Get display code for a locale (e.g., "zh_CN" -> "zh", "pt_BR" -> "pt")
-   */
-  function getLocaleDisplayCode(localeCode: string): string {
-    if (localeCode === 'auto') {
-      // Use Chrome's UI language (same as what the extension actually uses)
-      const chromeLocale = chrome.i18n.getUILanguage().replace('-', '_');
-      // Find matching locale in registry
-      const match = localeRegistry?.locales.find(l => 
-        l.code === chromeLocale || 
-        l.code.startsWith(chromeLocale.split('_')[0])
-      );
-      return match ? match.code.split('_')[0] : 'en';
-    }
-    return localeCode.split('_')[0];
-  }
-
-  /**
-   * Setup the compact language selector button and dropdown
-   */
-  async function setupLanguageSelector(): Promise<void> {
-    const langBtn = document.getElementById('language-selector') as HTMLButtonElement | null;
-    const dropdown = document.getElementById('language-dropdown') as HTMLElement | null;
-    const dropdownContent = document.getElementById('language-dropdown-content') as HTMLElement | null;
-
-    if (!langBtn || !dropdown || !dropdownContent) {
-      return;
-    }
-
-    // Load locale registry if not already loaded
-    if (!localeRegistry) {
-      try {
-        const url = chrome.runtime.getURL('_locales/registry.json');
-        const response = await fetch(url);
-        localeRegistry = (await response.json()) as LocaleRegistry;
-      } catch (error) {
-        console.error('Failed to load locale registry:', error);
-        return;
-      }
-    }
-
-    // Update button text with current locale code
-    const currentLocale = settings.preferredLocale || DEFAULT_SETTING_LOCALE;
-    langBtn.textContent = getLocaleDisplayCode(currentLocale);
-
-    // Populate dropdown options
-    dropdownContent.innerHTML = '';
-
-    // Add "Auto" option
-    const autoOption = document.createElement('div');
-    autoOption.className = 'language-option' + (currentLocale === 'auto' ? ' active' : '');
-    autoOption.dataset.locale = 'auto';
-    autoOption.innerHTML = `
-      <span class="language-option-code">auto</span>
-      <span data-i18n="settings_language_auto">Auto</span>
-    `;
-    dropdownContent.appendChild(autoOption);
-
-    // Add language options
-    (localeRegistry.locales || []).forEach((locale) => {
-      const option = document.createElement('div');
-      option.className = 'language-option' + (currentLocale === locale.code ? ' active' : '');
-      option.dataset.locale = locale.code;
-      option.innerHTML = `
-        <span class="language-option-code">${locale.code.split('_')[0]}</span>
-        <span>${locale.name}</span>
-      `;
-      dropdownContent.appendChild(option);
-    });
-
-    // Apply i18n
-    applyI18nText();
-
-    // Toggle dropdown on button click
-    if (!langBtn.dataset.listenerAdded) {
-      langBtn.dataset.listenerAdded = 'true';
-      langBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isVisible = dropdown.style.display !== 'none';
-        if (isVisible) {
-          dropdown.style.display = 'none';
-        } else {
-          // Position dropdown below button
-          const rect = langBtn.getBoundingClientRect();
-          dropdown.style.top = `${rect.bottom + 4}px`;
-          dropdown.style.right = `${window.innerWidth - rect.right}px`;
-          dropdown.style.display = 'block';
-        }
-      });
-    }
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', () => {
-      dropdown.style.display = 'none';
-    });
-
-    // Handle language option clicks
-    dropdownContent.addEventListener('click', async (e) => {
-      const target = (e.target as HTMLElement).closest('.language-option') as HTMLElement | null;
-      if (!target) return;
-
-      const newLocale = target.dataset.locale;
-      const currentSettingLocale = settings.preferredLocale || DEFAULT_SETTING_LOCALE;
-      if (!newLocale || newLocale === currentSettingLocale) {
-        dropdown.style.display = 'none';
-        return;
-      }
-
-      try {
-        settings.preferredLocale = newLocale;
-        await storageSet({
-          markdownViewerSettings: settings
-        });
-
-        await Localization.setPreferredLocale(newLocale);
-        safeSendMessage({
-          id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-          type: 'LOCALE_CHANGED',
-          payload: { locale: newLocale },
-          timestamp: Date.now(),
-          source: 'popup-settings',
-        });
-        
-        // Update button text
-        langBtn.textContent = getLocaleDisplayCode(newLocale);
-
-        // Update active state in dropdown
-        dropdownContent.querySelectorAll<HTMLElement>('.language-option').forEach(opt => {
-          opt.classList.toggle('active', opt.dataset.locale === newLocale);
-        });
-
-        applyI18nText();
-
-        // Reload themes to update names
-        loadThemes();
-
-        dropdown.style.display = 'none';
-        showMessage(translate('settings_language_changed'), 'success');
-      } catch (error) {
-        console.error('Failed to change language:', error);
-        showMessage(translate('settings_save_failed'), 'error');
-      }
-    });
   }
 
   /**
@@ -859,6 +879,49 @@ export function createSettingsTabManager({
         settings.docxEmojiStyle = docxEmojiStyleEl.value as EmojiStyle;
       }
 
+      const docxHeadingScaleEl = document.getElementById('docx-heading-scale-pct') as HTMLInputElement | null;
+      if (docxHeadingScaleEl) {
+        settings.docxHeadingScalePct = parseOptionalNumber(docxHeadingScaleEl.value, 1);
+      }
+
+      const docxHeadingSpacingBeforeEl = document.getElementById('docx-heading-spacing-before-pt') as HTMLInputElement | null;
+      if (docxHeadingSpacingBeforeEl) {
+        settings.docxHeadingSpacingBeforePt = parseOptionalNumber(docxHeadingSpacingBeforeEl.value, 0);
+      }
+
+      const docxHeadingSpacingAfterEl = document.getElementById('docx-heading-spacing-after-pt') as HTMLInputElement | null;
+      if (docxHeadingSpacingAfterEl) {
+        settings.docxHeadingSpacingAfterPt = parseOptionalNumber(docxHeadingSpacingAfterEl.value, 0);
+      }
+
+      const docxHeadingAlignmentEl = document.getElementById('docx-heading-alignment') as HTMLSelectElement | null;
+      if (docxHeadingAlignmentEl) {
+        const value = docxHeadingAlignmentEl.value;
+        settings.docxHeadingAlignment = (value === 'left' || value === 'center' || value === 'right' || value === 'justify')
+          ? value as TableAlignment
+          : null;
+      }
+
+      const docxCodeFontSizeEl = document.getElementById('docx-code-font-size-pt') as HTMLInputElement | null;
+      if (docxCodeFontSizeEl) {
+        settings.docxCodeFontSizePt = parseOptionalNumber(docxCodeFontSizeEl.value, 0);
+      }
+
+      const docxTableBorderWidthEl = document.getElementById('docx-table-border-width-pt') as HTMLInputElement | null;
+      if (docxTableBorderWidthEl) {
+        settings.docxTableBorderWidthPt = parseOptionalNumber(docxTableBorderWidthEl.value, 0);
+      }
+
+      const docxTableCellPaddingEl = document.getElementById('docx-table-cell-padding-pt') as HTMLInputElement | null;
+      if (docxTableCellPaddingEl) {
+        settings.docxTableCellPaddingPt = parseOptionalNumber(docxTableCellPaddingEl.value, 0);
+      }
+
+      const tableAlignmentEl = document.getElementById('table-alignment') as HTMLSelectElement | null;
+      if (tableAlignmentEl) {
+        settings.tableAlignment = tableAlignmentEl.value as TableAlignment;
+      }
+
       // Load supported file extensions from checkboxes
       const supportMermaidEl = document.getElementById('support-mermaid') as HTMLInputElement | null;
       const supportVegaEl = document.getElementById('support-vega') as HTMLInputElement | null;
@@ -913,6 +976,13 @@ export function createSettingsTabManager({
         preferredLocale: DEFAULT_SETTING_LOCALE,
         docxHrDisplay: 'hide',
         docxEmojiStyle: 'system',
+        docxHeadingScalePct: null,
+        docxHeadingSpacingBeforePt: null,
+        docxHeadingSpacingAfterPt: null,
+        docxHeadingAlignment: null,
+        docxCodeFontSizePt: null,
+        docxTableBorderWidthPt: null,
+        docxTableCellPaddingPt: null,
         supportedExtensions: {
           mermaid: true,
           vega: true,
@@ -923,7 +993,7 @@ export function createSettingsTabManager({
           drawio: true,
         },
         tableMergeEmpty: true,
-        tableLayout: 'center',
+        tableAlignment: 'center',
       };
 
       await storageSet({
@@ -966,7 +1036,6 @@ export function createSettingsTabManager({
     saveSettings,
     resetSettings,
     getSettings,
-    loadThemes,
-    setupLanguageSelector
+    loadThemes
   };
 }

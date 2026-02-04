@@ -551,6 +551,30 @@
     "message": "启用后，将分析表格结构并智能合并空单元格。",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "表格对齐：",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "左对齐",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "居中",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "右对齐",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "两端对齐",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "应用于预览与 DOCX 导出。",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "主题已成功切换，请刷新页面查看变化。",
     "description": "主题切换成功时显示的消息"
@@ -626,5 +650,45 @@
   "zoom": {
     "message": "缩放",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "�����ֺ����� (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "����ǰ��� (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "������� (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "�������",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "����Ĭ��",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "�����ֺ� (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "����߿���� (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "����Ԫ���ڱ߾� (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX ����ӳ��",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "������ʹ������Ĭ��ֵ���� 0 ��ǿ��Ϊ 0��",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

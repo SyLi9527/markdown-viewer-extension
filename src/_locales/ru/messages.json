@@ -551,6 +551,30 @@
     "message": "При включении структура таблицы будет проанализирована и пустые ячейки будут интеллектуально объединены.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Выравнивание таблицы:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "По левому краю",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "По центру",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "По правому краю",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "По ширине",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Применяется к предварительному просмотру и экспорту DOCX.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Тема успешно изменена. Пожалуйста, перезагрузите страницу, чтобы увидеть изменения.",
     "description": "Сообщение при изменении темы"
@@ -626,5 +650,45 @@
   "zoom": {
     "message": "Масштаб",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "���ѧ���ѧ� ��ѧ٧ާ֧�� �٧ѧԧ�ݧ�ӧܧ�� (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "���ߧ�֧�ӧѧ� ��֧�֧� �٧ѧԧ�ݧ�ӧܧѧާ� (���)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "���ߧ�֧�ӧѧ� ����ݧ� �٧ѧԧ�ݧ�ӧܧ�� (���)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "������ѧӧߧڧӧѧߧڧ� �٧ѧԧ�ݧ�ӧܧ��",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "���� ��ާ�ݧ�ѧߧڧ� �էݧ� ��֧ާ�",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "���ѧ٧ާ֧� ���ڧ��� �ܧ�է� (���)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "����ݧ�ڧߧ� �ԧ�ѧߧڧ�� ��ѧҧݧڧ�� (���)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "���ߧ���֧ߧߧڧ� �������� ���֧֧� ��ѧҧݧڧ�� (���)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "��������ѧӧݧ֧ߧڧ� ��֧ާ� DOCX",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "�����ѧӧ��� ��������, ����ҧ� �ڧ���ݧ�٧�ӧѧ�� �٧ߧѧ�֧ߧڧ� ��֧ާ�. 0 ���ڧߧ�էڧ�֧ݧ�ߧ� �٧ѧէѧק� �ߧ�ݧ�.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

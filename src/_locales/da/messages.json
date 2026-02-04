@@ -551,6 +551,30 @@
     "message": "Når aktiveret, vil tabelstrukturen blive analyseret og tomme celler vil blive intelligent flettet.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Tabeljustering:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Venstre",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Centreret",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Højre",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Justeret",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Gælder for forhåndsvisning og DOCX-eksport.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Tema ændret. Genindlæs venligst siden for at se ændringerne.",
     "description": "Message shown when theme is changed"
@@ -626,5 +650,45 @@
   "zoom": {
     "message": "Zoom",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "Skalering af overskriftsst?rrelse (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Afstand f?r overskrifter (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Afstand efter overskrifter (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "Overskriftsjustering",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Temastandard",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Kodeskrifttst?rrelse (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Tabelkantens bredde (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Indvendig polstring i tabelcelle (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX-temamapping",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "Lad feltet v?re tomt for at bruge temaets standarder. Brug 0 for at tvinge nul.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

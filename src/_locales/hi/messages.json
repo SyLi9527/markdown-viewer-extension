@@ -551,6 +551,30 @@
     "message": "सक्षम होने पर, टेबल संरचना का विश्लेषण किया जाएगा और खाली सेल बुद्धिमानी से मर्ज होंगे।",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "तालिका संरेखण:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "बाएँ",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "केंद्र",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "दाएँ",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "जस्टिफ़ाई",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "पूर्वावलोकन और DOCX निर्यात पर लागू।",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "थीम सफलतापूर्वक बदल गई। परिवर्तन देखने के लिए कृपया पृष्ठ को रीलोड करें।",
     "description": "Message shown when theme is changed"
@@ -626,5 +650,45 @@
   "zoom": {
     "message": "ज़ूम",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "???????? ?? ???? ????? (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "???????? ?? ???? ???????? (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "???????? ?? ??? ???????? (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "?????? ??????",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "??? ????????",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "??? ?????? ???? (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "?????? ?????? ?????? (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "?????? ??? ?????? (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX ??? ??????",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "??? ?? ???????? ????? ???? ?? ??? ???? ??????? 0 ?? ????? ????? ?????",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }

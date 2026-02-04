@@ -551,6 +551,30 @@
     "message": "Apabila didayakan, struktur jadual akan dianalisis dan sel kosong akan digabungkan secara pintar.",
     "description": "Helper note for the table merge option"
   },
+  "settings_table_alignment": {
+    "message": "Penjajaran jadual:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_left": {
+    "message": "Kiri",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_center": {
+    "message": "Tengah",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_right": {
+    "message": "Kanan",
+    "description": "Option to align tables to the right"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Rata kiri-kanan",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_note": {
+    "message": "Digunakan untuk pratonton dan eksport DOCX.",
+    "description": "Helper note for table alignment option"
+  },
   "settings_theme_changed": {
     "message": "Tema berjaya ditukar. Sila muat semula halaman untuk melihat perubahan.",
     "description": "Message shown when theme is changed"
@@ -626,5 +650,45 @@
   "zoom": {
     "message": "Zum",
     "description": "Menu item for zoom"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "Skala saiz tajuk (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Jarak sebelum tajuk (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Jarak selepas tajuk (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_alignment": {
+    "message": "Penjajaran tajuk",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Default tema",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Saiz fon kod (pt)",
+    "description": "Numeric override for code font size"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Lebar sempadan jadual (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Padding sel jadual (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "Pemetaan tema DOCX",
+    "description": "Section title for DOCX theme mapping options"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "Biarkan kosong untuk menggunakan default tema. Gunakan 0 untuk memaksa sifar.",
+    "description": "Note explaining DOCX theme mapping overrides"
   }
 }
