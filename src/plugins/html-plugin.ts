@@ -60,6 +60,14 @@ export class HtmlPlugin extends BasePlugin {
     });
 
     await Promise.all(tasks);
+    // Mark HTML tables for DOM-based handling
+    const tables = Array.from(container.querySelectorAll('table'));
+    tables.forEach((table, index) => {
+      table.setAttribute('data-table-dom', 'true');
+      if (!table.getAttribute('data-table-id')) {
+        table.setAttribute('data-table-id', `html-table-${index + 1}`);
+      }
+    });
     return container.innerHTML;
   }
 
