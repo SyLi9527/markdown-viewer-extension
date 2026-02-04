@@ -25,7 +25,7 @@ export async function exportPdfFromPreview(options: {
   pageSize?: string;
   margin?: string;
 }): Promise<void> {
-  const { containerId = 'markdown-page', pageSize = 'A4', margin = '18mm' } = options;
+  const { filename, containerId = 'markdown-page', pageSize = 'A4', margin = '18mm' } = options;
   const container = document.getElementById(containerId) || document.getElementById('markdown-content');
   if (!container) {
     throw new Error('Preview container not found');
@@ -40,6 +40,7 @@ export async function exportPdfFromPreview(options: {
   printWindow.document.open();
   printWindow.document.write(html);
   printWindow.document.close();
+  printWindow.document.title = filename;
 
   await new Promise<void>((resolve) => {
     printWindow.addEventListener('load', () => resolve(), { once: true });
