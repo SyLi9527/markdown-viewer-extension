@@ -75,6 +75,22 @@ export function getDocumentFilename(): string {
 }
 
 /**
+ * Convert filename to .pdf extension.
+ * Handles .md, .markdown, and other extensions.
+ */
+export function toPdfFilename(filename: string): string {
+  let pdfFilename = filename || 'document.pdf';
+  if (pdfFilename.toLowerCase().endsWith('.md')) {
+    pdfFilename = pdfFilename.slice(0, -3) + '.pdf';
+  } else if (pdfFilename.toLowerCase().endsWith('.markdown')) {
+    pdfFilename = pdfFilename.slice(0, -9) + '.pdf';
+  } else if (!pdfFilename.toLowerCase().endsWith('.pdf')) {
+    pdfFilename = pdfFilename + '.pdf';
+  }
+  return pdfFilename;
+}
+
+/**
  * Extract filename from URL
  * @param url - URL to extract filename from
  * @returns Extracted filename
