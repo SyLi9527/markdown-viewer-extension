@@ -45,7 +45,16 @@ function normalizeCssColor(value: string): string | null {
   if (rgbMatch) {
     const parts = rgbMatch[1].split(',').map((p) => p.trim());
     if (parts.length >= 3) {
-      const [r, g, b] = parts.slice(0, 3).map((p) => Math.max(0, Math.min(255, Number.parseInt(p, 10))));
+      const [rRaw, gRaw, bRaw] = parts.slice(0, 3);
+      const r = Math.max(0, Math.min(255, Number.parseInt(rRaw, 10)));
+      const g = Math.max(0, Math.min(255, Number.parseInt(gRaw, 10)));
+      const b = Math.max(0, Math.min(255, Number.parseInt(bRaw, 10)));
+      if (parts.length >= 4) {
+        const alpha = Number.parseFloat(parts[3]);
+        if (Number.isFinite(alpha) && alpha <= 0) {
+          return null;
+        }
+      }
       if ([r, g, b].every((n) => Number.isFinite(n))) {
         return [r, g, b].map((n) => n.toString(16).padStart(2, '0')).join('').toUpperCase();
       }
