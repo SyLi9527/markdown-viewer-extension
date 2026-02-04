@@ -5,6 +5,8 @@ export type TableDomFont = { family: string; sizePx: number; weight: string; sty
 export interface TableDomCell {
   row: number;
   col: number;
+  originRow: number;
+  originCol: number;
   rowspan: number;
   colspan: number;
   text: string;

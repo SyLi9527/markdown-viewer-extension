@@ -11,6 +11,10 @@ import {
 } from 'docx';
 import type { TableDomModel } from '../utils/table-dom-extractor';
 
+function pxToTwips(px: number): number {
+  return Math.round(px * 15);
+}
+
 function pxToEighths(px: number): number {
   const pt = px * 0.75;
   return Math.max(1, Math.round(pt * 8));
@@ -24,6 +28,32 @@ function cssBorderStyle(style: string): BorderStyle {
   return BorderStyle.SINGLE;
 }
 
+function normalizeCssColor(value: string): string | null {
+  if (!value) return null;
+  const trimmed = value.trim().toLowerCase();
+  if (trimmed === 'transparent') return null;
+  if (trimmed.startsWith('#')) {
+    const hex = trimmed.slice(1);
+    if (hex.length === 3) {
+      return hex.split('').map((c) => c + c).join('').toUpperCase();
+    }
+    if (hex.length >= 6) {
+      return hex.slice(0, 6).toUpperCase();
+    }
+  }
+  const rgbMatch = trimmed.match(/^rgba?\(([^)]+)\)$/);
+  if (rgbMatch) {
+    const parts = rgbMatch[1].split(',').map((p) => p.trim());
+    if (parts.length >= 3) {
+      const [r, g, b] = parts.slice(0, 3).map((p) => Math.max(0, Math.min(255, Number.parseInt(p, 10))));
+      if ([r, g, b].every((n) => Number.isFinite(n))) {
+        return [r, g, b].map((n) => n.toString(16).padStart(2, '0')).join('').toUpperCase();
+      }
+    }
+  }
+  return null;
+}
+
 export function convertTableDomToDocx(model: TableDomModel): Table {
   const rows: TableRow[] = [];
 
@@ -33,28 +63,28 @@ export function convertTableDomToDocx(model: TableDomModel): Table {
 
     for (let c = 0; c < model.colCount; c++) {
       const cell = cells[c];
-      if (!cell || (cell.row !== r || cell.col !== c)) continue;
+      if (!cell || cell.originRow !== r || cell.originCol !== c) continue;
 
       const border = {
         top: {
           style: cssBorderStyle(cell.border.top.style),
           size: pxToEighths(cell.border.top.widthPx),
-          color: cell.border.top.color.replace('#', '')
+          color: normalizeCssColor(cell.border.top.color) || '000000'
         },
         right: {
           style: cssBorderStyle(cell.border.right.style),
           size: pxToEighths(cell.border.right.widthPx),
-          color: cell.border.right.color.replace('#', '')
+          color: normalizeCssColor(cell.border.right.color) || '000000'
         },
         bottom: {
           style: cssBorderStyle(cell.border.bottom.style),
           size: pxToEighths(cell.border.bottom.widthPx),
-          color: cell.border.bottom.color.replace('#', '')
+          color: normalizeCssColor(cell.border.bottom.color) || '000000'
         },
         left: {
           style: cssBorderStyle(cell.border.left.style),
           size: pxToEighths(cell.border.left.widthPx),
-          color: cell.border.left.color.replace('#', '')
+          color: normalizeCssColor(cell.border.left.color) || '000000'
         }
       };
 
@@ -67,16 +97,17 @@ export function convertTableDomToDocx(model: TableDomModel): Table {
         children: [new TextRun({ text: cell.text || '' })]
       });
 
+      const shadingFill = normalizeCssColor(cell.background);
       rowCells.push(new TableCell({
         children: [paragraph],
         margins: {
-          top: Math.round(cell.padding.top * 20),
-          right: Math.round(cell.padding.right * 20),
-          bottom: Math.round(cell.padding.bottom * 20),
-          left: Math.round(cell.padding.left * 20)
+          top: pxToTwips(cell.padding.top),
+          right: pxToTwips(cell.padding.right),
+          bottom: pxToTwips(cell.padding.bottom),
+          left: pxToTwips(cell.padding.left)
         },
         borders: border,
-        shading: { fill: cell.background.replace('#', '') || 'FFFFFF' },
+        shading: shadingFill ? { fill: shadingFill } : undefined,
         rowSpan: cell.rowspan > 1 ? cell.rowspan : undefined,
         columnSpan: cell.colspan > 1 ? cell.colspan : undefined,
         verticalAlign: cell.verticalAlign === 'top'
