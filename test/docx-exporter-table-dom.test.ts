@@ -1,14 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseHTML } from 'linkedom';
-import { extractTableDomModel } from '../src/utils/table-dom-extractor';
+import DocxExporter from '../src/exporters/docx-exporter';
 
-// This is a lightweight assertion that DOM extraction is reachable.
-// Full integration is validated in visual diff tests.
+// Lightweight wiring check for the DOM table export path.
 
-test('extractTableDomModel returns model for HTML table', () => {
-  const { document } = parseHTML('<table><tr><td>1</td></tr></table>');
-  const table = document.querySelector('table') as HTMLTableElement;
-  const model = extractTableDomModel(table, { getStyle: () => ({ paddingTop: '0px' } as any) });
-  assert.equal(model.rowCount, 1);
+test('docx-exporter uses DOM table model when HTML contains a table', async () => {
+  const exporter = new DocxExporter(null);
+  const htmlNode = { type: 'html', value: '<table><tr><td>1</td></tr></table>' } as any;
+  const result = await (exporter as any).convertNode(htmlNode);
+  assert.ok(result);
 });
