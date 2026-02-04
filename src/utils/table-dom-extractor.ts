@@ -115,11 +115,14 @@ function computeMaxColumns(rows: HTMLTableRowElement[], rowGroupEnds: number[]):
   return maxColumns;
 }
 
-function buildCellElementMatrix(table: HTMLTableElement): HTMLTableCellElement[][] {
+function buildCellElementMatrix(
+  table: HTMLTableElement,
+  normalized: TableDomNormalized
+): (HTMLTableCellElement | null)[][] {
   const rows = getTableRows(table);
   const rowGroupEnds = getRowGroupEnds(rows);
-  const maxColumns = computeMaxColumns(rows, rowGroupEnds);
-  const grid: HTMLTableCellElement[][] = [];
+  const maxColumns = Math.max(normalized.colCount, computeMaxColumns(rows, rowGroupEnds));
+  const grid: (HTMLTableCellElement | null)[][] = [];
   const spanTracker: number[] = [];
 
   for (let r = 0; r < rows.length; r++) {
@@ -158,16 +161,26 @@ function buildCellElementMatrix(table: HTMLTableElement): HTMLTableCellElement[]
     }
   }
 
+  const rowCount = Math.max(normalized.rowCount, grid.length);
+  for (let r = 0; r < rowCount; r++) {
+    grid[r] = grid[r] || [];
+    for (let c = 0; c < maxColumns; c++) {
+      if (!grid[r][c]) {
+        grid[r][c] = null;
+      }
+    }
+  }
+
   return grid;
 }
 
 export function extractTableDomModel(table: HTMLTableElement, options?: { getStyle?: StyleResolver }): TableDomModel {
   const getStyle = options?.getStyle || ((node: Element) => getComputedStyle(node));
   const normalized = normalizeTableElement(table);
-  const cellMatrix = buildCellElementMatrix(table);
+  const cellMatrix = buildCellElementMatrix(table, normalized);
 
   const cells = normalized.cells.map((row) => row.map((cell) => {
-    const el = cellMatrix[cell.row]?.[cell.col] as Element | undefined;
+    const el = cellMatrix[cell.row]?.[cell.col] as Element | null | undefined;
     const style = el ? getStyle(el) : getStyle(table);
 
     return {

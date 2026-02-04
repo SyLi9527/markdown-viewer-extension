@@ -91,3 +91,55 @@ test('extractTableDomModel maps span cells to source element styles', () => {
   assert.equal(model.cells[1][0].padding.left, 11);
   assert.equal(model.cells[1][2].padding.left, 22);
 });
+
+test('extractTableDomModel falls back to table styles for missing slots', () => {
+  const { document } = parseHTML(`
+    <table>
+      <tr><td data-style="a">A</td><td data-style="b">B</td></tr>
+      <tr><td data-style="c">C</td></tr>
+    </table>
+  `);
+  const table = document.querySelector('table') as HTMLTableElement;
+
+  const model = extractTableDomModel(table, {
+    getStyle: (node) => {
+      const key = (node as HTMLElement).getAttribute('data-style') || 'table';
+      const paddingLeftMap: Record<string, string> = {
+        table: '99px',
+        a: '11px',
+        b: '22px',
+        c: '33px'
+      };
+
+      return {
+        paddingTop: '0px',
+        paddingRight: '0px',
+        paddingBottom: '0px',
+        paddingLeft: paddingLeftMap[key] || '0px',
+        borderTopWidth: '0px',
+        borderTopStyle: 'none',
+        borderTopColor: '#000000',
+        borderRightWidth: '0px',
+        borderRightStyle: 'none',
+        borderRightColor: '#000000',
+        borderBottomWidth: '0px',
+        borderBottomStyle: 'none',
+        borderBottomColor: '#000000',
+        borderLeftWidth: '0px',
+        borderLeftStyle: 'none',
+        borderLeftColor: '#000000',
+        fontFamily: 'Arial',
+        fontSize: '12px',
+        fontWeight: '400',
+        fontStyle: 'normal',
+        color: '#000000',
+        lineHeight: '16px',
+        textAlign: 'left',
+        verticalAlign: 'middle',
+        backgroundColor: '#ffffff'
+      } as any;
+    }
+  });
+
+  assert.equal(model.cells[1][1].padding.left, 99);
+});
