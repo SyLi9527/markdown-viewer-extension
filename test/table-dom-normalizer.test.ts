@@ -69,6 +69,25 @@ test('normalizeTableElement treats colspan="0" as span to end of row', () => {
   assert.equal(result.cells[0][2].text, 'B');
 });
 
+test('normalizeTableElement expands colspan="0" after rowspan="0" shifts columns', () => {
+  const { document } = parseHTML(`
+    <table>
+      <tbody>
+        <tr><td rowspan="0">A</td></tr>
+        <tr><td>B</td><td colspan="0">C</td></tr>
+        <tr><td>D</td><td>E</td><td>F</td></tr>
+      </tbody>
+    </table>
+  `);
+  const table = document.querySelector('table') as HTMLTableElement;
+  const result = normalizeTableElement(table);
+
+  assert.equal(result.rowCount, 3);
+  assert.equal(result.colCount, 4);
+  assert.equal(result.cells[1][2].colspan, 2);
+  assert.equal(result.cells[1][3].text, 'C');
+});
+
 test('normalizeTableElement produces a dense grid', () => {
   const { document } = parseHTML(`
     <table>
