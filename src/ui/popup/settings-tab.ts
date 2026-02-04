@@ -789,7 +789,8 @@ export function createSettingsTabManager({
       }
       layoutScheme.body = body as LayoutScheme['body'];
     }
-    const headings: Partial<LayoutScheme['headings']> = {};
+    type HeadingOverride = Partial<LayoutScheme['headings'][typeof headingLevels[number]]>;
+    const headings: Partial<Record<typeof headingLevels[number], HeadingOverride>> = {};
     headingLevels.forEach((level) => {
       const heading = getHeadingConfigFromForm(level);
       if (heading) {
@@ -810,8 +811,8 @@ export function createSettingsTabManager({
     if (list) blocks.list = list;
     const listItem = getBlockConfigFromForm('custom-block-list-item');
     if (listItem) blocks.listItem = listItem;
-    const blockquote = getBlockConfigFromForm('custom-block-blockquote');
-    if (blockquote) blocks.blockquote = blockquote;
+    const blockquoteBlock = getBlockConfigFromForm('custom-block-blockquote');
+    if (blockquoteBlock) blocks.blockquote = blockquoteBlock;
     const codeBlock = getBlockConfigFromForm('custom-block-code');
     if (codeBlock) blocks.codeBlock = codeBlock;
     const tableBlock = getBlockConfigFromForm('custom-block-table');
@@ -847,11 +848,11 @@ export function createSettingsTabManager({
     if (Object.keys(background).length > 0) {
       colorScheme.background = background as ColorScheme['background'];
     }
-    const blockquote: Partial<ColorScheme['blockquote']> = {};
+    const blockquoteColor: Partial<ColorScheme['blockquote']> = {};
     const blockquoteBorder = normalizeHexColor(colors.blockquoteBorder);
-    if (blockquoteBorder) blockquote.border = blockquoteBorder;
-    if (Object.keys(blockquote).length > 0) {
-      colorScheme.blockquote = blockquote as ColorScheme['blockquote'];
+    if (blockquoteBorder) blockquoteColor.border = blockquoteBorder;
+    if (Object.keys(blockquoteColor).length > 0) {
+      colorScheme.blockquote = blockquoteColor as ColorScheme['blockquote'];
     }
     const tableColors: Partial<ColorScheme['table']> = {};
     const tableBorder = normalizeHexColor(colors.tableBorder);
