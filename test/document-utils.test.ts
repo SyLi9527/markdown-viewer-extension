@@ -10,3 +10,7 @@ test('toPdfFilename converts md/markdown to .pdf', () => {
 test('toPdfFilename appends .pdf when missing', () => {
   assert.equal(toPdfFilename('note'), 'note.pdf');
 });
+
+test('toPdfFilename defaults to document.pdf', () => {
+  assert.equal(toPdfFilename(''), 'document.pdf');
+});

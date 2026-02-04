@@ -19,6 +19,7 @@ import { getDocument, renderMarkdownDocument } from './viewer-controller';
 import { AsyncTaskManager } from '../markdown-processor';
 import type { PluginRenderer, PlatformAPI } from '../../types/index';
 import type { FrontmatterDisplay } from './viewer-controller';
+import { toPdfFilename } from '../document-utils';
 
 // ============================================================================
 // File Key Management (for scroll position persistence)
@@ -586,6 +587,21 @@ export interface DocxExportFlowOptions {
   onError?: (error: string) => void;
 }
 
+export interface PdfExportFlowOptions {
+  /** Original filename (will be converted to .pdf) */
+  filename: string;
+  /** Optional container ID to export (default: markdown-page) */
+  containerId?: string;
+  /** Page size for PDF (default: A4) */
+  pageSize?: string;
+  /** Page margin for PDF (default: 18mm) */
+  margin?: string;
+  /** Success callback with generated filename */
+  onSuccess?: (filename: string) => void;
+  /** Error callback with error message */
+  onError?: (error: string) => void;
+}
+
 /**
  * Convert filename to .docx extension.
  * Handles .md, .markdown, and other extensions.
@@ -652,6 +668,34 @@ export async function exportDocxFlow(options: DocxExportFlowOptions): Promise<vo
     const errMsg = error instanceof Error ? error.message : String(error);
     // eslint-disable-next-line no-console
     console.error('[ViewerHost] DOCX export failed:', errMsg);
+    onError?.(errMsg);
+  }
+}
+
+export async function exportPdfFlow(options: PdfExportFlowOptions): Promise<void> {
+  const {
+    filename,
+    containerId,
+    pageSize,
+    margin,
+    onSuccess,
+    onError,
+  } = options;
+
+  try {
+    const pdfFilename = toPdfFilename(filename);
+    const PdfExporterModule = await import('../../exporters/pdf-exporter');
+    await PdfExporterModule.exportPdfFromPreview({
+      filename: pdfFilename,
+      containerId,
+      pageSize,
+      margin,
+    });
+    onSuccess?.(pdfFilename);
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    // eslint-disable-next-line no-console
+    console.error('[ViewerHost] PDF export failed:', errMsg);
     onError?.(errMsg);
   }
 }
