@@ -11,14 +11,13 @@ import Localization from '../../../src/utils/localization';
 import type { EmojiStyle } from '../../../src/types/docx.js';
 import type { FrontmatterDisplay } from '../../../src/core/viewer/viewer-controller';
 
-/** Table layout mode */
-export type TableLayout = 'left' | 'center';
-
 export interface SettingsPanelOptions {
   /** Current theme ID */
   currentTheme?: string;
   /** Current locale */
   currentLocale?: string;
+  /** Table style override */
+  tableStyleOverride?: string;
   /** DOCX HR display mode setting */
   docxHrDisplay?: 'pageBreak' | 'line' | 'hide';
   /** DOCX emoji style setting */
@@ -27,12 +26,12 @@ export interface SettingsPanelOptions {
   frontmatterDisplay?: FrontmatterDisplay;
   /** Table merge empty cells setting */
   tableMergeEmpty?: boolean;
-  /** Table layout setting */
-  tableLayout?: TableLayout;
   /** Theme changed callback */
   onThemeChange?: (themeId: string) => void;
   /** Locale changed callback */
   onLocaleChange?: (locale: string) => void;
+  /** Table style override changed callback */
+  onTableStyleOverrideChange?: (value: string) => void;
   /** DOCX HR display changed callback */
   onDocxHrDisplayChange?: (display: 'pageBreak' | 'line' | 'hide') => void;
   /** DOCX emoji style changed callback */
@@ -41,8 +40,6 @@ export interface SettingsPanelOptions {
   onFrontmatterDisplayChange?: (display: FrontmatterDisplay) => void;
   /** Table merge empty cells changed callback */
   onTableMergeEmptyChange?: (enabled: boolean) => void;
-  /** Table layout changed callback */
-  onTableLayoutChange?: (layout: TableLayout) => void;
   /** Cache clear callback */
   onClearCache?: () => Promise<void>;
   /** Called when panel is shown, use to refresh dynamic data */
@@ -62,6 +59,8 @@ export interface SettingsPanel {
   isVisible: () => boolean;
   /** Update theme list */
   setThemes: (themes: ThemeOption[]) => void;
+  /** Update table style list */
+  setTableStyles: (styles: TableStyleOption[]) => void;
   /** Update locale list */
   setLocales: (locales: LocaleOption[]) => void;
   /** Update UI labels after locale change */
@@ -78,6 +77,11 @@ export interface ThemeOption {
   id: string;
   name: string;
   category?: string;
+}
+
+export interface TableStyleOption {
+  id: string;
+  name: string;
 }
 
 export interface LocaleOption {
@@ -98,13 +102,14 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
   const {
     currentTheme = 'default',
     currentLocale = 'auto',
+    tableStyleOverride = 'theme',
     docxHrDisplay = 'hide',
     docxEmojiStyle = 'windows',
     frontmatterDisplay = 'hide',
     tableMergeEmpty = true,
-    tableLayout = 'center',
     onThemeChange,
     onLocaleChange,
+    onTableStyleOverrideChange,
     onDocxHrDisplayChange,
     onDocxEmojiStyleChange,
     onClose
@@ -117,27 +122,9 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
   panel.className = 'vscode-settings-panel';
   panel.style.display = 'none';
 
-  // Helper to get display code from locale
-  const getLocaleDisplayCode = (localeCode: string): string => {
-    if (localeCode === 'auto') {
-      // Use VSCode's UI language
-      const uiLang = document.documentElement.lang || navigator.language || 'en';
-      const baseLang = uiLang.split('-')[0].split('_')[0];
-      return baseLang.toLowerCase();
-    }
-    // Extract base language code (e.g., "zh" from "zh_CN", "en" from "en")
-    return localeCode.split('_')[0].split('-')[0].toLowerCase();
-  };
-
   panel.innerHTML = `
     <div class="vscode-settings-header">
       <span class="vscode-settings-title" data-i18n="tab_settings">${Localization.translate('tab_settings')}</span>
-      <div class="vscode-language-selector">
-        <button class="vscode-language-btn" data-setting="locale-btn">${getLocaleDisplayCode(currentLocale)}</button>
-        <div class="vscode-language-dropdown" style="display: none;">
-          <div class="vscode-language-option" data-locale="auto" data-i18n="settings_language_auto">${Localization.translate('settings_language_auto')}</div>
-        </div>
-      </div>
       <button class="vscode-settings-close" data-i18n-title="close" title="${Localization.translate('close') || 'Close'}">×</button>
     </div>
     <div class="vscode-settings-content">
@@ -147,6 +134,13 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
           <option value="default">Default</option>
         </select>
       </div>
+      <div class="vscode-settings-group">
+        <label class="vscode-settings-label" data-i18n="settings_language_label">${Localization.translate('settings_language_label')}</label>
+        <select class="vscode-settings-select" data-setting="locale">
+          <option value="auto" data-i18n="settings_language_auto">${Localization.translate('settings_language_auto')}</option>
+        </select>
+      </div>
+      <div class="vscode-settings-divider"></div>
       <div class="vscode-settings-group">
         <label class="vscode-settings-label" data-i18n="settings_frontmatter_display">${Localization.translate('settings_frontmatter_display')}</label>
         <select class="vscode-settings-select" data-setting="frontmatterDisplay">
@@ -170,11 +164,11 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
         </label>
       </div>
       <div class="vscode-settings-group">
-        <label class="vscode-settings-label" data-i18n="settings_table_layout">${Localization.translate('settings_table_layout')}</label>
-        <select class="vscode-settings-select" data-setting="tableLayout">
-          <option value="left" ${tableLayout === 'left' ? 'selected' : ''} data-i18n="settings_table_layout_left">${Localization.translate('settings_table_layout_left')}</option>
-          <option value="center" ${tableLayout === 'center' ? 'selected' : ''} data-i18n="settings_table_layout_center">${Localization.translate('settings_table_layout_center')}</option>
+        <label class="vscode-settings-label" data-i18n="settings_table_style">${Localization.translate('settings_table_style')}</label>
+        <select class="vscode-settings-select" data-setting="tableStyleOverride">
+          <option value="theme" data-i18n="settings_table_style_follow_theme">${Localization.translate('settings_table_style_follow_theme')}</option>
         </select>
+        <div class="vscode-settings-note" data-i18n="settings_table_style_note">${Localization.translate('settings_table_style_note')}</div>
       </div>
       <div class="vscode-settings-group">
         <label class="vscode-settings-label" data-i18n="settings_docx_hr_display">${Localization.translate('settings_docx_hr_display')}</label>
@@ -204,25 +198,22 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
   // Get elements
   const closeBtn = panel.querySelector('.vscode-settings-close') as HTMLButtonElement;
   const themeSelect = panel.querySelector('[data-setting="theme"]') as HTMLSelectElement;
-  const languageBtn = panel.querySelector('.vscode-language-btn') as HTMLButtonElement;
-  const languageDropdown = panel.querySelector('.vscode-language-dropdown') as HTMLDivElement;
+  const localeSelect = panel.querySelector('[data-setting="locale"]') as HTMLSelectElement;
+  const tableStyleSelect = panel.querySelector('[data-setting="tableStyleOverride"]') as HTMLSelectElement;
   const docxHrDisplaySelect = panel.querySelector('[data-setting="docxHrDisplay"]') as HTMLSelectElement;
   const tableMergeEmptyCheckbox = panel.querySelector('[data-setting="tableMergeEmpty"]') as HTMLInputElement;
-  const tableLayoutSelect = panel.querySelector('[data-setting="tableLayout"]') as HTMLSelectElement;
   const emojiStyleSelect = panel.querySelector('[data-setting="emojiStyle"]') as HTMLSelectElement;
   const frontmatterDisplaySelect = panel.querySelector('[data-setting="frontmatterDisplay"]') as HTMLSelectElement;
   const clearCacheBtn = panel.querySelector('.vscode-cache-clear-btn') as HTMLButtonElement;
   const cacheItemsValue = panel.querySelector('[data-cache-stat="items"]') as HTMLElement;
   const cacheSizeValue = panel.querySelector('[data-cache-stat="size"]') as HTMLElement;
 
-  // Track current locale for language button
-  let activeLocale = currentLocale;
-
   // Set initial values
   if (themeSelect) themeSelect.value = currentTheme;
+  if (localeSelect) localeSelect.value = currentLocale;
+  if (tableStyleSelect) tableStyleSelect.value = tableStyleOverride;
   if (docxHrDisplaySelect) docxHrDisplaySelect.value = docxHrDisplay;
   if (tableMergeEmptyCheckbox) tableMergeEmptyCheckbox.checked = tableMergeEmpty;
-  if (tableLayoutSelect) tableLayoutSelect.value = tableLayout;
   if (emojiStyleSelect) emojiStyleSelect.value = docxEmojiStyle;
   if (frontmatterDisplaySelect) frontmatterDisplaySelect.value = frontmatterDisplay;
 
@@ -236,18 +227,8 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
     onThemeChange?.(themeSelect.value);
   });
 
-  // Language button click handler
-  languageBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isVisible = languageDropdown.style.display !== 'none';
-    languageDropdown.style.display = isVisible ? 'none' : 'block';
-  });
-
-  // Close language dropdown when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!languageBtn?.contains(e.target as Node) && !languageDropdown?.contains(e.target as Node)) {
-      if (languageDropdown) languageDropdown.style.display = 'none';
-    }
+  localeSelect?.addEventListener('change', () => {
+    onLocaleChange?.(localeSelect.value);
   });
 
   docxHrDisplaySelect?.addEventListener('change', () => {
@@ -258,8 +239,8 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
     options.onTableMergeEmptyChange?.(tableMergeEmptyCheckbox.checked);
   });
 
-  tableLayoutSelect?.addEventListener('change', () => {
-    options.onTableLayoutChange?.(tableLayoutSelect.value as TableLayout);
+  tableStyleSelect?.addEventListener('change', () => {
+    onTableStyleOverrideChange?.(tableStyleSelect.value);
   });
 
   emojiStyleSelect?.addEventListener('change', () => {
@@ -399,43 +380,39 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
     }
   }
 
-  function setLocales(locales: LocaleOption[]): void {
-    if (!languageDropdown) return;
+  function setTableStyles(styles: TableStyleOption[]): void {
+    if (!tableStyleSelect) return;
 
-    // Clear and rebuild dropdown options
-    languageDropdown.innerHTML = `<div class="vscode-language-option${activeLocale === 'auto' ? ' selected' : ''}" data-locale="auto" data-i18n="settings_language_auto">${Localization.translate('settings_language_auto')}</div>`;
-    
-    locales.forEach(loc => {
-      const option = document.createElement('div');
-      option.className = `vscode-language-option${loc.code === activeLocale ? ' selected' : ''}`;
-      option.setAttribute('data-locale', loc.code);
-      option.textContent = loc.name;
-      option.addEventListener('click', (e) => {
-        e.stopPropagation();
-        activeLocale = loc.code;
-        if (languageBtn) languageBtn.textContent = getLocaleDisplayCode(loc.code);
-        languageDropdown.style.display = 'none';
-        // Update selected state
-        languageDropdown.querySelectorAll('.vscode-language-option').forEach(opt => {
-          opt.classList.toggle('selected', opt.getAttribute('data-locale') === loc.code);
-        });
-        onLocaleChange?.(loc.code);
-      });
-      languageDropdown.appendChild(option);
+    const selectedValue = tableStyleSelect.value || tableStyleOverride;
+    tableStyleSelect.innerHTML = `<option value="theme" data-i18n="settings_table_style_follow_theme">${Localization.translate('settings_table_style_follow_theme')}</option>`;
+
+    styles.forEach(style => {
+      const opt = document.createElement('option');
+      opt.value = style.id;
+      opt.textContent = style.name;
+      opt.selected = style.id === selectedValue;
+      tableStyleSelect.appendChild(opt);
     });
 
-    // Add click handler for auto option
-    const autoOption = languageDropdown.querySelector('[data-locale="auto"]');
-    autoOption?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      activeLocale = 'auto';
-      if (languageBtn) languageBtn.textContent = getLocaleDisplayCode('auto');
-      languageDropdown.style.display = 'none';
-      // Update selected state
-      languageDropdown.querySelectorAll('.vscode-language-option').forEach(opt => {
-        opt.classList.toggle('selected', opt.getAttribute('data-locale') === 'auto');
-      });
-      onLocaleChange?.('auto');
+    if (selectedValue === 'theme' || styles.some(style => style.id === selectedValue)) {
+      tableStyleSelect.value = selectedValue;
+    } else {
+      tableStyleSelect.value = 'theme';
+    }
+  }
+
+  function setLocales(locales: LocaleOption[]): void {
+    if (!localeSelect) return;
+
+    // Keep auto option, add loaded locales
+    localeSelect.innerHTML = `<option value="auto" data-i18n="settings_language_auto">${Localization.translate('settings_language_auto')}</option>`;
+    
+    locales.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = loc.code;
+      opt.textContent = loc.name;
+      opt.selected = loc.code === currentLocale;
+      localeSelect.appendChild(opt);
     });
   }
 
@@ -471,6 +448,7 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
     hide,
     isVisible: () => visible,
     setThemes,
+    setTableStyles,
     setLocales,
     updateLabels,
     setCacheStats,

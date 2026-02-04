@@ -173,6 +173,8 @@ export { BorderStyle, AlignmentType } from './docx';
 
 export type {
   SettingKey,
+  TableAlignment,
+  TableStyleOverride,
   SettingTypes,
   SetSettingOptions,
   ISettingsService,

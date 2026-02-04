@@ -690,5 +690,17 @@
   "settings_docx_theme_mapping_note": {
     "message": "Biarkan kosong untuk memakai default tema. Gunakan 0 untuk memaksa nol.",
     "description": "Note explaining DOCX theme mapping overrides"
+  },
+  "settings_table_style": {
+    "message": "Gaya tabel:",
+    "description": "Label for table style selector"
+  },
+  "settings_table_style_follow_theme": {
+    "message": "Ikuti tema",
+    "description": "Option to follow theme table style"
+  },
+  "settings_table_style_note": {
+    "message": "Menimpa gaya tabel tema di pratinjau dan ekspor DOCX.",
+    "description": "Helper note for table style override"
   }
 }

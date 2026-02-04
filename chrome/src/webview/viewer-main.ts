@@ -395,6 +395,11 @@ export async function initializeViewerMain(options: ViewerMainOptions): Promise<
         
         if (key === 'themeId' && typeof value === 'string') {
           void handleSetTheme(value);
+        } else if (key === 'tableStyleOverride') {
+          // Re-apply theme CSS to update table styles without re-rendering
+          if (currentThemeId) {
+            void loadAndApplyTheme(currentThemeId);
+          }
         } else {
           // Other settings changed - just re-render with scroll preservation
           const scrollLine = scrollSyncController?.getCurrentLine() ?? 0;

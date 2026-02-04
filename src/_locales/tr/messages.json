@@ -690,5 +690,17 @@
   "settings_docx_theme_mapping_note": {
     "message": "Tema varsay?lanlar?n? kullanmak i?in bo? b?rak?n. 0 de?eri s?f?r? zorlar.",
     "description": "Note explaining DOCX theme mapping overrides"
+  },
+  "settings_table_style": {
+    "message": "Tablo stili:",
+    "description": "Label for table style selector"
+  },
+  "settings_table_style_follow_theme": {
+    "message": "Temayı takip et",
+    "description": "Option to follow theme table style"
+  },
+  "settings_table_style_note": {
+    "message": "Önizleme ve DOCX dışa aktarmada temanın tablo stilini geçersiz kılar.",
+    "description": "Helper note for table style override"
   }
 }

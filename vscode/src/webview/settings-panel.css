@@ -132,6 +132,13 @@
   opacity: 0.9;
 }
 
+.vscode-settings-note {
+  margin-top: 4px;
+  font-size: 11px;
+  opacity: 0.7;
+  line-height: 1.4;
+}
+
 .vscode-settings-select {
   width: 100%;
   padding: 4px 8px;

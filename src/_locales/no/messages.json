@@ -690,5 +690,17 @@
   "settings_docx_theme_mapping_note": {
     "message": "La st? tomt for ? bruke temastandarder. Bruk 0 for ? tvinge null.",
     "description": "Note explaining DOCX theme mapping overrides"
+  },
+  "settings_table_style": {
+    "message": "Tabellstil:",
+    "description": "Label for table style selector"
+  },
+  "settings_table_style_follow_theme": {
+    "message": "Følg tema",
+    "description": "Option to follow theme table style"
+  },
+  "settings_table_style_note": {
+    "message": "Overstyrer temaets tabellstil i forhåndsvisning og DOCX-eksport.",
+    "description": "Helper note for table style override"
   }
 }

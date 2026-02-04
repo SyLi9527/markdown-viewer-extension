@@ -690,5 +690,17 @@
   "settings_docx_theme_mapping_note": {
     "message": "�ՙڤˤ���ȥƩ`�޼ȶ���ʹ�ä��ޤ���0 ��ָ������� 0 �˹̶����ޤ���",
     "description": "Note explaining DOCX theme mapping overrides"
+  },
+  "settings_table_style": {
+    "message": "表のスタイル：",
+    "description": "Label for table style selector"
+  },
+  "settings_table_style_follow_theme": {
+    "message": "テーマに従う",
+    "description": "Option to follow theme table style"
+  },
+  "settings_table_style_note": {
+    "message": "プレビューと DOCX エクスポートでテーマの表スタイルを上書きします。",
+    "description": "Helper note for table style override"
   }
 }

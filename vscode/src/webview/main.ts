@@ -108,6 +108,7 @@ async function initialize(): Promise<void> {
 
     // Load themes and locales for settings panel
     loadThemesForSettings();
+    loadTableStylesForSettings();
     loadLocalesForSettings();
     loadCacheStats();
 
@@ -416,6 +417,7 @@ function initializeUI(): void {
   settingsPanel = createSettingsPanel({
     currentTheme: currentThemeId,
     currentLocale: window.VSCODE_CONFIG?.locale as string || 'auto',
+    tableStyleOverride: window.VSCODE_CONFIG?.tableStyleOverride as string || 'theme',
     docxHrDisplay: (window.VSCODE_CONFIG?.docxHrDisplay as 'pageBreak' | 'line' | 'hide') || 'hide',
     docxEmojiStyle: (window.VSCODE_CONFIG?.docxEmojiStyle as EmojiStyle) || 'system',
     frontmatterDisplay: (window.VSCODE_CONFIG?.frontmatterDisplay as FrontmatterDisplay) || 'hide',
@@ -437,6 +439,7 @@ function initializeUI(): void {
       
       // Reload themes with new locale names
       await loadThemesForSettings();
+      await loadTableStylesForSettings();
       
       // Re-render to apply new locale
       if (currentMarkdown) {
@@ -445,6 +448,10 @@ function initializeUI(): void {
     },
     onDocxHrDisplayChange: (display) => {
       vscodeBridge.postMessage('SAVE_SETTING', { key: 'docxHrDisplay', value: display });
+    },
+    onTableStyleOverrideChange: async (value) => {
+      await platform.settings.set('tableStyleOverride', value);
+      await loadAndApplyTheme(currentThemeId);
     },
     onTableMergeEmptyChange: async (enabled) => {
       vscodeBridge.postMessage('SAVE_SETTING', { key: 'tableMergeEmpty', value: enabled });
@@ -582,6 +589,45 @@ async function loadThemesForSettings(): Promise<void> {
     settingsPanel.setThemes(themes);
   } catch (error) {
     console.warn('[VSCode Webview] Failed to load themes:', error);
+  }
+}
+
+/**
+ * Load available table styles for settings panel
+ */
+async function loadTableStylesForSettings(): Promise<void> {
+  if (!settingsPanel) return;
+
+  try {
+    const registryUrl = platform.resource.getURL('themes/table-styles/registry.json');
+    const response = await fetch(registryUrl);
+    const registry = await response.json() as {
+      styles: Array<{ id: string; file: string }>;
+    };
+
+    const locale = Localization.getLocale();
+    const useEnglish = !locale.startsWith('zh');
+
+    const stylePromises = registry.styles.map(async (info) => {
+      try {
+        const url = platform.resource.getURL(`themes/table-styles/${info.file}`);
+        const res = await fetch(url);
+        const data = await res.json() as { id: string; name: string; name_en: string };
+        return {
+          id: data.id,
+          name: useEnglish ? data.name_en : data.name
+        };
+      } catch {
+        return null;
+      }
+    });
+
+    const styles = (await Promise.all(stylePromises))
+      .filter((style): style is { id: string; name: string } => style !== null);
+
+    settingsPanel.setTableStyles(styles);
+  } catch (error) {
+    console.warn('[VSCode Webview] Failed to load table styles:', error);
   }
 }
 

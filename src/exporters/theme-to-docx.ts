@@ -528,10 +528,31 @@ export async function loadThemeForDOCX(themeId: string): Promise<DOCXThemeStyles
       `themes/color-schemes/${theme.colorScheme}.json`
     );
 
-    // Load table style
-    const tableStyle = await fetchResource<TableStyleConfig>(
-      `themes/table-styles/${theme.tableStyle}.json`
-    );
+    // Load table style (allow override from settings)
+    let tableStyleId = theme.tableStyle;
+    let tableStyle: TableStyleConfig | null = null;
+    try {
+      const override = await (globalThis.platform as { settings?: { get: (key: string) => Promise<unknown> } } | undefined)?.settings?.get('tableStyleOverride');
+      if (typeof override === 'string' && override && override !== 'theme') {
+        try {
+          tableStyle = await fetchResource<TableStyleConfig>(
+            `themes/table-styles/${override}.json`
+          );
+          tableStyleId = override;
+        } catch (error) {
+          console.warn('Invalid table style override:', override, error);
+          tableStyle = null;
+        }
+      }
+    } catch {
+      // Ignore override errors, fall back to theme default
+    }
+
+    if (!tableStyle) {
+      tableStyle = await fetchResource<TableStyleConfig>(
+        `themes/table-styles/${tableStyleId}.json`
+      );
+    }
 
     // Load code theme
     const codeTheme = await fetchResource<CodeThemeConfig>(

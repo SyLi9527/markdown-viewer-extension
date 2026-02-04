@@ -690,5 +690,17 @@
   "settings_docx_theme_mapping_note": {
     "message": "J?t? tyhj?ksi, jotta k?ytet??n teeman oletuksia. 0 pakottaa nollan.",
     "description": "Note explaining DOCX theme mapping overrides"
+  },
+  "settings_table_style": {
+    "message": "Taulukon tyyli:",
+    "description": "Label for table style selector"
+  },
+  "settings_table_style_follow_theme": {
+    "message": "Seuraa teemaa",
+    "description": "Option to follow theme table style"
+  },
+  "settings_table_style_note": {
+    "message": "Ohittaa teeman taulukkotyylin esikatselussa ja DOCX-viennissä.",
+    "description": "Helper note for table style override"
   }
 }

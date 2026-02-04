@@ -2,6 +2,13 @@
   "version": "2.0.0",
   "themes": [
     {
+      "id": "custom",
+      "file": "custom.json",
+      "category": "classic",
+      "featured": true,
+      "order": 0
+    },
+    {
       "id": "default",
       "file": "default.json",
       "category": "classic",
