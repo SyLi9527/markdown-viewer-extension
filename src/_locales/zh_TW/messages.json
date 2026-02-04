@@ -583,6 +583,78 @@
     "message": "選擇主題：",
     "description": "主題選擇器標籤"
   },
+  "settings_custom_theme_title": {
+    "message": "自訂主題",
+    "description": "Title for custom theme editor"
+  },
+  "settings_custom_theme_base": {
+    "message": "基底主題",
+    "description": "Label for base preset selector"
+  },
+  "settings_custom_theme_generate": {
+    "message": "從目前主題產生",
+    "description": "Button to load current theme into custom editor"
+  },
+  "settings_custom_theme_apply": {
+    "message": "套用",
+    "description": "Button to apply custom theme"
+  },
+  "settings_custom_theme_save": {
+    "message": "儲存",
+    "description": "Button to save custom theme"
+  },
+  "settings_custom_theme_restore": {
+    "message": "還原上次儲存",
+    "description": "Button to restore saved custom theme"
+  },
+  "settings_custom_theme_fonts": {
+    "message": "字型",
+    "description": "Custom theme fonts section"
+  },
+  "settings_custom_theme_layout": {
+    "message": "版面",
+    "description": "Custom theme layout section"
+  },
+  "settings_custom_theme_colors": {
+    "message": "色彩",
+    "description": "Custom theme colors section"
+  },
+  "settings_custom_theme_table": {
+    "message": "表格",
+    "description": "Custom theme table section"
+  },
+  "settings_custom_theme_code": {
+    "message": "程式碼",
+    "description": "Custom theme code section"
+  },
+  "settings_custom_theme_diagram": {
+    "message": "圖表",
+    "description": "Custom theme diagram section"
+  },
+  "settings_custom_theme_advanced": {
+    "message": "進階",
+    "description": "Advanced toggle label"
+  },
+  "settings_custom_theme_saved": {
+    "message": "自訂主題已儲存。",
+    "description": "Toast when custom theme is saved"
+  },
+  "settings_custom_theme_applied": {
+    "message": "自訂主題已套用。",
+    "description": "Toast when custom theme is applied"
+  },
+  "settings_custom_theme_restore_empty": {
+    "message": "尚無已儲存的自訂主題。",
+    "description": "Toast when restoring without saved custom theme"
+  },
+  "settings_custom_theme_based_on": {
+    "message": "基於 {0}",
+    "description": "Description for custom theme based on a preset"
+  },
+  "settings_custom_theme_option": {
+    "message": "自訂",
+    "description": "Custom theme option label"
+  },
   "share": {
     "message": "分享",
     "description": "Share button tooltip"

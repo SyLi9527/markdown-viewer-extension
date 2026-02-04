@@ -36,6 +36,12 @@ export interface CustomThemeMergeResult {
   code: CodeThemeConfig;
 }
 
+export interface CustomThemeInputValidation {
+  colors: Record<string, string | null | undefined>;
+  ptValues: Record<string, string | number | null | undefined>;
+  lineHeight?: number | string | null;
+}
+
 export function validateCustomThemeBundle(bundle: unknown): { ok: boolean; errors: string[] } {
   const errors: string[] = [];
   if (!bundle || typeof bundle !== 'object') {
@@ -45,6 +51,56 @@ export function validateCustomThemeBundle(bundle: unknown): { ok: boolean; error
   if (typeof obj.basePresetId !== 'string' || obj.basePresetId.trim() === '') {
     errors.push('basePresetId is required');
   }
+  return { ok: errors.length === 0, errors };
+}
+
+function isValidHexColor(value: string): boolean {
+  return /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value);
+}
+
+function parsePtValue(value: string | number): number | null {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return null;
+  const numeric = trimmed.endsWith('pt') ? trimmed.slice(0, -2) : trimmed;
+  const parsed = Number(numeric);
+  if (!Number.isFinite(parsed)) return null;
+  return parsed;
+}
+
+export function validateCustomThemeInputs(input: CustomThemeInputValidation): { ok: boolean; errors: string[] } {
+  const errors: string[] = [];
+
+  Object.entries(input.colors || {}).forEach(([key, value]) => {
+    if (value === null || value === undefined || value === '') {
+      return;
+    }
+    if (!isValidHexColor(String(value))) {
+      errors.push(`${key} must be a valid hex color`);
+    }
+  });
+
+  Object.entries(input.ptValues || {}).forEach(([key, value]) => {
+    if (value === null || value === undefined || value === '') {
+      return;
+    }
+    const parsed = parsePtValue(value);
+    if (parsed === null || parsed < 0) {
+      errors.push(`${key} must be a valid pt value`);
+    }
+  });
+
+  if (input.lineHeight !== undefined && input.lineHeight !== null && input.lineHeight !== '') {
+    const parsed = typeof input.lineHeight === 'number'
+      ? input.lineHeight
+      : Number(input.lineHeight);
+    if (!Number.isFinite(parsed) || parsed < 0.5 || parsed > 3.0) {
+      errors.push('lineHeight must be between 0.5 and 3.0');
+    }
+  }
+
   return { ok: errors.length === 0, errors };
 }
 

@@ -4,7 +4,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { mergeCustomTheme, resolveCustomTheme, validateCustomThemeBundle } from '../src/utils/custom-theme.ts';
+import { mergeCustomTheme, resolveCustomTheme, validateCustomThemeBundle, validateCustomThemeInputs } from '../src/utils/custom-theme.ts';
 import { loadThemeForDOCX } from '../src/exporters/theme-to-docx.ts';
 
 const baseTheme = {
@@ -113,6 +113,16 @@ describe('custom-theme', () => {
     const result = validateCustomThemeBundle({});
     assert.strictEqual(result.ok, false);
     assert.ok(result.errors.some(e => e.includes('basePresetId')));
+  });
+
+  it('rejects invalid color hex', () => {
+    const result = validateCustomThemeInputs({
+      colors: { textPrimary: 'not-a-color' },
+      ptValues: {},
+      lineHeight: 1.5
+    });
+    assert.strictEqual(result.ok, false);
+    assert.ok(result.errors.some(e => e.includes('textPrimary')));
   });
 
   it('resolves custom theme via base preset id', async () => {
