@@ -281,3 +281,21 @@ export interface ThemeRegistryInfo {
   name: string;
   category: string;
 }
+
+/**
+ * Custom theme bundle (stored in platform storage)
+ * Used to override a base preset with custom values.
+ */
+export interface CustomThemeBundle {
+  basePresetId: string;
+  overrides?: {
+    fontScheme?: Theme['fontScheme'];
+    diagramStyle?: Theme['diagramStyle'];
+  };
+  schemes?: {
+    layoutScheme?: Partial<LayoutScheme>;
+    colorScheme?: Partial<ColorScheme>;
+    tableStyle?: Partial<TableStyleConfig>;
+    codeTheme?: Partial<CodeThemeConfig>;
+  };
+}
