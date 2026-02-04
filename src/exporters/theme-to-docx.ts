@@ -4,6 +4,7 @@
  */
 
 import themeManager from '../utils/theme-manager';
+import { resolveCustomTheme } from '../utils/custom-theme';
 import { BorderStyle } from 'docx';
 import type {
   DOCXThemeStyles,
@@ -495,16 +496,14 @@ export async function loadThemeForDOCX(themeId: string): Promise<DOCXThemeStyles
     // Initialize theme manager first
     await themeManager.initialize();
     
-    // Load theme preset
-    const theme = (await themeManager.loadTheme(themeId)) as unknown as ThemeConfig & { colorScheme: string };
-
     // Get platform for resource loading
     const platform = globalThis.platform as { 
       platform?: string;
       resource: { 
         getURL: (path: string) => string;
         fetch: (path: string) => Promise<string>;
-      } 
+      };
+      settings?: { get: (key: string) => Promise<unknown> };
     } | undefined;
     
     if (!platform?.resource) {
@@ -517,6 +516,32 @@ export async function loadThemeForDOCX(themeId: string): Promise<DOCXThemeStyles
       const content = await platform.resource.fetch(path);
       return JSON.parse(content) as T;
     };
+
+    if (themeId === 'custom') {
+      const resolved = await resolveCustomTheme(globalThis.platform as import('../types/index').PlatformAPI);
+      let tableStyle = resolved.table;
+      try {
+        const override = await platform.settings?.get?.('tableStyleOverride');
+        if (typeof override === 'string' && override && override !== 'theme') {
+          tableStyle = await fetchResource<TableStyleConfig>(
+            `themes/table-styles/${override}.json`
+          );
+        }
+      } catch {
+        // Ignore override errors, fall back to resolved table style
+      }
+
+      return themeToDOCXStyles(
+        resolved.theme as unknown as ThemeConfig,
+        resolved.layout,
+        resolved.color,
+        tableStyle,
+        resolved.code
+      );
+    }
+
+    // Load theme preset
+    const theme = (await themeManager.loadTheme(themeId)) as unknown as ThemeConfig & { colorScheme: string };
 
     // Load layout scheme
     const layoutScheme = await fetchResource<LayoutScheme>(
@@ -532,7 +557,7 @@ export async function loadThemeForDOCX(themeId: string): Promise<DOCXThemeStyles
     let tableStyleId = theme.tableStyle;
     let tableStyle: TableStyleConfig | null = null;
     try {
-      const override = await (globalThis.platform as { settings?: { get: (key: string) => Promise<unknown> } } | undefined)?.settings?.get('tableStyleOverride');
+      const override = await platform.settings?.get('tableStyleOverride');
       if (typeof override === 'string' && override && override !== 'theme') {
         try {
           tableStyle = await fetchResource<TableStyleConfig>(

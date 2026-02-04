@@ -5,6 +5,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { mergeCustomTheme, resolveCustomTheme, validateCustomThemeBundle } from '../src/utils/custom-theme.ts';
+import { loadThemeForDOCX } from '../src/exporters/theme-to-docx.ts';
 
 const baseTheme = {
   fontScheme: {
@@ -160,5 +161,65 @@ describe('custom-theme', () => {
     assert.strictEqual(resolved.theme.id, 'default');
     assert.strictEqual(resolved.layout.id, 'document');
     assert.strictEqual(resolved.color.id, 'neutral');
+  });
+
+  it('uses custom theme bundle for DOCX when themeId is custom', async () => {
+    const platform = {
+      resource: {
+        getURL: (path: string) => path,
+        fetch: async (path: string) => {
+          if (path === 'themes/font-config.json') {
+            return JSON.stringify({
+              fonts: {
+                'Times New Roman': {
+                  webFallback: 'Times New Roman, serif',
+                  docx: { ascii: 'Times New Roman', eastAsia: 'SimSun' }
+                },
+                Monaco: {
+                  webFallback: 'Monaco, monospace',
+                  docx: { ascii: 'Consolas', eastAsia: 'FangSong' }
+                }
+              }
+            });
+          }
+          if (path === 'themes/registry.json') {
+            return JSON.stringify({ themes: [], categories: {} });
+          }
+          if (path === 'themes/presets/default.json') {
+            return JSON.stringify({
+              id: 'default',
+              fontScheme: {
+                body: { fontFamily: 'Times New Roman' },
+                headings: {},
+                code: { fontFamily: 'Monaco' }
+              },
+              layoutScheme: 'document',
+              colorScheme: 'neutral',
+              tableStyle: 'grid',
+              codeTheme: 'light-clean'
+            });
+          }
+          if (path === 'themes/layout-schemes/document.json') {
+            return JSON.stringify(baseLayout);
+          }
+          if (path === 'themes/color-schemes/neutral.json') {
+            return JSON.stringify(baseColor);
+          }
+          if (path === 'themes/table-styles/grid.json') {
+            return JSON.stringify(baseTable);
+          }
+          if (path === 'themes/code-themes/light-clean.json') {
+            return JSON.stringify(baseCode);
+          }
+          throw new Error(`Unexpected path: ${path}`);
+        }
+      },
+      settings: { get: async () => 'theme' },
+      storage: { get: async () => ({ customThemeBundle: { basePresetId: 'default' } }) }
+    } as any;
+
+    (globalThis as any).platform = platform;
+
+    await assert.doesNotReject(() => loadThemeForDOCX('custom'));
   });
 });
