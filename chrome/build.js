@@ -2,10 +2,10 @@
 
 import { build } from 'esbuild';
 import { createBuildConfig } from './build-config.js';
-import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createZip } from '../scripts/create-zip.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
@@ -71,7 +71,7 @@ try {
   }
   
   // Create zip from inside the chrome directory (so manifest.json is at root)
-  execSync(`cd "${outdir}" && zip -r "${zipPath}" .`, { stdio: 'ignore' });
+  createZip(outdir, zipPath);
   
   // Show zip file size
   const zipStats = fs.statSync(zipPath);
