@@ -706,5 +706,29 @@
   "settings_table_style_note": {
     "message": "Ohittaa teeman taulukkotyylin esikatselussa ja DOCX-viennissä.",
     "description": "Helper note for table style override"
+  },
+  "export_format_title": {
+    "message": "Export format",
+    "description": "Title for export format menu"
+  },
+  "export_format_word": {
+    "message": "Word (.docx)",
+    "description": "Label for Word export format"
+  },
+  "export_format_pdf": {
+    "message": "PDF (.pdf)",
+    "description": "Label for PDF export format"
+  },
+  "export_pdf": {
+    "message": "Share as PDF",
+    "description": "Menu item for exporting to PDF"
+  },
+  "export_pdf_failed_alert": {
+    "message": "PDF export failed{0}",
+    "description": "Alert shown when PDF export fails"
+  },
+  "pdf_export_failed_default": {
+    "message": "PDF export failed",
+    "description": "Fallback message when PDF export fails"
   }
 }
