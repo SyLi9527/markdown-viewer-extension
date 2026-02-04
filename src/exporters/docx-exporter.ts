@@ -29,7 +29,6 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkGemoji from 'remark-gemoji';
 import remarkSuperSub from '../plugins/remark-super-sub';
-import remarkObsidianExcalidraw from '../plugins/remark-obsidian-excalidraw';
 import { visit } from 'unist-util-visit';
 import { loadThemeForDOCX } from './theme-to-docx';
 import type { FrontmatterDisplay } from '../ui/popup/settings-tab';
@@ -107,7 +106,7 @@ class DocxExporter {
   private docxCodeFontSizePt: number | null = null;
   private docxTableBorderWidthPt: number | null = null;
   private docxTableCellPaddingPt: number | null = null;
-  
+
   // Converters (initialized in exportToDocx)
   private tableConverter: TableConverter | null = null;
   private blockquoteConverter: BlockquoteConverter | null = null;
@@ -163,29 +162,29 @@ class DocxExporter {
 
     const rendererAdapter = this.renderer
       ? {
-          render: async (
-            type: string,
-            content: string
-          ): Promise<{ base64: string; width: number; height: number; format: string }> => {
-            const result = await this.renderer!.render(type, content);
-            if (!result) {
-              throw new Error('Renderer returned empty result');
-            }
-            const { base64, width, height, format } = result;
+        render: async (
+          type: string,
+          content: string
+        ): Promise<{ base64: string; width: number; height: number; format: string }> => {
+          const result = await this.renderer!.render(type, content);
+          if (!result) {
+            throw new Error('Renderer returned empty result');
+          }
+          const { base64, width, height, format } = result;
 
-            if (typeof base64 !== 'string' || base64.length === 0) {
-              throw new Error('Renderer returned empty base64');
-            }
-            if (typeof width !== 'number' || typeof height !== 'number') {
-              throw new Error('Renderer returned invalid dimensions');
-            }
-            if (typeof format !== 'string' || format.length === 0) {
-              throw new Error('Renderer returned empty format');
-            }
+          if (typeof base64 !== 'string' || base64.length === 0) {
+            throw new Error('Renderer returned empty base64');
+          }
+          if (typeof width !== 'number' || typeof height !== 'number') {
+            throw new Error('Renderer returned invalid dimensions');
+          }
+          if (typeof format !== 'string' || format.length === 0) {
+            throw new Error('Renderer returned empty format');
+          }
 
-            return { base64, width, height, format };
-          },
-        }
+          return { base64, width, height, format };
+        },
+      }
       : null;
 
     // Create inline converter first (used by others)
@@ -413,7 +412,7 @@ class DocxExporter {
       // Estimate toBlob time based on render time (empirically ~1.8x)
       const estimatedToBlobTime = renderTime * 1.8;
       const t0 = performance.now();
-      
+
       // Simulate progress with timer, stop at 84% to avoid jumping backward
       let simulatedProgress = 30;
       const progressInterval = onProgress ? setInterval(() => {
@@ -440,11 +439,11 @@ class DocxExporter {
 
       await downloadBlob(blob, filename, onProgress
         ? (uploaded: number, total: number) => {
-            // Map upload progress to 85-100%
-            const uploadProgress = total > 0 ? (uploaded / total) : 1;
-            const overallProgress = 85 + Math.round(uploadProgress * 15);
-            onProgress(overallProgress, 100);
-          }
+          // Map upload progress to 85-100%
+          const uploadProgress = total > 0 ? (uploaded / total) : 1;
+          const overallProgress = 85 + Math.round(uploadProgress * 15);
+          onProgress(overallProgress, 100);
+        }
         : undefined
       );
 
@@ -458,7 +457,7 @@ class DocxExporter {
     } finally {
       this.progressCallback = null;
       this.totalResources = 0;
-      this.processedResources = 0;  
+      this.processedResources = 0;
     }
   }
 
@@ -509,7 +508,7 @@ class DocxExporter {
     // Extract frontmatter content (without --- delimiters)
     const frontmatterLines = lines.slice(1, endIndex);
     const frontmatterContent = frontmatterLines.join('\n');
-    
+
     // Return markdown without frontmatter
     const remainingMarkdown = lines.slice(endIndex + 1).join('\n');
     return [frontmatterContent, remainingMarkdown];
@@ -521,7 +520,7 @@ class DocxExporter {
   private parseFrontmatterData(content: string): Record<string, string> {
     const lines = content.split('\n');
     const result: Record<string, string> = {};
-    
+
     for (const line of lines) {
       const colonIndex = line.indexOf(':');
       if (colonIndex > 0) {
@@ -532,7 +531,7 @@ class DocxExporter {
         }
       }
     }
-    
+
     return result;
   }
 
@@ -551,8 +550,7 @@ class DocxExporter {
       .use(remarkGfm, { singleTilde: false })
       .use(remarkMath)
       .use(remarkGemoji)
-      .use(remarkSuperSub)
-      .use(remarkObsidianExcalidraw);
+      .use(remarkSuperSub);
 
     const ast = processor.parse(cleanMarkdown);
     const transformed = processor.runSync(ast);
@@ -578,10 +576,10 @@ class DocxExporter {
   private isTocMarker(node: DOCXASTNode): boolean {
     if (node.type !== 'paragraph') return false;
     if (!node.children || node.children.length !== 1) return false;
-    
+
     const child = node.children[0];
     if (child.type !== 'text') return false;
-    
+
     const text = (child.value || '').trim();
     return /^\[toc\]$/i.test(text);
   }
@@ -601,7 +599,7 @@ class DocxExporter {
       // Render as table with key-value pairs using tableConverter
       const data = this.parseFrontmatterData(this.frontmatterContent);
       const entries = Object.entries(data);
-      
+
       if (entries.length > 0 && this.tableConverter) {
         // Create a fake table AST node for the converter
         const tableNode = {
@@ -644,7 +642,7 @@ class DocxExporter {
 
       const runs: TextRun[] = [];
       const lines = this.frontmatterContent.split('\n');
-      
+
       lines.forEach((line, index) => {
         if (index > 0) {
           runs.push(new TextRun({ break: 1 }));
@@ -791,33 +789,33 @@ class DocxExporter {
 
     const pluginRenderer: PluginRenderer = this.renderer
       ? {
-          render: async (
-            type: string,
-            content: string | object
-          ) => {
-            const result = await this.renderer!.render(type, content);
-            if (!result) {
-              throw new Error('Plugin renderer returned empty result');
-            }
-            if (typeof result.width !== 'number' || typeof result.height !== 'number') {
-              throw new Error('Plugin renderer returned invalid dimensions');
-            }
+        render: async (
+          type: string,
+          content: string | object
+        ) => {
+          const result = await this.renderer!.render(type, content);
+          if (!result) {
+            throw new Error('Plugin renderer returned empty result');
+          }
+          if (typeof result.width !== 'number' || typeof result.height !== 'number') {
+            throw new Error('Plugin renderer returned invalid dimensions');
+          }
 
-            const format = (typeof result.format === 'string' && result.format) ? result.format : 'png';
-            return {
-              base64: result.base64,
-              width: result.width,
-              height: result.height,
-              format: format,
-              error: (result as any).error,
-            };
-          },
-        }
+          const format = (typeof result.format === 'string' && result.format) ? result.format : 'png';
+          return {
+            base64: result.base64,
+            width: result.width,
+            height: result.height,
+            format: format,
+            error: (result as any).error,
+          };
+        },
+      }
       : {
-          render: async () => {
-            throw new Error('Renderer not available');
-          },
-        };
+        render: async () => {
+          throw new Error('Renderer not available');
+        },
+      };
 
     const pluginResult = await convertNodeToDOCX(
       node, pluginRenderer, docxHelpers, () => this.reportResourceProgress()
@@ -903,7 +901,7 @@ class DocxExporter {
   private convertCodeBlock(node: DOCXASTNode, listLevel = 0, blockquoteNestLevel = 0): Paragraph {
     const runs = this.codeHighlighter!.getHighlightedRunsForCode(node.value ?? '', node.lang);
     const codeBackground = this.themeStyles?.characterStyles?.code?.background || 'F6F8FA';
-    
+
     // Border space (10 points) extends outward, need to compensate with indent
     // 10 points = 200 twips (1 point = 20 twips)
     const borderSpace = 200;
@@ -1018,9 +1016,9 @@ class DocxExporter {
   private toDocumentDefaults(defaults: DOCXThemeStyles['default']): IDocumentDefaultsOptions {
     const paragraph: IParagraphStylePropertiesOptions | undefined = defaults.paragraph
       ? {
-          spacing: defaults.paragraph.spacing,
-          alignment: this.toAlignmentType(defaults.paragraph.alignment),
-        }
+        spacing: defaults.paragraph.spacing,
+        alignment: this.toAlignmentType(defaults.paragraph.alignment),
+      }
       : undefined;
 
     return {

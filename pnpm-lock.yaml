@@ -126,6 +126,9 @@ importers:
       '@vscode/vsce':
         specifier: ^3.7.1
         version: 3.7.1
+      fibjs:
+        specifier: ^0.1.8
+        version: 0.1.8
       knip:
         specifier: ^5.80.0
         version: 5.82.1(@types/node@25.2.0)(typescript@5.9.3)
@@ -1913,6 +1916,10 @@ packages:
 
   fd-slicer@1.1.0:
     resolution: {integrity: sha512-cE1qsB/VwyQozZ+q1dGxR8LBYNZeofhEdUNGSMbQD3Gw2lAzX9Zb3uIU6Ebc/Fmyjo9AWWfnn0AUCHqtevs/8g==}
+
+  fibjs@0.1.8:
+    resolution: {integrity: sha512-o1qxYiXhxrFmAQgsBQWg8mdvNc9E4UksJOjLn3nol1Hk1aPRHalz1ixP2fBLN2ktHQ3kPwMF6yRqjOyX7WOk4A==}
+    hasBin: true
 
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
@@ -5780,6 +5787,8 @@ snapshots:
   fd-slicer@1.1.0:
     dependencies:
       pend: 1.2.0
+
+  fibjs@0.1.8: {}
 
   fill-range@7.1.1:
     dependencies:
