@@ -9,6 +9,7 @@ import { loadAndApplyTheme } from '../../../src/utils/theme-to-css';
 import type { AsyncTaskManager } from '../../../src/core/markdown-processor';
 import type { ScrollSyncController } from '../../../src/core/line-based-scroll';
 import type { PlatformBridgeAPI } from '../../../src/types/index';
+import { buildPdfExportHtml } from '../../../src/exporters/pdf-exporter';
 
 // Import shared utilities from viewer-host
 import {
@@ -344,6 +345,30 @@ async function handleExportDocx(): Promise<void> {
 }
 
 /**
+ * Handle PDF export
+ */
+async function handleExportPdf(): Promise<void> {
+  try {
+    const container = document.getElementById('markdown-page') || document.getElementById('markdown-content');
+    if (!container) {
+      throw new Error('Preview container not found');
+    }
+
+    bridge.postMessage('EXPORT_PROGRESS', {
+      completed: 0,
+      total: 0,
+      phase: 'processing',
+    });
+
+    const html = await buildPdfExportHtml(container.outerHTML, { pageSize: 'A4', margin: '18mm' });
+    bridge.postMessage('EXPORT_PDF_READY', { html, filename: currentFilename || 'document.pdf' });
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    bridge.postMessage('EXPORT_ERROR', { error: errMsg });
+  }
+}
+
+/**
  * Handle settings update
  */
 async function handleUpdateSettings(payload: UpdateSettingsPayload): Promise<void> {
@@ -377,6 +402,7 @@ declare global {
     setTheme: (themeId: string) => void;
     // Export
     exportDocx: () => void;
+    exportPdf: () => void;
     // Display settings
     setFontSize: (size: number) => void;
     setLocale: (locale: string) => void;
@@ -410,6 +436,10 @@ window.setTheme = (themeId: string) => {
 
 window.exportDocx = () => {
   handleExportDocx();
+};
+
+window.exportPdf = () => {
+  handleExportPdf();
 };
 
 window.setFontSize = (size: number) => {

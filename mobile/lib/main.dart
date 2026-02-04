@@ -6,6 +6,7 @@ import 'package:ant_icons/ant_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_html_to_pdf_plus/flutter_html_to_pdf_plus.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
@@ -487,6 +488,21 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(error)),
             );
+          }
+          break;
+
+        case 'EXPORT_PDF_READY':
+          if (payload is Map) {
+            final html = payload['html'] as String?;
+            final filename = payload['filename'] as String? ?? 'document.pdf';
+            if (html == null || html.isEmpty) {
+              _hideExportProgress();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(localization.t('pdf_export_failed_default'))),
+              );
+              return;
+            }
+            await _handlePdfReady(html, filename);
           }
           break;
 
@@ -1244,6 +1260,66 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
     }
   }
 
+  /// Export current file to PDF
+  Future<void> _exportPdf() async {
+    if (!_hasContent) return;
+
+    setState(() {
+      _isExporting = true;
+      _exportProgress = 0;
+      _exportTotal = 0;
+      _exportPhase = 'processing';
+    });
+
+    try {
+      await _controller.runJavaScript('window.exportPdf()');
+    } catch (e) {
+      debugPrint('[Mobile] Export PDF error: $e');
+      _hideExportProgress();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(localization.t('pdf_export_failed_default'))),
+        );
+      }
+    }
+  }
+
+  Future<void> _handlePdfReady(String html, String filename) async {
+    try {
+      final targetDir = (await getTemporaryDirectory()).path;
+      final normalized = filename.toLowerCase().endsWith('.pdf')
+          ? filename.substring(0, filename.length - 4)
+          : filename;
+
+      final file = await FlutterHtmlToPdfPlus.convertFromHtmlContent(
+        html,
+        targetDir,
+        normalized.isEmpty ? 'document' : normalized,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _exportPhase = 'sharing';
+      });
+
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          sharePositionOrigin: const Rect.fromLTWH(0, 0, 100, 100),
+        ),
+      );
+    } catch (e) {
+      debugPrint('[Mobile] PDF export failed: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(localization.t('pdf_export_failed_default'))),
+        );
+      }
+    } finally {
+      _hideExportProgress();
+    }
+  }
+
   void _showRecentFiles() {
     final recentFiles = recentFilesService.getAll();
     
@@ -1536,6 +1612,8 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
         _buildPopupMenuItem('recent', AntIcons.history, localization.t('recent_files')),
         if (_hasContent)
           _buildPopupMenuItem('export_docx', AntIcons.file_word, localization.t('export_docx')),
+        if (_hasContent)
+          _buildPopupMenuItem('export_pdf', AntIcons.file_pdf, localization.t('export_pdf')),
         const PopupMenuDivider(),
         _buildPopupMenuItem('settings', AntIcons.setting_outline, localization.t('tab_settings')),
         _buildPopupMenuItem('about', AntIcons.info_circle_outline, localization.t('about')),
@@ -1548,6 +1626,9 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
           break;
         case 'export_docx':
           _exportDocx();
+          break;
+        case 'export_pdf':
+          _exportPdf();
           break;
         case 'settings':
           Navigator.of(context).push(
