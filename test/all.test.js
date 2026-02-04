@@ -12,3 +12,4 @@ import './docx-table-converter.test.ts';
 import './docx-list-converter.test.ts';
 import './html-plugin-table-bypass.test.ts';
 import './docx-theme-mapping.test.ts';
+import './custom-theme.test.ts';
