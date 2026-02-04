@@ -94,6 +94,7 @@
     "@types/node": "^25.0.3",
     "@types/vscode": "^1.107.0",
     "@vscode/vsce": "^3.7.1",
+    "fibjs": "^0.1.8",
     "knip": "^5.80.0",
     "typescript": "^5.9.3",
     "webextension-polyfill": "^0.12.0"
