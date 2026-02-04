@@ -31,6 +31,16 @@ function borderFromStyle(style: CSSStyleDeclaration, side: 'Top' | 'Right' | 'Bo
   };
 }
 
+function parseSpan(value: string | null): number | null {
+  if (value === null || value === '') return null;
+  const num = Number(value);
+  return Number.isFinite(num) ? Math.floor(num) : null;
+}
+
+function normalizeSpanValue(value: number | null): number {
+  return value && value > 1 ? value : 1;
+}
+
 function getTableRows(table: HTMLTableElement): HTMLTableRowElement[] {
   const rows = 'rows' in table ? Array.from(table.rows) : [];
   if (rows.length > 0) {
@@ -53,14 +63,111 @@ function getRowCells(row: HTMLTableRowElement): HTMLTableCellElement[] {
   }) as HTMLTableCellElement[];
 }
 
+function getRowGroupEnds(rows: HTMLTableRowElement[]): number[] {
+  const ends = new Array(rows.length);
+  if (rows.length === 0) return ends;
+  let groupStart = 0;
+  let currentParent = rows[0].parentElement;
+  for (let i = 1; i <= rows.length; i++) {
+    const row = rows[i];
+    if (i === rows.length || row.parentElement !== currentParent) {
+      const groupEnd = i - 1;
+      for (let j = groupStart; j <= groupEnd; j++) {
+        ends[j] = groupEnd;
+      }
+      groupStart = i;
+      currentParent = row?.parentElement ?? null;
+    }
+  }
+  return ends;
+}
+
+function computeMaxColumns(rows: HTMLTableRowElement[], rowGroupEnds: number[]): number {
+  const spanTracker: number[] = [];
+  let maxColumns = 0;
+
+  for (let r = 0; r < rows.length; r++) {
+    for (let c = 0; c < spanTracker.length; c++) {
+      if (spanTracker[c] > 0) spanTracker[c] -= 1;
+    }
+
+    let col = 0;
+    const cells = getRowCells(rows[r]);
+    for (const cell of cells) {
+      while (spanTracker[col] > 0) col += 1;
+
+      const rowspanValue = parseSpan(cell.getAttribute('rowspan'));
+      const rowGroupEnd = rowGroupEnds[r] ?? r;
+      const rowspan =
+        rowspanValue === 0 ? rowGroupEnd - r + 1 : normalizeSpanValue(rowspanValue);
+      const colspan = normalizeSpanValue(parseSpan(cell.getAttribute('colspan')));
+
+      maxColumns = Math.max(maxColumns, col + colspan);
+      for (let c = col; c < col + colspan; c++) {
+        spanTracker[c] = Math.max(spanTracker[c] || 0, rowspan - 1);
+      }
+
+      col += colspan;
+    }
+    maxColumns = Math.max(maxColumns, col);
+  }
+
+  return maxColumns;
+}
+
+function buildCellElementMatrix(table: HTMLTableElement): HTMLTableCellElement[][] {
+  const rows = getTableRows(table);
+  const rowGroupEnds = getRowGroupEnds(rows);
+  const maxColumns = computeMaxColumns(rows, rowGroupEnds);
+  const grid: HTMLTableCellElement[][] = [];
+  const spanTracker: number[] = [];
+
+  for (let r = 0; r < rows.length; r++) {
+    const cells = getRowCells(rows[r]);
+    grid[r] = grid[r] || [];
+
+    for (let c = 0; c < spanTracker.length; c++) {
+      if (spanTracker[c] > 0) spanTracker[c] -= 1;
+    }
+
+    let col = 0;
+    for (const cell of cells) {
+      while (spanTracker[col] > 0) col += 1;
+
+      const rowspanValue = parseSpan(cell.getAttribute('rowspan'));
+      const rowspan =
+        rowspanValue === 0 ? rowGroupEnds[r] - r + 1 : normalizeSpanValue(rowspanValue);
+      const colspanValue = parseSpan(cell.getAttribute('colspan'));
+      const colspan =
+        colspanValue === 0 ? Math.max(1, maxColumns - col) : normalizeSpanValue(colspanValue);
+
+      for (let i = 0; i < rowspan; i++) {
+        for (let j = 0; j < colspan; j++) {
+          const rr = r + i;
+          const cc = col + j;
+          grid[rr] = grid[rr] || [];
+          grid[rr][cc] = cell;
+        }
+      }
+
+      for (let c = col; c < col + colspan; c++) {
+        spanTracker[c] = Math.max(spanTracker[c] || 0, rowspan - 1);
+      }
+
+      col += colspan;
+    }
+  }
+
+  return grid;
+}
+
 export function extractTableDomModel(table: HTMLTableElement, options?: { getStyle?: StyleResolver }): TableDomModel {
   const getStyle = options?.getStyle || ((node: Element) => getComputedStyle(node));
   const normalized = normalizeTableElement(table);
-  const rows = getTableRows(table);
-  const rowCells = rows.map((row) => getRowCells(row));
+  const cellMatrix = buildCellElementMatrix(table);
 
   const cells = normalized.cells.map((row) => row.map((cell) => {
-    const el = rowCells[cell.row]?.[cell.col] as Element | undefined;
+    const el = cellMatrix[cell.row]?.[cell.col] as Element | undefined;
     const style = el ? getStyle(el) : getStyle(table);
 
     return {
