@@ -12,6 +12,7 @@
 
 import themeManager from './theme-manager';
 import { fetchJSON } from './fetch-utils';
+import { resolveCustomTheme } from './custom-theme';
 import type { PlatformAPI, ColorScheme } from '../types/index';
 
 // ============================================================================
@@ -615,21 +616,47 @@ export function applyThemeCSS(css: string): void {
 export async function loadAndApplyTheme(themeId: string): Promise<void> {
   try {
     const platform = getPlatform();
+    if (!platform) {
+      throw new Error('Platform not available');
+    }
     
-    // Load theme preset
-    const theme = (await themeManager.loadTheme(themeId)) as unknown as ThemeConfig;
+    let theme: ThemeConfig;
+    let layoutScheme: LayoutScheme;
+    let colorScheme: ColorScheme;
+    let tableStyle: TableStyleConfig;
+    let codeTheme: CodeThemeConfig;
 
-    // Load layout scheme
-    const layoutSchemeUrl = platform.resource.getURL(`themes/layout-schemes/${theme.layoutScheme}.json`);
-    const layoutScheme = await fetchJSON(layoutSchemeUrl) as LayoutScheme;
+    if (themeId === 'custom') {
+      const resolved = await resolveCustomTheme(platform);
+      theme = resolved.theme as unknown as ThemeConfig;
+      layoutScheme = resolved.layout;
+      colorScheme = resolved.color;
+      tableStyle = resolved.table;
+      codeTheme = resolved.code;
+    } else {
+      // Load theme preset
+      theme = (await themeManager.loadTheme(themeId)) as unknown as ThemeConfig;
 
-    // Load color scheme
-    const colorSchemeUrl = platform.resource.getURL(`themes/color-schemes/${theme.colorScheme}.json`);
-    const colorScheme = await fetchJSON(colorSchemeUrl) as ColorScheme;
+      // Load layout scheme
+      const layoutSchemeUrl = platform.resource.getURL(`themes/layout-schemes/${theme.layoutScheme}.json`);
+      layoutScheme = await fetchJSON(layoutSchemeUrl) as LayoutScheme;
 
-    // Load table style (allow override from settings)
-    let tableStyleId = theme.tableStyle;
-    let tableStyle: TableStyleConfig | null = null;
+      // Load color scheme
+      const colorSchemeUrl = platform.resource.getURL(`themes/color-schemes/${theme.colorScheme}.json`);
+      colorScheme = await fetchJSON(colorSchemeUrl) as ColorScheme;
+
+      // Load table style
+      tableStyle = await fetchJSON(
+        platform.resource.getURL(`themes/table-styles/${theme.tableStyle}.json`)
+      ) as TableStyleConfig;
+
+      // Load code theme
+      codeTheme = await fetchJSON(
+        platform.resource.getURL(`themes/code-themes/${theme.codeTheme}.json`)
+      ) as CodeThemeConfig;
+    }
+
+    // Load table style override (applies to all themes)
     try {
       const override = await platform.settings?.get?.('tableStyleOverride');
       if (typeof override === 'string' && override && override !== 'theme') {
@@ -637,26 +664,13 @@ export async function loadAndApplyTheme(themeId: string): Promise<void> {
           tableStyle = await fetchJSON(
             platform.resource.getURL(`themes/table-styles/${override}.json`)
           ) as TableStyleConfig;
-          tableStyleId = override;
         } catch (error) {
           console.warn('[Theme] Invalid table style override:', override, error);
-          tableStyle = null;
         }
       }
     } catch {
-      // Ignore override errors, fall back to theme default
+      // Ignore override errors, fall back to theme table style
     }
-
-    if (!tableStyle) {
-      tableStyle = await fetchJSON(
-        platform.resource.getURL(`themes/table-styles/${tableStyleId}.json`)
-      ) as TableStyleConfig;
-    }
-
-    // Load code theme
-    const codeTheme = await fetchJSON(
-      platform.resource.getURL(`themes/code-themes/${theme.codeTheme}.json`)
-    ) as CodeThemeConfig;
 
     // Generate and apply CSS
     const css = themeToCSS(theme, layoutScheme, colorScheme, tableStyle, codeTheme);

@@ -9,8 +9,10 @@ import type {
   LayoutScheme,
   ColorScheme,
   TableStyleConfig,
-  CodeThemeConfig
+  CodeThemeConfig,
+  PlatformAPI
 } from '../types/index';
+import { fetchJSON } from './fetch-utils';
 
 export interface CustomThemeBundle {
   basePresetId: string;
@@ -89,4 +91,31 @@ export function mergeCustomTheme(
   const table = deepMerge(baseTable, bundle.schemes?.tableStyle);
   const code = deepMerge(baseCode, bundle.schemes?.codeTheme);
   return { theme, layout, color, table, code };
+}
+
+export async function resolveCustomTheme(platform: PlatformAPI): Promise<CustomThemeMergeResult> {
+  const stored = await platform.storage.get(['customThemeBundle']);
+  const bundle = stored.customThemeBundle as CustomThemeBundle | undefined;
+  const validation = validateCustomThemeBundle(bundle);
+  if (!validation.ok) {
+    throw new Error(`Invalid custom theme bundle: ${validation.errors.join(', ')}`);
+  }
+
+  const basePresetId = bundle!.basePresetId;
+  const theme = await fetchJSON(platform.resource.getURL(`themes/presets/${basePresetId}.json`)) as Theme;
+
+  const layout = await fetchJSON(
+    platform.resource.getURL(`themes/layout-schemes/${theme.layoutScheme}.json`)
+  ) as LayoutScheme;
+  const color = await fetchJSON(
+    platform.resource.getURL(`themes/color-schemes/${theme.colorScheme}.json`)
+  ) as ColorScheme;
+  const table = await fetchJSON(
+    platform.resource.getURL(`themes/table-styles/${theme.tableStyle}.json`)
+  ) as TableStyleConfig;
+  const code = await fetchJSON(
+    platform.resource.getURL(`themes/code-themes/${theme.codeTheme}.json`)
+  ) as CodeThemeConfig;
+
+  return mergeCustomTheme(theme, layout, color, table, code, bundle!);
 }

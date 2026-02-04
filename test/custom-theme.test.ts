@@ -4,7 +4,7 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { mergeCustomTheme, validateCustomThemeBundle } from '../src/utils/custom-theme.ts';
+import { mergeCustomTheme, resolveCustomTheme, validateCustomThemeBundle } from '../src/utils/custom-theme.ts';
 
 const baseTheme = {
   fontScheme: {
@@ -112,5 +112,53 @@ describe('custom-theme', () => {
     const result = validateCustomThemeBundle({});
     assert.strictEqual(result.ok, false);
     assert.ok(result.errors.some(e => e.includes('basePresetId')));
+  });
+
+  it('resolves custom theme via base preset id', async () => {
+    const platform = {
+      storage: {
+        get: async () => ({ customThemeBundle: { basePresetId: 'default' } })
+      },
+      resource: {
+        getURL: (path: string) => path,
+        fetch: async (path: string) => {
+          if (path === 'themes/presets/default.json') {
+            return JSON.stringify({
+              id: 'default',
+              fontScheme: {
+                body: { fontFamily: 'Times New Roman' },
+                headings: {},
+                code: { fontFamily: 'Monaco' }
+              },
+              layoutScheme: 'document',
+              colorScheme: 'neutral',
+              tableStyle: 'grid',
+              codeTheme: 'light-clean'
+            });
+          }
+          if (path === 'themes/layout-schemes/document.json') {
+            return JSON.stringify(baseLayout);
+          }
+          if (path === 'themes/color-schemes/neutral.json') {
+            return JSON.stringify(baseColor);
+          }
+          if (path === 'themes/table-styles/grid.json') {
+            return JSON.stringify(baseTable);
+          }
+          if (path === 'themes/code-themes/light-clean.json') {
+            return JSON.stringify(baseCode);
+          }
+          throw new Error(`Unexpected path: ${path}`);
+        }
+      },
+      settings: { get: async () => 'theme' }
+    } as any;
+
+    (globalThis as any).platform = platform;
+
+    const resolved = await resolveCustomTheme(platform);
+    assert.strictEqual(resolved.theme.id, 'default');
+    assert.strictEqual(resolved.layout.id, 'document');
+    assert.strictEqual(resolved.color.id, 'neutral');
   });
 });
