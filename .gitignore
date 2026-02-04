@@ -75,3 +75,6 @@ src/fonts/*.ttf
 !src/fonts/.gitkeep
 /test
 /test-md
+
+# Git worktrees
+.worktrees/
