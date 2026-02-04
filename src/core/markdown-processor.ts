@@ -18,6 +18,7 @@ import rehypeStringify from 'rehype-stringify';
 import { visit } from 'unist-util-visit';
 import rehypeImageUri from '../plugins/rehype-image-uri';
 import rehypeTableMerge from '../plugins/rehype-table-merge';
+import rehypeTableId from '../plugins/rehype-table-id';
 import { registerRemarkPlugins } from '../plugins/index';
 import { createPlaceholderElement } from '../plugins/plugin-content-utils';
 import { generateContentHash, hashCode } from '../utils/hash';
@@ -595,6 +596,7 @@ export function createMarkdownProcessor(
     .use(rehypeSlug)
     .use(rehypeImageUri)  // Rewrite relative image paths for VS Code webview
     .use(rehypeTableMerge, { enabled: tableMergeEmpty })  // Auto-merge empty table cells
+    .use(rehypeTableId)
     .use(rehypeHighlight)
     .use(rehypeKatex)
     .use(rehypeStringify, { allowDangerousHtml: true });
