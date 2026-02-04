@@ -115,6 +115,33 @@ interface ThemeRegistry {
 }
 
 /**
+ * Table style registry info
+ */
+interface TableStyleRegistryInfo {
+  id: string;
+  file: string;
+}
+
+/**
+ * Table style definition loaded from table style file
+ */
+interface TableStyleDefinition {
+  id: string;
+  name: string;
+  name_en: string;
+  description: string;
+  description_en: string;
+}
+
+/**
+ * Table style registry structure
+ */
+interface TableStyleRegistry {
+  version: string;
+  styles: TableStyleRegistryInfo[];
+}
+
+/**
  * Locale info from registry
  */
 interface LocaleInfo {
@@ -167,6 +194,7 @@ interface Settings {
   frontmatterDisplay?: FrontmatterDisplay;
   tableMergeEmpty?: boolean;
   tableAlignment?: TableAlignment;
+  tableStyleOverride?: string;
 }
 
 /**
@@ -224,10 +252,13 @@ export function createSettingsTabManager({
     frontmatterDisplay: 'hide',
     tableMergeEmpty: true,
     tableAlignment: 'center',
+    tableStyleOverride: 'theme',
   };
   let currentTheme = 'default';
   let themes: ThemeDefinition[] = [];
   let registry: ThemeRegistry | null = null;
+  let tableStyleRegistry: TableStyleRegistry | null = null;
+  let tableStyles: TableStyleDefinition[] = [];
   let localeRegistry: LocaleRegistry | null = null;
 
   function parseOptionalNumber(value: unknown, min?: number): number | null {
@@ -246,6 +277,14 @@ export function createSettingsTabManager({
 
   function setNumberInputValue(el: HTMLInputElement, value: number | null | undefined): void {
     el.value = (typeof value === 'number' && Number.isFinite(value)) ? String(value) : '';
+  }
+
+  function normalizeTableStyleOverride(value: unknown): string {
+    if (typeof value !== 'string') {
+      return 'theme';
+    }
+    const trimmed = value.trim();
+    return trimmed ? trimmed : 'theme';
   }
 
   /**
@@ -275,6 +314,7 @@ export function createSettingsTabManager({
           settings.tableAlignment !== 'right' && settings.tableAlignment !== 'justify') {
         settings.tableAlignment = 'center';
       }
+      settings.tableStyleOverride = normalizeTableStyleOverride(settings.tableStyleOverride);
 
       // Load selected theme
       const themeResult = await storageGet(['selectedTheme']);
@@ -333,8 +373,9 @@ export function createSettingsTabManager({
             });
             applyI18nText();
 
-            // Reload themes to update names
+            // Reload themes and table styles to update names
             loadThemes();
+            void loadTableStyles();
 
             showMessage(translate('settings_language_changed'), 'success');
           } catch (error) {
@@ -345,8 +386,9 @@ export function createSettingsTabManager({
       }
     }
 
-    // Load themes
+    // Load themes + table styles
     loadThemes();
+    void loadTableStyles();
 
     // DOCX: Horizontal rule display
     const docxHrDisplayEl = document.getElementById('docx-hr-display') as HTMLSelectElement | null;
@@ -505,6 +547,20 @@ export function createSettingsTabManager({
           await saveSettingsToStorage();
           // Notify all tabs to re-render
           notifySettingChanged('tableAlignment', settings.tableAlignment);
+        });
+      }
+    }
+
+    // Table style override
+    const tableStyleOverrideEl = document.getElementById('table-style-override') as HTMLSelectElement | null;
+    if (tableStyleOverrideEl) {
+      if (!tableStyleOverrideEl.dataset.listenerAdded) {
+        tableStyleOverrideEl.dataset.listenerAdded = 'true';
+        tableStyleOverrideEl.addEventListener('change', async () => {
+          settings.tableStyleOverride = normalizeTableStyleOverride(tableStyleOverrideEl.value);
+          await saveSettingsToStorage();
+          // Notify all tabs to re-render theme styles
+          notifySettingChanged('tableStyleOverride', settings.tableStyleOverride);
         });
       }
     }
@@ -814,6 +870,76 @@ export function createSettingsTabManager({
   }
 
   /**
+   * Load available table styles from registry
+   */
+  async function loadTableStyles(): Promise<void> {
+    try {
+      if (!tableStyleRegistry) {
+        const registryResponse = await fetch(chrome.runtime.getURL('themes/table-styles/registry.json'));
+        tableStyleRegistry = await registryResponse.json();
+      }
+
+      if (tableStyles.length === 0 && tableStyleRegistry?.styles) {
+        const stylePromises = tableStyleRegistry.styles.map(async (styleInfo) => {
+          try {
+            const response = await fetch(chrome.runtime.getURL(`themes/table-styles/${styleInfo.file}`));
+            const style = await response.json();
+            return {
+              id: style.id,
+              name: style.name,
+              name_en: style.name_en,
+              description: style.description,
+              description_en: style.description_en
+            } as TableStyleDefinition;
+          } catch (error) {
+            console.error(`Failed to load table style ${styleInfo.id}:`, error);
+            return null;
+          }
+        });
+
+        tableStyles = (await Promise.all(stylePromises)).filter((t): t is TableStyleDefinition => t !== null);
+      }
+
+      refreshTableStyleSelect();
+    } catch (error) {
+      console.error('Failed to load table styles:', error);
+    }
+  }
+
+  function refreshTableStyleSelect(): void {
+    const tableStyleSelect = document.getElementById('table-style-override') as HTMLSelectElement | null;
+    if (!tableStyleSelect) {
+      return;
+    }
+
+    tableStyleSelect.innerHTML = '';
+
+    const followOption = document.createElement('option');
+    followOption.value = 'theme';
+    followOption.setAttribute('data-i18n', 'settings_table_style_follow_theme');
+    followOption.textContent = translate('settings_table_style_follow_theme');
+    tableStyleSelect.appendChild(followOption);
+
+    const locale = getUiLocale();
+    const useEnglish = !locale.startsWith('zh');
+    tableStyles.forEach((style) => {
+      const option = document.createElement('option');
+      option.value = style.id;
+      option.textContent = useEnglish ? style.name_en : style.name;
+      tableStyleSelect.appendChild(option);
+    });
+
+    const availableIds = new Set(tableStyles.map((style) => style.id));
+    const selected = settings.tableStyleOverride && settings.tableStyleOverride !== 'theme' && availableIds.has(settings.tableStyleOverride)
+      ? settings.tableStyleOverride
+      : 'theme';
+    settings.tableStyleOverride = selected;
+    tableStyleSelect.value = selected;
+
+    applyI18nText();
+  }
+
+  /**
    * Update theme description display
    * @param themeId - Theme ID
    */
@@ -922,6 +1048,11 @@ export function createSettingsTabManager({
         settings.tableAlignment = tableAlignmentEl.value as TableAlignment;
       }
 
+      const tableStyleOverrideEl = document.getElementById('table-style-override') as HTMLSelectElement | null;
+      if (tableStyleOverrideEl) {
+        settings.tableStyleOverride = normalizeTableStyleOverride(tableStyleOverrideEl.value);
+      }
+
       // Load supported file extensions from checkboxes
       const supportMermaidEl = document.getElementById('support-mermaid') as HTMLInputElement | null;
       const supportVegaEl = document.getElementById('support-vega') as HTMLInputElement | null;
@@ -994,6 +1125,7 @@ export function createSettingsTabManager({
         },
         tableMergeEmpty: true,
         tableAlignment: 'center',
+        tableStyleOverride: 'theme',
       };
 
       await storageSet({

@@ -1,0 +1,22 @@
+{
+  "id": "custom",
+  "name": "自定义",
+  "name_en": "Custom",
+  "description": "基于标准主题，可在设置中覆盖表格样式",
+  "description_en": "Based on the Standard theme. Use settings to override table styles.",
+  "author": "Markdown Viewer Extension",
+  "version": "1.0.0",
+  "fontScheme": {
+    "body": {
+      "fontFamily": "Times New Roman"
+    },
+    "headings": {},
+    "code": {
+      "fontFamily": "Monaco"
+    }
+  },
+  "layoutScheme": "document",
+  "colorScheme": "neutral",
+  "tableStyle": "grid",
+  "codeTheme": "light-clean"
+}

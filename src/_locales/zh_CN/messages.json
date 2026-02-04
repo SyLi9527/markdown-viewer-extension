@@ -694,5 +694,17 @@
   "settings_docx_theme_mapping_note": {
     "message": "������ʹ������Ĭ��ֵ���� 0 ��ǿ��Ϊ 0��",
     "description": "Note explaining DOCX theme mapping overrides"
+  },
+  "settings_table_style": {
+    "message": "表格样式：",
+    "description": "Label for table style selector"
+  },
+  "settings_table_style_follow_theme": {
+    "message": "跟随主题",
+    "description": "Option to follow theme table style"
+  },
+  "settings_table_style_note": {
+    "message": "在预览和 DOCX 导出中覆盖主题的表格样式。",
+    "description": "Helper note for table style override"
   }
 }

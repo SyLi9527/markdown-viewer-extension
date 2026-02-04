@@ -694,5 +694,17 @@
   "settings_docx_theme_mapping_note": {
     "message": "?? tr?ng ?? d��ng gi�� tr? m?c ??nh c?a ch? ??. D��ng 0 ?? ��p v? 0.",
     "description": "Note explaining DOCX theme mapping overrides"
+  },
+  "settings_table_style": {
+    "message": "Kiểu bảng:",
+    "description": "Label for table style selector"
+  },
+  "settings_table_style_follow_theme": {
+    "message": "Theo chủ đề",
+    "description": "Option to follow theme table style"
+  },
+  "settings_table_style_note": {
+    "message": "Ghi đè kiểu bảng của chủ đề trong bản xem trước và xuất DOCX.",
+    "description": "Helper note for table style override"
   }
 }

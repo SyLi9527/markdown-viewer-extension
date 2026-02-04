@@ -627,10 +627,31 @@ export async function loadAndApplyTheme(themeId: string): Promise<void> {
     const colorSchemeUrl = platform.resource.getURL(`themes/color-schemes/${theme.colorScheme}.json`);
     const colorScheme = await fetchJSON(colorSchemeUrl) as ColorScheme;
 
-    // Load table style
-    const tableStyle = await fetchJSON(
-      platform.resource.getURL(`themes/table-styles/${theme.tableStyle}.json`)
-    ) as TableStyleConfig;
+    // Load table style (allow override from settings)
+    let tableStyleId = theme.tableStyle;
+    let tableStyle: TableStyleConfig | null = null;
+    try {
+      const override = await platform.settings?.get?.('tableStyleOverride');
+      if (typeof override === 'string' && override && override !== 'theme') {
+        try {
+          tableStyle = await fetchJSON(
+            platform.resource.getURL(`themes/table-styles/${override}.json`)
+          ) as TableStyleConfig;
+          tableStyleId = override;
+        } catch (error) {
+          console.warn('[Theme] Invalid table style override:', override, error);
+          tableStyle = null;
+        }
+      }
+    } catch {
+      // Ignore override errors, fall back to theme default
+    }
+
+    if (!tableStyle) {
+      tableStyle = await fetchJSON(
+        platform.resource.getURL(`themes/table-styles/${tableStyleId}.json`)
+      ) as TableStyleConfig;
+    }
 
     // Load code theme
     const codeTheme = await fetchJSON(

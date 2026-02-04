@@ -16,6 +16,8 @@ export interface SettingsPanelOptions {
   currentTheme?: string;
   /** Current locale */
   currentLocale?: string;
+  /** Table style override */
+  tableStyleOverride?: string;
   /** DOCX HR display mode setting */
   docxHrDisplay?: 'pageBreak' | 'line' | 'hide';
   /** DOCX emoji style setting */
@@ -28,6 +30,8 @@ export interface SettingsPanelOptions {
   onThemeChange?: (themeId: string) => void;
   /** Locale changed callback */
   onLocaleChange?: (locale: string) => void;
+  /** Table style override changed callback */
+  onTableStyleOverrideChange?: (value: string) => void;
   /** DOCX HR display changed callback */
   onDocxHrDisplayChange?: (display: 'pageBreak' | 'line' | 'hide') => void;
   /** DOCX emoji style changed callback */
@@ -55,6 +59,8 @@ export interface SettingsPanel {
   isVisible: () => boolean;
   /** Update theme list */
   setThemes: (themes: ThemeOption[]) => void;
+  /** Update table style list */
+  setTableStyles: (styles: TableStyleOption[]) => void;
   /** Update locale list */
   setLocales: (locales: LocaleOption[]) => void;
   /** Update UI labels after locale change */
@@ -71,6 +77,11 @@ export interface ThemeOption {
   id: string;
   name: string;
   category?: string;
+}
+
+export interface TableStyleOption {
+  id: string;
+  name: string;
 }
 
 export interface LocaleOption {
@@ -91,12 +102,14 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
   const {
     currentTheme = 'default',
     currentLocale = 'auto',
+    tableStyleOverride = 'theme',
     docxHrDisplay = 'hide',
     docxEmojiStyle = 'windows',
     frontmatterDisplay = 'hide',
     tableMergeEmpty = true,
     onThemeChange,
     onLocaleChange,
+    onTableStyleOverrideChange,
     onDocxHrDisplayChange,
     onDocxEmojiStyleChange,
     onClose
@@ -151,6 +164,13 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
         </label>
       </div>
       <div class="vscode-settings-group">
+        <label class="vscode-settings-label" data-i18n="settings_table_style">${Localization.translate('settings_table_style')}</label>
+        <select class="vscode-settings-select" data-setting="tableStyleOverride">
+          <option value="theme" data-i18n="settings_table_style_follow_theme">${Localization.translate('settings_table_style_follow_theme')}</option>
+        </select>
+        <div class="vscode-settings-note" data-i18n="settings_table_style_note">${Localization.translate('settings_table_style_note')}</div>
+      </div>
+      <div class="vscode-settings-group">
         <label class="vscode-settings-label" data-i18n="settings_docx_hr_display">${Localization.translate('settings_docx_hr_display')}</label>
         <select class="vscode-settings-select" data-setting="docxHrDisplay">
           <option value="hide" ${docxHrDisplay === 'hide' ? 'selected' : ''} data-i18n="settings_docx_hr_display_hide">${Localization.translate('settings_docx_hr_display_hide')}</option>
@@ -179,6 +199,7 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
   const closeBtn = panel.querySelector('.vscode-settings-close') as HTMLButtonElement;
   const themeSelect = panel.querySelector('[data-setting="theme"]') as HTMLSelectElement;
   const localeSelect = panel.querySelector('[data-setting="locale"]') as HTMLSelectElement;
+  const tableStyleSelect = panel.querySelector('[data-setting="tableStyleOverride"]') as HTMLSelectElement;
   const docxHrDisplaySelect = panel.querySelector('[data-setting="docxHrDisplay"]') as HTMLSelectElement;
   const tableMergeEmptyCheckbox = panel.querySelector('[data-setting="tableMergeEmpty"]') as HTMLInputElement;
   const emojiStyleSelect = panel.querySelector('[data-setting="emojiStyle"]') as HTMLSelectElement;
@@ -190,6 +211,7 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
   // Set initial values
   if (themeSelect) themeSelect.value = currentTheme;
   if (localeSelect) localeSelect.value = currentLocale;
+  if (tableStyleSelect) tableStyleSelect.value = tableStyleOverride;
   if (docxHrDisplaySelect) docxHrDisplaySelect.value = docxHrDisplay;
   if (tableMergeEmptyCheckbox) tableMergeEmptyCheckbox.checked = tableMergeEmpty;
   if (emojiStyleSelect) emojiStyleSelect.value = docxEmojiStyle;
@@ -215,6 +237,10 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
 
   tableMergeEmptyCheckbox?.addEventListener('change', () => {
     options.onTableMergeEmptyChange?.(tableMergeEmptyCheckbox.checked);
+  });
+
+  tableStyleSelect?.addEventListener('change', () => {
+    onTableStyleOverrideChange?.(tableStyleSelect.value);
   });
 
   emojiStyleSelect?.addEventListener('change', () => {
@@ -354,6 +380,27 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
     }
   }
 
+  function setTableStyles(styles: TableStyleOption[]): void {
+    if (!tableStyleSelect) return;
+
+    const selectedValue = tableStyleSelect.value || tableStyleOverride;
+    tableStyleSelect.innerHTML = `<option value="theme" data-i18n="settings_table_style_follow_theme">${Localization.translate('settings_table_style_follow_theme')}</option>`;
+
+    styles.forEach(style => {
+      const opt = document.createElement('option');
+      opt.value = style.id;
+      opt.textContent = style.name;
+      opt.selected = style.id === selectedValue;
+      tableStyleSelect.appendChild(opt);
+    });
+
+    if (selectedValue === 'theme' || styles.some(style => style.id === selectedValue)) {
+      tableStyleSelect.value = selectedValue;
+    } else {
+      tableStyleSelect.value = 'theme';
+    }
+  }
+
   function setLocales(locales: LocaleOption[]): void {
     if (!localeSelect) return;
 
@@ -401,6 +448,7 @@ export function createSettingsPanel(options: SettingsPanelOptions): SettingsPane
     hide,
     isVisible: () => visible,
     setThemes,
+    setTableStyles,
     setLocales,
     updateLabels,
     setCacheStats,

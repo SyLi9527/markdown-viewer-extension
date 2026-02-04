@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "styles": [
+    { "id": "academic", "file": "academic.json" },
+    { "id": "borderless", "file": "borderless.json" },
+    { "id": "compact", "file": "compact.json" },
+    { "id": "grid", "file": "grid.json" },
+    { "id": "high-contrast", "file": "high-contrast.json" },
+    { "id": "minimal-gray", "file": "minimal-gray.json" },
+    { "id": "modern-tech", "file": "modern-tech.json" },
+    { "id": "professional", "file": "professional.json" },
+    { "id": "zebra", "file": "zebra.json" }
+  ]
+}

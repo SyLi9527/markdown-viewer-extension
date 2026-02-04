@@ -694,5 +694,17 @@
   "zoom": {
     "message": "Zoom",
     "description": "Menu item for zoom"
+  },
+  "settings_table_style": {
+    "message": "Table style:",
+    "description": "Label for table style selector"
+  },
+  "settings_table_style_follow_theme": {
+    "message": "Follow theme",
+    "description": "Option to follow theme table style"
+  },
+  "settings_table_style_note": {
+    "message": "Overrides the theme's table style in preview and DOCX export.",
+    "description": "Helper note for table style override"
   }
 }

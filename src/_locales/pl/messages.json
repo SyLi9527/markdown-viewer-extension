@@ -694,5 +694,17 @@
   "settings_docx_theme_mapping_note": {
     "message": "Pozostaw puste, aby u?y? ustawie�� motywu. 0 wymusza zero.",
     "description": "Note explaining DOCX theme mapping overrides"
+  },
+  "settings_table_style": {
+    "message": "Styl tabeli:",
+    "description": "Label for table style selector"
+  },
+  "settings_table_style_follow_theme": {
+    "message": "Zgodny z motywem",
+    "description": "Option to follow theme table style"
+  },
+  "settings_table_style_note": {
+    "message": "Nadpisuje styl tabeli motywu w podglądzie i eksporcie DOCX.",
+    "description": "Helper note for table style override"
   }
 }

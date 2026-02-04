@@ -694,5 +694,17 @@
   "settings_docx_theme_mapping_note": {
     "message": "Leer lassen, um die Theme-Standards zu verwenden. 0 erzwingt Null.",
     "description": "Note explaining DOCX theme mapping overrides"
+  },
+  "settings_table_style": {
+    "message": "Tabellenstil:",
+    "description": "Label for table style selector"
+  },
+  "settings_table_style_follow_theme": {
+    "message": "Dem Theme folgen",
+    "description": "Option to follow theme table style"
+  },
+  "settings_table_style_note": {
+    "message": "Überschreibt den Tabellenstil des Themes in Vorschau und DOCX-Export.",
+    "description": "Helper note for table style override"
   }
 }

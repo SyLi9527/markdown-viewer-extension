@@ -11,6 +11,7 @@ export type SettingKey =
   | 'themeId'
   | 'tableMergeEmpty'
   | 'tableAlignment'
+  | 'tableStyleOverride'
   | 'frontmatterDisplay'
   | 'preferredLocale'
   | 'docxHrDisplay'
@@ -24,6 +25,7 @@ export type SettingKey =
   | 'docxTableCellPaddingPt';
 
 export type TableAlignment = 'left' | 'center' | 'right' | 'justify';
+export type TableStyleOverride = 'theme' | string;
 
 /**
  * Setting value types mapped by key
@@ -32,6 +34,7 @@ export interface SettingTypes {
   themeId: string;
   tableMergeEmpty: boolean;
   tableAlignment: TableAlignment;
+  tableStyleOverride: TableStyleOverride;
   frontmatterDisplay: 'hide' | 'table' | 'raw';
   preferredLocale: string;
   docxHrDisplay: 'pageBreak' | 'line' | 'hide';
@@ -52,6 +55,7 @@ export const DEFAULT_SETTINGS: SettingTypes = {
   themeId: 'default',
   tableMergeEmpty: true,
   tableAlignment: 'center',
+  tableStyleOverride: 'theme',
   frontmatterDisplay: 'hide',
   preferredLocale: 'auto',
   docxHrDisplay: 'hide',
