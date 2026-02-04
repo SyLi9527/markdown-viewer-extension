@@ -4,7 +4,7 @@
  */
 
 import { getFilenameFromURL, getDocumentFilename } from '../../../../src/core/document-utils';
-import { applyZoom as applyZoomCore } from '../../../../src/core/viewer/viewer-host';
+import { applyZoom as applyZoomCore, exportPdfFlow } from '../../../../src/core/viewer/viewer-host';
 import type {
   TranslateFunction,
   EscapeHtmlFunction,
@@ -66,6 +66,7 @@ export function createToolbarManager(options: ToolbarManagerOptions): ToolbarMan
 
   // Global zoom state
   let currentZoomLevel = 100;
+  let triggerExport: (() => void) | null = null;
 
   /**
    * Apply zoom level to content and update UI
@@ -258,77 +259,160 @@ export function createToolbarManager(options: ToolbarManagerOptions): ToolbarMan
       })();
     }
 
-    // Download button (DOCX export)
+    type ExportFormat = 'docx' | 'pdf';
+    let currentExportFormat: ExportFormat = savedState.exportFormat === 'pdf' ? 'pdf' : 'docx';
+
     const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement | null;
-    if (downloadBtn) {
-      downloadBtn.addEventListener('click', async () => {
-        // Prevent multiple clicks
-        if (downloadBtn.disabled) {
-          return;
+    const exportMenuBtn = document.getElementById('export-menu-btn') as HTMLButtonElement | null;
+    const exportMenu = document.getElementById('export-menu') as HTMLDivElement | null;
+    const exportMenuItems = exportMenu?.querySelectorAll<HTMLButtonElement>('[data-format]') || [];
+
+    const updateExportMenu = (): void => {
+      exportMenuItems.forEach((item) => {
+        const format = item.dataset.format as ExportFormat;
+        const isActive = format === currentExportFormat;
+        item.classList.toggle('active', isActive);
+        item.setAttribute('aria-checked', isActive ? 'true' : 'false');
+      });
+
+      if (downloadBtn) {
+        const label = currentExportFormat === 'pdf'
+          ? translate('export_format_pdf')
+          : translate('export_format_word');
+        const baseTitle = translate('toolbar_download_title');
+        downloadBtn.title = `${baseTitle} (${label})`;
+      }
+    };
+
+    const setExportFormat = (format: ExportFormat): void => {
+      currentExportFormat = format;
+      saveFileState({ exportFormat: format });
+      updateExportMenu();
+    };
+
+    const resetDownloadButton = (button: HTMLButtonElement, originalContent: string): void => {
+      button.innerHTML = originalContent;
+      button.disabled = false;
+      button.classList.remove('downloading');
+    };
+
+    const runDocxExport = async (button: HTMLButtonElement): Promise<void> => {
+      const originalContent = button.innerHTML;
+      button.disabled = true;
+      button.classList.add('downloading');
+      const progressHTML = `
+        <svg class="progress-circle" width="18" height="18" viewBox="0 0 18 18">
+          <circle class="progress-circle-bg" cx="9" cy="9" r="7" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <circle class="download-progress-circle" cx="9" cy="9" r="7" stroke="currentColor" stroke-width="2" fill="none"
+                  stroke-dasharray="43.98" stroke-dashoffset="43.98" transform="rotate(-90 9 9)"/>
+        </svg>
+      `;
+      button.innerHTML = progressHTML;
+
+      const markdown = rawMarkdown;
+      const filename = getDocumentFilename();
+      const exportErrorFallback = translate('docx_export_failed_default');
+      const result = await docxExporter.exportToDocx(markdown, filename, (completed, total) => {
+        const progressCircle = button.querySelector('.download-progress-circle');
+        if (progressCircle && total > 0) {
+          const progress = completed / total;
+          const circumference = 43.98;
+          const offset = circumference * (1 - progress);
+          (progressCircle as SVGCircleElement).style.strokeDashoffset = String(offset);
         }
+      });
 
-        try {
-          // Disable button and show progress indicator
-          downloadBtn.disabled = true;
-          downloadBtn.classList.add('downloading');
+      if (!result.success) {
+        throw new Error(result.error || exportErrorFallback);
+      }
 
-          // Add progress indicator to button
-          const originalContent = downloadBtn.innerHTML;
-          const progressHTML = `
-          <svg class="progress-circle" width="18" height="18" viewBox="0 0 18 18">
-            <circle class="progress-circle-bg" cx="9" cy="9" r="7" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-            <circle class="download-progress-circle" cx="9" cy="9" r="7" stroke="currentColor" stroke-width="2" fill="none"
-                    stroke-dasharray="43.98" stroke-dashoffset="43.98" transform="rotate(-90 9 9)"/>
-          </svg>
-        `;
-          downloadBtn.innerHTML = progressHTML;
+      resetDownloadButton(button, originalContent);
+    };
 
-          // Get the original markdown content
-          const markdown = rawMarkdown;
+    const runPdfExport = async (button: HTMLButtonElement): Promise<void> => {
+      const originalContent = button.innerHTML;
+      button.disabled = true;
+      button.classList.add('downloading');
+      const progressHTML = `
+        <svg class="progress-circle" width="18" height="18" viewBox="0 0 18 18">
+          <circle class="progress-circle-bg" cx="9" cy="9" r="7" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+          <circle class="download-progress-circle" cx="9" cy="9" r="7" stroke="currentColor" stroke-width="2" fill="none"
+                  stroke-dasharray="43.98" stroke-dashoffset="21.99" transform="rotate(-90 9 9)"/>
+        </svg>
+      `;
+      button.innerHTML = progressHTML;
 
-          // Generate filename from document title or URL
-          const filename = getDocumentFilename();
+      await exportPdfFlow({
+        filename: getFilenameFromURL(),
+        onError: (error) => {
+          throw new Error(error);
+        },
+      });
 
-          // Export to DOCX with progress callback
-          const exportErrorFallback = translate('docx_export_failed_default');
-          const result = await docxExporter.exportToDocx(markdown, filename, (completed, total) => {
-            // Update progress circle
-            const progressCircle = downloadBtn.querySelector('.download-progress-circle');
-            if (progressCircle && total > 0) {
-              const progress = completed / total;
-              const circumference = 43.98; // 2 * PI * 7
-              const offset = circumference * (1 - progress);
-              (progressCircle as SVGCircleElement).style.strokeDashoffset = String(offset);
-            }
-          });
+      resetDownloadButton(button, originalContent);
+    };
 
-          if (!result.success) {
-            throw new Error(result.error || exportErrorFallback);
-          }
+    const runExport = async (format: ExportFormat): Promise<void> => {
+      if (!downloadBtn) return;
+      if (downloadBtn.disabled) return;
 
-          // Restore button after successful download
-          downloadBtn.innerHTML = originalContent;
-          downloadBtn.disabled = false;
-          downloadBtn.classList.remove('downloading');
-        } catch (error) {
-          console.error('Export error:', error);
-          const alertDetail = (error as Error)?.message ? `: ${(error as Error).message}` : '';
-          const alertMessage = translate('docx_export_failed_alert', [alertDetail])
-            || `Export failed${alertDetail}`;
-          alert(alertMessage);
-
-          // Restore button on error
-          const originalContent = `
+      try {
+        if (format === 'pdf') {
+          await runPdfExport(downloadBtn);
+        } else {
+          await runDocxExport(downloadBtn);
+        }
+      } catch (error) {
+        console.error('Export error:', error);
+        const alertDetail = (error as Error)?.message ? `: ${(error as Error).message}` : '';
+        const alertKey = format === 'pdf' ? 'export_pdf_failed_alert' : 'docx_export_failed_alert';
+        const alertMessage = translate(alertKey, [alertDetail]) || `Export failed${alertDetail}`;
+        alert(alertMessage);
+        const originalContent = `
           <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
             <path d="M10 3v10m0 0l-3-3m3 3l3-3M3 16h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         `;
-          downloadBtn.innerHTML = originalContent;
-          downloadBtn.disabled = false;
-          downloadBtn.classList.remove('downloading');
-        }
+        resetDownloadButton(downloadBtn, originalContent);
+      }
+    };
+
+    triggerExport = () => {
+      void runExport(currentExportFormat);
+    };
+
+    if (downloadBtn) {
+      downloadBtn.addEventListener('click', () => {
+        void runExport(currentExportFormat);
       });
     }
+
+    if (exportMenuBtn && exportMenu) {
+      exportMenuBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        exportMenu.classList.toggle('hidden');
+      });
+    }
+
+    exportMenuItems.forEach((item) => {
+      item.addEventListener('click', () => {
+        const format = item.dataset.format as ExportFormat;
+        setExportFormat(format);
+        exportMenu?.classList.add('hidden');
+        void runExport(format);
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!exportMenu) return;
+      const target = event.target as Node;
+      if (exportMenu.contains(target) || exportMenuBtn?.contains(target)) {
+        return;
+      }
+      exportMenu.classList.add('hidden');
+    });
+
+    updateExportMenu();
 
     // Print button
     setupPrintButton();
@@ -398,13 +482,10 @@ export function createToolbarManager(options: ToolbarManagerOptions): ToolbarMan
         return;
       }
 
-      // Ctrl/Cmd + S: Download as DOCX
+      // Ctrl/Cmd + S: Export using last selected format
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
-        const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement | null;
-        if (downloadBtn && !downloadBtn.disabled) {
-          downloadBtn.click();
-        }
+        triggerExport?.();
         return;
       }
 
@@ -445,6 +526,9 @@ export function generateToolbarHTML(options: GenerateToolbarHTMLOptions): string
   const toolbarZoomInTitle = translate('toolbar_zoom_in_title');
   const toolbarDownloadTitle = translate('toolbar_download_title');
   const toolbarPrintTitle = translate('toolbar_print_title');
+  const exportFormatWord = translate('export_format_word');
+  const exportFormatPdf = translate('export_format_pdf');
+  const exportFormatTitle = translate('export_format_title');
 
   const layoutTitleAttr = escapeHtml(toolbarLayoutTitleNormal);
   const toggleTocTitleAttr = escapeHtml(toolbarToggleTocTitle);
@@ -490,11 +574,22 @@ export function generateToolbarHTML(options: GenerateToolbarHTMLOptions): string
       </button>
     </div>
     <div class="toolbar-right">
-      <button id="download-btn" class="toolbar-btn" title="${downloadTitleAttr}">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M10 3v10m0 0l-3-3m3 3l3-3M3 16h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
+      <div class="export-menu-wrapper">
+        <button id="download-btn" class="toolbar-btn" title="${downloadTitleAttr}">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 3v10m0 0l-3-3m3 3l3-3M3 16h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button id="export-menu-btn" class="toolbar-btn export-menu-btn" title="${escapeHtml(exportFormatTitle)}">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div id="export-menu" class="export-menu hidden" role="menu">
+          <button class="export-menu-item" data-format="docx" role="menuitemradio">${escapeHtml(exportFormatWord)}</button>
+          <button class="export-menu-item" data-format="pdf" role="menuitemradio">${escapeHtml(exportFormatPdf)}</button>
+        </div>
+      </div>
       <button id="print-btn" class="toolbar-btn" title="${printTitleAttr}">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
           <path d="M5 7V3h10v4M5 14H3V9h14v5h-2M5 14v3h10v-3M5 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
