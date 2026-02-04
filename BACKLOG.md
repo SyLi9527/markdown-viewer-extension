@@ -22,3 +22,9 @@
 ## Testing
 - Add sanitizer-specific test cases once whitelist is implemented.
 - Add DOM/image render mode tests if settings are added.
+
+## PDF Export Follow-ups
+- Add optional online PDF conversion fallback (service selection, privacy prompt, and opt-in settings).
+- Add PDF export settings (page size, margins, page numbering, filename template).
+- Investigate true PDF file generation without print dialog (browser-safe download).
+- Decide mobile-native PDF printing/preview implementation (plugin/API selection).
