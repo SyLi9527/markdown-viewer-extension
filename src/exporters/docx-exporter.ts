@@ -758,6 +758,39 @@ class DocxExporter {
     return elements;
   }
 
+  private convertHtmlTablesFromDom(htmlValue: string): FileChild | FileChild[] | null {
+    if (!htmlValue || typeof document === 'undefined') {
+      return null;
+    }
+
+    const tables = parseHtmlTablesToDomElements(htmlValue);
+    if (!tables || tables.length === 0) {
+      return null;
+    }
+
+    const getStyle = typeof getComputedStyle === 'function'
+      ? (node: Element) => getComputedStyle(node)
+      : (node: Element) => ((node as HTMLElement).style || ({} as CSSStyleDeclaration));
+
+    try {
+      const elements: FileChild[] = [];
+      for (let i = 0; i < tables.length; i++) {
+        const model = extractTableDomModel(tables[i], { getStyle });
+        elements.push(convertTableDomToDocx(model));
+        if (i < tables.length - 1) {
+          elements.push(new Paragraph({
+            text: '',
+            alignment: AlignmentType.LEFT,
+            spacing: { before: 120, after: 120, line: 240 },
+          }));
+        }
+      }
+      return elements.length === 1 ? elements[0] : elements;
+    } catch {
+      return null;
+    }
+  }
+
   private async convertNode(
     node: DOCXASTNode,
     parentStyle: Record<string, unknown> = {},
@@ -766,22 +799,9 @@ class DocxExporter {
   ): Promise<FileChild | FileChild[] | null> {
     if (node.type === 'html' && this.tableConverter) {
       const htmlValue = typeof node.value === 'string' ? node.value : '';
-      const domTables = parseHtmlTablesToDomElements(htmlValue);
-      if (domTables && domTables.length > 0) {
-        const elements: FileChild[] = [];
-        for (let i = 0; i < domTables.length; i++) {
-          const model = extractTableDomModel(domTables[i]);
-          const table = convertTableDomToDocx(model);
-          elements.push(table);
-          if (i < domTables.length - 1) {
-            elements.push(new Paragraph({
-              text: '',
-              alignment: AlignmentType.LEFT,
-              spacing: { before: 120, after: 120, line: 240 },
-            }));
-          }
-        }
-        return elements.length === 1 ? elements[0] : elements;
+      const domTables = this.convertHtmlTablesFromDom(htmlValue);
+      if (domTables) {
+        return domTables;
       }
 
       const tableNodes = parseHtmlTablesToDocxNodes(htmlValue);

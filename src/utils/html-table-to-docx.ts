@@ -58,13 +58,30 @@ interface ParsedRow {
 }
 
 export function parseHtmlTablesToDocxNodes(html: string): DOCXTableNode[] | null {
+  const tables = parseHtmlTables(html);
+  if (!tables) {
+    return null;
+  }
+
+  const nodes = tables
+    .map((table) => buildTableNode(table))
+    .filter((node): node is DOCXTableNode => Boolean(node));
+
+  return nodes.length > 0 ? nodes : null;
+}
+
+function parseHtmlTables(html: string): HTMLTableElement[] | null {
   if (!html || typeof DOMParser === 'undefined') {
     return null;
   }
 
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
-  const tables = Array.from(doc.querySelectorAll('table'));
+  return extractTablesFromDocument(doc);
+}
+
+function extractTablesFromDocument(doc: Document): HTMLTableElement[] | null {
+  const tables = Array.from(doc.querySelectorAll('table')) as HTMLTableElement[];
   if (tables.length === 0) {
     return null;
   }
@@ -83,36 +100,11 @@ export function parseHtmlTablesToDocxNodes(html: string): DOCXTableNode[] | null
     return null;
   }
 
-  const nodes = topLevelTables
-    .map((table) => buildTableNode(table as HTMLTableElement))
-    .filter((node): node is DOCXTableNode => Boolean(node));
-
-  return nodes.length > 0 ? nodes : null;
+  return topLevelTables;
 }
 
 export function parseHtmlTablesToDomElements(html: string): HTMLTableElement[] | null {
-  if (!html || typeof DOMParser === 'undefined') {
-    return null;
-  }
-
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  const tables = Array.from(doc.querySelectorAll('table')) as HTMLTableElement[];
-  if (tables.length === 0) {
-    return null;
-  }
-
-  if (!containsOnlyTables(doc.body)) {
-    return null;
-  }
-
-  // Keep behavior consistent with DOCX node parsing: skip nested tables for now
-  if (tables.some((table) => table.querySelector('table'))) {
-    return null;
-  }
-
-  const topLevelTables = tables.filter((table) => !table.parentElement?.closest('table'));
-  return topLevelTables.length > 0 ? topLevelTables : null;
+  return parseHtmlTables(html);
 }
 
 function buildTableNode(tableEl: HTMLTableElement): DOCXTableNode | null {
