@@ -29,6 +29,9 @@ import {
 
 type ConvertInlineNodesFunction = (children: InlineNode[], options?: { bold?: boolean; size?: number; color?: string }) => Promise<InlineResult[]>;
 
+/** Table layout mode */
+export type TableLayout = 'left' | 'center';
+
 interface TableConverterOptions {
   themeStyles: DOCXThemeStyles;
   convertInlineNodes: ConvertInlineNodesFunction;
@@ -36,12 +39,16 @@ interface TableConverterOptions {
   mergeEmptyCells?: boolean;
   /** Default alignment for tables */
   defaultTableAlignment?: TableAlignment;
+  /** Table layout: 'left' or 'center' */
+  tableLayout?: TableLayout;
 }
 
 export interface TableConverter {
   convertTable(node: DOCXTableNode, listLevel?: number): Promise<Table>;
   /** Update merge setting at runtime */
   setMergeEmptyCells(enabled: boolean): void;
+  /** Update table layout at runtime */
+  setTableLayout(layout: TableLayout): void;
 }
 
 /**
@@ -53,7 +60,8 @@ export function createTableConverter({
   themeStyles,
   convertInlineNodes,
   mergeEmptyCells = false,
-  defaultTableAlignment
+  defaultTableAlignment,
+  tableLayout = 'center'
 }: TableConverterOptions): TableConverter {
   // Default table styles
   const defaultMargins = { top: 80, bottom: 80, left: 100, right: 100 };
@@ -65,8 +73,9 @@ export function createTableConverter({
   const borderStyles = tableStyles.borders || {};
   const zebraStyles = tableStyles.zebra;
   
-  // Mutable merge setting
+  // Mutable settings
   let enableMerge = mergeEmptyCells;
+  let currentLayout: TableLayout = tableLayout;
   
   /**
    * Extract cell text content matrix from data rows (excluding header)
@@ -318,18 +327,16 @@ export function createTableConverter({
     // This creates the visual effect of centering within the indented area
     const indentSize = listLevel > 0 ? convertInchesToTwip(0.5 * listLevel / 2) : undefined;
 
-    const alignment = defaultTableAlignment === 'left'
-      ? AlignmentType.LEFT
-      : defaultTableAlignment === 'right'
-        ? AlignmentType.RIGHT
-        : defaultTableAlignment === 'justify'
-          ? AlignmentType.JUSTIFIED
-          : AlignmentType.CENTER;
-
     return new Table({
       rows: rows,
       layout: TableLayoutType.AUTOFIT,
-      alignment,
+      alignment: defaultTableAlignment === 'right'
+        ? AlignmentType.RIGHT
+        : defaultTableAlignment === 'justify'
+          ? AlignmentType.JUSTIFIED
+          : currentLayout === 'center'
+            ? AlignmentType.CENTER
+            : AlignmentType.LEFT,
       indent: indentSize ? { size: indentSize, type: WidthType.DXA } : undefined,
     });
   }
@@ -338,7 +345,11 @@ export function createTableConverter({
     enableMerge = enabled;
   }
 
-  return { convertTable, setMergeEmptyCells };
+  function setTableLayout(layout: TableLayout): void {
+    currentLayout = layout;
+  }
+
+  return { convertTable, setMergeEmptyCells, setTableLayout };
 }
 
 type HtmlBorderSpec = { style?: string; width?: number; color?: string };

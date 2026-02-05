@@ -12,6 +12,7 @@ export type SettingKey =
   | 'tableMergeEmpty'
   | 'tableAlignment'
   | 'tableStyleOverride'
+  | 'tableLayout'
   | 'frontmatterDisplay'
   | 'preferredLocale'
   | 'docxHrDisplay'
@@ -35,6 +36,7 @@ export interface SettingTypes {
   tableMergeEmpty: boolean;
   tableAlignment: TableAlignment;
   tableStyleOverride: TableStyleOverride;
+  tableLayout: 'left' | 'center';
   frontmatterDisplay: 'hide' | 'table' | 'raw';
   preferredLocale: string;
   docxHrDisplay: 'pageBreak' | 'line' | 'hide';
@@ -56,6 +58,7 @@ export const DEFAULT_SETTINGS: SettingTypes = {
   tableMergeEmpty: true,
   tableAlignment: 'center',
   tableStyleOverride: 'theme',
+  tableLayout: 'center',
   frontmatterDisplay: 'hide',
   preferredLocale: 'auto',
   docxHrDisplay: 'hide',

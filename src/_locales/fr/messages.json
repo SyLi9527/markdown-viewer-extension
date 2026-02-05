@@ -547,6 +547,18 @@
     "message": "Formats pris en charge",
     "description": "Title for supported file formats section in settings"
   },
+  "settings_table_layout": {
+    "message": "Disposition du tableau",
+    "description": "Label for table layout selector"
+  },
+  "settings_table_layout_center": {
+    "message": "Centré",
+    "description": "Table layout option: center aligned"
+  },
+  "settings_table_layout_left": {
+    "message": "Gauche",
+    "description": "Table layout option: left aligned"
+  },
   "settings_table_merge_empty": {
     "message": "Fusion intelligente des cellules",
     "description": "Checkbox label for enabling automatic vertical merging of empty table cells"

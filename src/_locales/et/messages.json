@@ -547,6 +547,18 @@
     "message": "Toetatud vormingud",
     "description": "Heading for supported formats section"
   },
+  "settings_table_layout": {
+    "message": "Tabeli paigutus",
+    "description": "Label for table layout selector"
+  },
+  "settings_table_layout_center": {
+    "message": "Keskel",
+    "description": "Table layout option: center aligned"
+  },
+  "settings_table_layout_left": {
+    "message": "Vasakul",
+    "description": "Table layout option: left aligned"
+  },
   "settings_table_merge_empty": {
     "message": "Nutikas tabelilahtrite ühendamine",
     "description": "Checkbox label for enabling automatic vertical merging of empty table cells"
