@@ -58,7 +58,9 @@ import { createTableConverter, type TableConverter } from './docx-table-converte
 import { createBlockquoteConverter, type BlockquoteConverter } from './docx-blockquote-converter';
 import { createListConverter, createNumberingLevels, type ListConverter } from './docx-list-converter';
 import { createInlineConverter, type InlineConverter, type InlineNode } from './docx-inline-converter';
-import { parseHtmlTablesToDocxNodes } from '../utils/html-table-to-docx';
+import { parseHtmlTablesToDocxNodes, parseHtmlTablesToDomElements } from '../utils/html-table-to-docx';
+import { extractTableDomModel } from '../utils/table-dom-extractor';
+import { convertTableDomToDocx } from './docx-table-from-dom';
 import { applyDocxThemeOverrides } from './docx-theme-mapping';
 
 // Re-export for external use
@@ -756,6 +758,39 @@ class DocxExporter {
     return elements;
   }
 
+  private convertHtmlTablesFromDom(htmlValue: string): FileChild | FileChild[] | null {
+    if (!htmlValue || typeof document === 'undefined') {
+      return null;
+    }
+
+    const tables = parseHtmlTablesToDomElements(htmlValue);
+    if (!tables || tables.length === 0) {
+      return null;
+    }
+
+    const getStyle = typeof getComputedStyle === 'function'
+      ? (node: Element) => getComputedStyle(node)
+      : (node: Element) => ((node as HTMLElement).style || ({} as CSSStyleDeclaration));
+
+    try {
+      const elements: FileChild[] = [];
+      for (let i = 0; i < tables.length; i++) {
+        const model = extractTableDomModel(tables[i], { getStyle });
+        elements.push(convertTableDomToDocx(model));
+        if (i < tables.length - 1) {
+          elements.push(new Paragraph({
+            text: '',
+            alignment: AlignmentType.LEFT,
+            spacing: { before: 120, after: 120, line: 240 },
+          }));
+        }
+      }
+      return elements.length === 1 ? elements[0] : elements;
+    } catch {
+      return null;
+    }
+  }
+
   private async convertNode(
     node: DOCXASTNode,
     parentStyle: Record<string, unknown> = {},
@@ -764,6 +799,11 @@ class DocxExporter {
   ): Promise<FileChild | FileChild[] | null> {
     if (node.type === 'html' && this.tableConverter) {
       const htmlValue = typeof node.value === 'string' ? node.value : '';
+      const domTables = this.convertHtmlTablesFromDom(htmlValue);
+      if (domTables) {
+        return domTables;
+      }
+
       const tableNodes = parseHtmlTablesToDocxNodes(htmlValue);
       if (tableNodes && tableNodes.length > 0) {
         const elements: FileChild[] = [];

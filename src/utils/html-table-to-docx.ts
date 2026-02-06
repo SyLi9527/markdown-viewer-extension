@@ -58,13 +58,30 @@ interface ParsedRow {
 }
 
 export function parseHtmlTablesToDocxNodes(html: string): DOCXTableNode[] | null {
+  const tables = parseHtmlTables(html);
+  if (!tables) {
+    return null;
+  }
+
+  const nodes = tables
+    .map((table) => buildTableNode(table))
+    .filter((node): node is DOCXTableNode => Boolean(node));
+
+  return nodes.length > 0 ? nodes : null;
+}
+
+function parseHtmlTables(html: string): HTMLTableElement[] | null {
   if (!html || typeof DOMParser === 'undefined') {
     return null;
   }
 
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
-  const tables = Array.from(doc.querySelectorAll('table'));
+  return extractTablesFromDocument(doc);
+}
+
+function extractTablesFromDocument(doc: Document): HTMLTableElement[] | null {
+  const tables = Array.from(doc.querySelectorAll('table')) as HTMLTableElement[];
   if (tables.length === 0) {
     return null;
   }
@@ -83,11 +100,11 @@ export function parseHtmlTablesToDocxNodes(html: string): DOCXTableNode[] | null
     return null;
   }
 
-  const nodes = topLevelTables
-    .map((table) => buildTableNode(table as HTMLTableElement))
-    .filter((node): node is DOCXTableNode => Boolean(node));
+  return topLevelTables;
+}
 
-  return nodes.length > 0 ? nodes : null;
+export function parseHtmlTablesToDomElements(html: string): HTMLTableElement[] | null {
+  return parseHtmlTables(html);
 }
 
 function buildTableNode(tableEl: HTMLTableElement): DOCXTableNode | null {

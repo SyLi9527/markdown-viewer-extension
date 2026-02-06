@@ -1,0 +1,79 @@
+<style>
+.fixture-root {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #17202a;
+}
+.fixture-root table.span-table {
+  border-collapse: collapse;
+  border: 1px solid #2d6a4f;
+  margin: 0;
+  min-width: 520px;
+  background: #ffffff;
+}
+.fixture-root table.span-table th,
+.fixture-root table.span-table td {
+  border: 1px solid #2d6a4f;
+  padding: 6px 10px;
+}
+.fixture-root table.span-table th {
+  background: #dbe7e4;
+  font-weight: 700;
+  text-align: center;
+}
+.fixture-root table.span-table td.label {
+  font-weight: 600;
+  vertical-align: middle;
+  background: #f1f5f4;
+}
+.fixture-root table.span-table td.number {
+  text-align: right;
+}
+.fixture-root table.span-table td.center {
+  text-align: center;
+}
+.fixture-root table.span-table td.highlight {
+  background: #fff3bf;
+}
+</style>
+<table class="span-table">
+  <tr>
+    <th rowspan="2">Region</th>
+    <th colspan="2">Q1</th>
+    <th colspan="2">Q2</th>
+  </tr>
+  <tr>
+    <th>Sales</th>
+    <th>Growth</th>
+    <th>Sales</th>
+    <th>Growth</th>
+  </tr>
+  <tr>
+    <td class="label">North</td>
+    <td class="number">$120k</td>
+    <td class="center highlight">8%</td>
+    <td class="number">$140k</td>
+    <td class="center">6%</td>
+  </tr>
+  <tr>
+    <td class="label">South</td>
+    <td class="number">$98k</td>
+    <td class="center">5%</td>
+    <td class="number">$110k</td>
+    <td class="center highlight">9%</td>
+  </tr>
+  <tr>
+    <td class="label" rowspan="2">East</td>
+    <td class="number">$115k</td>
+    <td class="center">6%</td>
+    <td class="number">$130k</td>
+    <td class="center">4%</td>
+  </tr>
+  <tr>
+    <td class="number">$122k</td>
+    <td class="center highlight">10%</td>
+    <td class="number">$128k</td>
+    <td class="center">-1%</td>
+  </tr>
+</table>
