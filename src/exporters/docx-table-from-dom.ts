@@ -20,7 +20,7 @@ function pxToEighths(px: number): number {
   return Math.max(1, Math.round(pt * 8));
 }
 
-function cssBorderStyle(style: string): BorderStyle {
+function cssBorderStyle(style: string): (typeof BorderStyle)[keyof typeof BorderStyle] {
   if (style === 'dashed') return BorderStyle.DASHED;
   if (style === 'dotted') return BorderStyle.DOTTED;
   if (style === 'double') return BorderStyle.DOUBLE;
