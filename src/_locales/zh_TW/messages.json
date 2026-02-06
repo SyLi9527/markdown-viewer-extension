@@ -655,6 +655,418 @@
     "message": "自訂",
     "description": "Custom theme option label"
   },
+  "settings_custom_theme_label_body_font": {
+    "message": "正文字體",
+    "description": "Custom theme label for body font"
+  },
+  "settings_custom_theme_label_headings_font": {
+    "message": "標題字體",
+    "description": "Custom theme label for headings font"
+  },
+  "settings_custom_theme_label_code_font": {
+    "message": "程式碼字體",
+    "description": "Custom theme label for code font"
+  },
+  "settings_custom_theme_label_h1_font": {
+    "message": "H1 字體",
+    "description": "Custom theme label for H1 font"
+  },
+  "settings_custom_theme_label_h2_font": {
+    "message": "H2 字體",
+    "description": "Custom theme label for H2 font"
+  },
+  "settings_custom_theme_label_h3_font": {
+    "message": "H3 字體",
+    "description": "Custom theme label for H3 font"
+  },
+  "settings_custom_theme_label_h4_font": {
+    "message": "H4 字體",
+    "description": "Custom theme label for H4 font"
+  },
+  "settings_custom_theme_label_h5_font": {
+    "message": "H5 字體",
+    "description": "Custom theme label for H5 font"
+  },
+  "settings_custom_theme_label_h6_font": {
+    "message": "H6 字體",
+    "description": "Custom theme label for H6 font"
+  },
+  "settings_custom_theme_label_body_font_size": {
+    "message": "正文字號 (pt)",
+    "description": "Custom theme label for body font size"
+  },
+  "settings_custom_theme_label_body_line_height": {
+    "message": "正文行高",
+    "description": "Custom theme label for body line height"
+  },
+  "settings_custom_theme_label_h1_size": {
+    "message": "H1 字號 (pt)",
+    "description": "Custom theme label for H1 size"
+  },
+  "settings_custom_theme_label_h2_size": {
+    "message": "H2 字號 (pt)",
+    "description": "Custom theme label for H2 size"
+  },
+  "settings_custom_theme_label_h1_spacing_before": {
+    "message": "H1 段前間距 (pt)",
+    "description": "Custom theme label for H1 spacing before"
+  },
+  "settings_custom_theme_label_h1_spacing_after": {
+    "message": "H1 段後間距 (pt)",
+    "description": "Custom theme label for H1 spacing after"
+  },
+  "settings_custom_theme_label_h1_alignment": {
+    "message": "H1 對齊方式",
+    "description": "Custom theme label for H1 alignment"
+  },
+  "settings_custom_theme_label_h2_spacing_before": {
+    "message": "H2 段前間距 (pt)",
+    "description": "Custom theme label for H2 spacing before"
+  },
+  "settings_custom_theme_label_h2_spacing_after": {
+    "message": "H2 段後間距 (pt)",
+    "description": "Custom theme label for H2 spacing after"
+  },
+  "settings_custom_theme_label_h2_alignment": {
+    "message": "H2 對齊方式",
+    "description": "Custom theme label for H2 alignment"
+  },
+  "settings_custom_theme_label_h3_size": {
+    "message": "H3 字號 (pt)",
+    "description": "Custom theme label for H3 size"
+  },
+  "settings_custom_theme_label_h3_spacing_before": {
+    "message": "H3 段前間距 (pt)",
+    "description": "Custom theme label for H3 spacing before"
+  },
+  "settings_custom_theme_label_h3_spacing_after": {
+    "message": "H3 段後間距 (pt)",
+    "description": "Custom theme label for H3 spacing after"
+  },
+  "settings_custom_theme_label_h3_alignment": {
+    "message": "H3 對齊方式",
+    "description": "Custom theme label for H3 alignment"
+  },
+  "settings_custom_theme_label_h4_size": {
+    "message": "H4 字號 (pt)",
+    "description": "Custom theme label for H4 size"
+  },
+  "settings_custom_theme_label_h4_spacing_before": {
+    "message": "H4 段前間距 (pt)",
+    "description": "Custom theme label for H4 spacing before"
+  },
+  "settings_custom_theme_label_h4_spacing_after": {
+    "message": "H4 段後間距 (pt)",
+    "description": "Custom theme label for H4 spacing after"
+  },
+  "settings_custom_theme_label_h4_alignment": {
+    "message": "H4 對齊方式",
+    "description": "Custom theme label for H4 alignment"
+  },
+  "settings_custom_theme_label_h5_size": {
+    "message": "H5 字號 (pt)",
+    "description": "Custom theme label for H5 size"
+  },
+  "settings_custom_theme_label_h5_spacing_before": {
+    "message": "H5 段前間距 (pt)",
+    "description": "Custom theme label for H5 spacing before"
+  },
+  "settings_custom_theme_label_h5_spacing_after": {
+    "message": "H5 段後間距 (pt)",
+    "description": "Custom theme label for H5 spacing after"
+  },
+  "settings_custom_theme_label_h5_alignment": {
+    "message": "H5 對齊方式",
+    "description": "Custom theme label for H5 alignment"
+  },
+  "settings_custom_theme_label_h6_size": {
+    "message": "H6 字號 (pt)",
+    "description": "Custom theme label for H6 size"
+  },
+  "settings_custom_theme_label_h6_spacing_before": {
+    "message": "H6 段前間距 (pt)",
+    "description": "Custom theme label for H6 spacing before"
+  },
+  "settings_custom_theme_label_h6_spacing_after": {
+    "message": "H6 段後間距 (pt)",
+    "description": "Custom theme label for H6 spacing after"
+  },
+  "settings_custom_theme_label_h6_alignment": {
+    "message": "H6 對齊方式",
+    "description": "Custom theme label for H6 alignment"
+  },
+  "settings_custom_theme_label_code_font_size": {
+    "message": "程式碼字號 (pt)",
+    "description": "Custom theme label for code font size"
+  },
+  "settings_custom_theme_label_paragraph_spacing_after": {
+    "message": "段落段後間距 (pt)",
+    "description": "Custom theme label for paragraph spacing after"
+  },
+  "settings_custom_theme_label_list_spacing_after": {
+    "message": "清單段後間距 (pt)",
+    "description": "Custom theme label for list spacing after"
+  },
+  "settings_custom_theme_label_list_item_spacing_after": {
+    "message": "清單項段後間距 (pt)",
+    "description": "Custom theme label for list item spacing after"
+  },
+  "settings_custom_theme_label_blockquote_spacing_before": {
+    "message": "引用段前間距 (pt)",
+    "description": "Custom theme label for blockquote spacing before"
+  },
+  "settings_custom_theme_label_blockquote_spacing_after": {
+    "message": "引用段後間距 (pt)",
+    "description": "Custom theme label for blockquote spacing after"
+  },
+  "settings_custom_theme_label_blockquote_padding_vertical": {
+    "message": "引用垂直內邊距 (pt)",
+    "description": "Custom theme label for blockquote vertical padding"
+  },
+  "settings_custom_theme_label_blockquote_padding_horizontal": {
+    "message": "引用水平內邊距 (pt)",
+    "description": "Custom theme label for blockquote horizontal padding"
+  },
+  "settings_custom_theme_label_code_block_spacing_after": {
+    "message": "程式碼區塊段後間距 (pt)",
+    "description": "Custom theme label for code block spacing after"
+  },
+  "settings_custom_theme_label_table_spacing_after": {
+    "message": "表格段後間距 (pt)",
+    "description": "Custom theme label for table spacing after"
+  },
+  "settings_custom_theme_label_hr_spacing_before": {
+    "message": "分隔線段前間距 (pt)",
+    "description": "Custom theme label for horizontal rule spacing before"
+  },
+  "settings_custom_theme_label_hr_spacing_after": {
+    "message": "分隔線段後間距 (pt)",
+    "description": "Custom theme label for horizontal rule spacing after"
+  },
+  "settings_custom_theme_label_text_primary": {
+    "message": "主要文字顏色",
+    "description": "Custom theme label for primary text color"
+  },
+  "settings_custom_theme_label_text_secondary": {
+    "message": "次要文字顏色",
+    "description": "Custom theme label for secondary text color"
+  },
+  "settings_custom_theme_label_text_muted": {
+    "message": "弱化文字顏色",
+    "description": "Custom theme label for muted text color"
+  },
+  "settings_custom_theme_label_link": {
+    "message": "連結顏色",
+    "description": "Custom theme label for link color"
+  },
+  "settings_custom_theme_label_link_hover": {
+    "message": "連結滑過顏色",
+    "description": "Custom theme label for link hover color"
+  },
+  "settings_custom_theme_label_code_background": {
+    "message": "程式碼背景",
+    "description": "Custom theme label for code background color"
+  },
+  "settings_custom_theme_label_blockquote_border": {
+    "message": "引用邊框",
+    "description": "Custom theme label for blockquote border color"
+  },
+  "settings_custom_theme_label_table_border": {
+    "message": "表格邊框",
+    "description": "Custom theme label for table border color"
+  },
+  "settings_custom_theme_label_table_header_background": {
+    "message": "表頭背景",
+    "description": "Custom theme label for table header background color"
+  },
+  "settings_custom_theme_label_table_header_text": {
+    "message": "表頭文字",
+    "description": "Custom theme label for table header text color"
+  },
+  "settings_custom_theme_label_table_zebra_even": {
+    "message": "表格斑馬紋（偶數行）",
+    "description": "Custom theme label for table zebra even color"
+  },
+  "settings_custom_theme_label_table_zebra_odd": {
+    "message": "表格斑馬紋（奇數行）",
+    "description": "Custom theme label for table zebra odd color"
+  },
+  "settings_custom_theme_label_h1_color": {
+    "message": "H1 顏色",
+    "description": "Custom theme label for H1 color"
+  },
+  "settings_custom_theme_label_h2_color": {
+    "message": "H2 顏色",
+    "description": "Custom theme label for H2 color"
+  },
+  "settings_custom_theme_label_h3_color": {
+    "message": "H3 顏色",
+    "description": "Custom theme label for H3 color"
+  },
+  "settings_custom_theme_label_h4_color": {
+    "message": "H4 顏色",
+    "description": "Custom theme label for H4 color"
+  },
+  "settings_custom_theme_label_h5_color": {
+    "message": "H5 顏色",
+    "description": "Custom theme label for H5 color"
+  },
+  "settings_custom_theme_label_h6_color": {
+    "message": "H6 顏色",
+    "description": "Custom theme label for H6 color"
+  },
+  "settings_custom_theme_label_table_border_width": {
+    "message": "邊框寬度 (pt)",
+    "description": "Custom theme label for table border width"
+  },
+  "settings_custom_theme_label_table_border_style": {
+    "message": "邊框樣式",
+    "description": "Custom theme label for table border style"
+  },
+  "settings_custom_theme_label_table_header_bold": {
+    "message": "表頭加粗",
+    "description": "Custom theme label for table header bold"
+  },
+  "settings_custom_theme_label_table_cell_padding": {
+    "message": "儲存格內邊距 (pt)",
+    "description": "Custom theme label for table cell padding"
+  },
+  "settings_custom_theme_label_table_zebra": {
+    "message": "斑馬紋",
+    "description": "Custom theme label for table zebra stripes"
+  },
+  "settings_custom_theme_label_table_header_font_size": {
+    "message": "表頭字號 (pt)",
+    "description": "Custom theme label for table header font size"
+  },
+  "settings_custom_theme_label_table_header_top_border_width": {
+    "message": "表頭上邊框寬度 (pt)",
+    "description": "Custom theme label for header top border width"
+  },
+  "settings_custom_theme_label_table_header_top_border_style": {
+    "message": "表頭上邊框樣式",
+    "description": "Custom theme label for header top border style"
+  },
+  "settings_custom_theme_label_table_header_bottom_border_width": {
+    "message": "表頭下邊框寬度 (pt)",
+    "description": "Custom theme label for header bottom border width"
+  },
+  "settings_custom_theme_label_table_header_bottom_border_style": {
+    "message": "表頭下邊框樣式",
+    "description": "Custom theme label for header bottom border style"
+  },
+  "settings_custom_theme_label_table_row_bottom_border_width": {
+    "message": "行下邊框寬度 (pt)",
+    "description": "Custom theme label for row bottom border width"
+  },
+  "settings_custom_theme_label_table_row_bottom_border_style": {
+    "message": "行下邊框樣式",
+    "description": "Custom theme label for row bottom border style"
+  },
+  "settings_custom_theme_label_table_last_row_border_width": {
+    "message": "最後一行下邊框寬度 (pt)",
+    "description": "Custom theme label for last row border width"
+  },
+  "settings_custom_theme_label_table_last_row_border_style": {
+    "message": "最後一行下邊框樣式",
+    "description": "Custom theme label for last row border style"
+  },
+  "settings_custom_theme_label_code_theme": {
+    "message": "程式碼主題",
+    "description": "Custom theme label for code theme"
+  },
+  "settings_custom_theme_label_code_foreground": {
+    "message": "前景色",
+    "description": "Custom theme label for code foreground"
+  },
+  "settings_custom_theme_label_code_token_keyword": {
+    "message": "關鍵字",
+    "description": "Custom theme label for code keyword token"
+  },
+  "settings_custom_theme_label_code_token_string": {
+    "message": "字串",
+    "description": "Custom theme label for code string token"
+  },
+  "settings_custom_theme_label_code_token_comment": {
+    "message": "註解",
+    "description": "Custom theme label for code comment token"
+  },
+  "settings_custom_theme_label_code_token_number": {
+    "message": "數字",
+    "description": "Custom theme label for code number token"
+  },
+  "settings_custom_theme_label_code_token_title": {
+    "message": "標題",
+    "description": "Custom theme label for code title token"
+  },
+  "settings_custom_theme_label_code_token_attr": {
+    "message": "屬性",
+    "description": "Custom theme label for code attr token"
+  },
+  "settings_custom_theme_label_code_token_built_in": {
+    "message": "內建",
+    "description": "Custom theme label for code built-in token"
+  },
+  "settings_custom_theme_label_code_token_literal": {
+    "message": "字面量",
+    "description": "Custom theme label for code literal token"
+  },
+  "settings_custom_theme_label_code_token_type": {
+    "message": "類型",
+    "description": "Custom theme label for code type token"
+  },
+  "settings_custom_theme_label_code_token_variable": {
+    "message": "變數",
+    "description": "Custom theme label for code variable token"
+  },
+  "settings_custom_theme_label_code_token_property": {
+    "message": "屬性名稱",
+    "description": "Custom theme label for code property token"
+  },
+  "settings_custom_theme_label_diagram_style": {
+    "message": "圖表風格",
+    "description": "Custom theme label for diagram style"
+  },
+  "settings_custom_theme_option_left": {
+    "message": "左對齊",
+    "description": "Custom theme option for left alignment"
+  },
+  "settings_custom_theme_option_center": {
+    "message": "置中",
+    "description": "Custom theme option for center alignment"
+  },
+  "settings_custom_theme_option_right": {
+    "message": "右對齊",
+    "description": "Custom theme option for right alignment"
+  },
+  "settings_custom_theme_option_border_single": {
+    "message": "單線",
+    "description": "Custom theme option for single border style"
+  },
+  "settings_custom_theme_option_border_double": {
+    "message": "雙線",
+    "description": "Custom theme option for double border style"
+  },
+  "settings_custom_theme_option_border_dashed": {
+    "message": "虛線",
+    "description": "Custom theme option for dashed border style"
+  },
+  "settings_custom_theme_option_border_dotted": {
+    "message": "點線",
+    "description": "Custom theme option for dotted border style"
+  },
+  "settings_custom_theme_option_border_solid": {
+    "message": "實線",
+    "description": "Custom theme option for solid border style"
+  },
+  "settings_custom_theme_option_diagram_normal": {
+    "message": "一般",
+    "description": "Custom theme option for normal diagram style"
+  },
+  "settings_custom_theme_option_diagram_hand_drawn": {
+    "message": "手繪",
+    "description": "Custom theme option for hand-drawn diagram style"
+  },
   "share": {
     "message": "分享",
     "description": "Share button tooltip"
