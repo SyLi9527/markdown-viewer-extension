@@ -9,7 +9,7 @@ import {
   TableRow,
   BorderStyle,
   TableLayoutType,
-  VerticalAlign as VerticalAlignTable,
+  VerticalAlignTable,
   VerticalMergeType,
   WidthType,
   convertInchesToTwip,
@@ -19,6 +19,7 @@ import {
   type ParagraphChild,
 } from 'docx';
 import type { DOCXThemeStyles, DOCXTableNode } from '../types/docx';
+import type { TableAlignment } from '../types/settings';
 import type { InlineResult, InlineNode } from './docx-inline-converter';
 import { 
   calculateMergeInfoFromStringsWithAnalysis, 
@@ -28,24 +29,19 @@ import {
 
 type ConvertInlineNodesFunction = (children: InlineNode[], options?: { bold?: boolean; size?: number; color?: string }) => Promise<InlineResult[]>;
 
-/** Table layout mode */
-export type TableLayout = 'left' | 'center';
-
 interface TableConverterOptions {
   themeStyles: DOCXThemeStyles;
   convertInlineNodes: ConvertInlineNodesFunction;
   /** Enable auto-merge of empty table cells */
   mergeEmptyCells?: boolean;
-  /** Table layout: 'left' or 'center' */
-  tableLayout?: TableLayout;
+  /** Default alignment for tables */
+  defaultTableAlignment?: TableAlignment;
 }
 
 export interface TableConverter {
   convertTable(node: DOCXTableNode, listLevel?: number): Promise<Table>;
   /** Update merge setting at runtime */
   setMergeEmptyCells(enabled: boolean): void;
-  /** Update table layout at runtime */
-  setTableLayout(layout: TableLayout): void;
 }
 
 /**
@@ -53,7 +49,12 @@ export interface TableConverter {
  * @param options - Configuration options
  * @returns Table converter
  */
-export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmptyCells = false, tableLayout = 'center' }: TableConverterOptions): TableConverter {
+export function createTableConverter({
+  themeStyles,
+  convertInlineNodes,
+  mergeEmptyCells = false,
+  defaultTableAlignment
+}: TableConverterOptions): TableConverter {
   // Default table styles
   const defaultMargins = { top: 80, bottom: 80, left: 100, right: 100 };
   
@@ -64,16 +65,14 @@ export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmp
   const borderStyles = tableStyles.borders || {};
   const zebraStyles = tableStyles.zebra;
   
-  // Mutable settings
+  // Mutable merge setting
   let enableMerge = mergeEmptyCells;
-  let currentLayout: TableLayout = tableLayout;
   
   /**
    * Extract cell text content matrix from data rows (excluding header)
    */
-  function extractCellMatrix(tableRows: DOCXTableNode['children']): string[][] {
-    // Skip header row (index 0)
-    const dataRows = tableRows.slice(1);
+  function extractCellMatrix(tableRows: DOCXTableNode['children'], headerRowCount: number): string[][] {
+    const dataRows = tableRows.slice(Math.max(0, headerRowCount));
     return dataRows.map(row => {
       const cells = (row.children || []).filter(c => c.type === 'tableCell');
       return cells.map(cell => extractTextFromAstCell(cell));
@@ -91,12 +90,16 @@ export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmp
     const alignments = (node as unknown as { align?: Array<'left' | 'center' | 'right' | null> }).align || [];
     const tableRows = (node.children || []).filter((row) => row.type === 'tableRow');
     const rowCount = tableRows.length;
+    const headerRowCount = typeof (node as { headerRowCount?: number }).headerRowCount === 'number'
+      ? (node as { headerRowCount?: number }).headerRowCount!
+      : 1;
+    const explicitSpans = (node as { explicitSpans?: boolean }).explicitSpans === true;
 
     // Calculate merge info for data rows if merge is enabled
     let mergeInfo: CellMergeInfo[][] | null = null;
     let groupHeaderRows = new Set<number>();
-    if (enableMerge && rowCount > 1) {
-      const cellMatrix = extractCellMatrix(tableRows);
+    if (!explicitSpans && enableMerge && rowCount > headerRowCount) {
+      const cellMatrix = extractCellMatrix(tableRows, headerRowCount);
       if (cellMatrix.length > 0 && cellMatrix[0].length > 0) {
         const result = calculateMergeInfoFromStringsWithAnalysis(cellMatrix);
         mergeInfo = result.mergeInfo;
@@ -109,9 +112,10 @@ export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmp
 
     for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
       const row = tableRows[rowIndex];
-      const isHeaderRow = rowIndex === 0;
+      const rowMeta = row as { isHeaderRow?: boolean };
+      const isHeaderRow = typeof rowMeta.isHeaderRow === 'boolean' ? rowMeta.isHeaderRow : rowIndex < headerRowCount;
       const isLastRow = rowIndex === rowCount - 1;
-      const dataRowIndex = rowIndex - 1; // Index in data rows (excluding header)
+      const dataRowIndex = rowIndex - headerRowCount; // Index in data rows (excluding header rows)
 
       if (row.type === 'tableRow') {
         const cells: TableCell[] = [];
@@ -121,24 +125,71 @@ export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmp
           const cell = rowChildren[colIndex];
 
           if (cell.type === 'tableCell') {
+            const cellMeta = cell as {
+              columnIndex?: number;
+              colspan?: number;
+              rowspan?: number;
+              colSpan?: number;
+              rowSpan?: number;
+              shouldRender?: boolean;
+              isHeaderCell?: boolean;
+              alignment?: 'left' | 'center' | 'right' | 'justify';
+              verticalAlign?: 'top' | 'center' | 'bottom';
+              backgroundColor?: string;
+              textStyle?: { color?: string; bold?: boolean; italics?: boolean };
+              borders?: HtmlBorderSet;
+            };
+            if (cellMeta.shouldRender === false) {
+              continue;
+            }
+
+            const columnIndex = typeof cellMeta.columnIndex === 'number' ? cellMeta.columnIndex : colIndex;
+            const isHeaderCell = isHeaderRow || cellMeta.isHeaderCell === true;
+
             // Check if this cell should be skipped (merged into cell above)
-            if (!isHeaderRow && mergeInfo && dataRowIndex >= 0 && dataRowIndex < mergeInfo.length) {
-              const cellInfo = mergeInfo[dataRowIndex]?.[colIndex];
+            if (!explicitSpans && !isHeaderRow && mergeInfo && dataRowIndex >= 0 && dataRowIndex < mergeInfo.length) {
+              const cellInfo = mergeInfo[dataRowIndex]?.[columnIndex];
               if (cellInfo && !cellInfo.shouldRender) {
                 // Skip this cell - it's merged into the cell above
                 continue;
               }
             }
             
-            const isBold = isHeaderRow && (headerStyles.bold ?? true);
-            const headerColor = isHeaderRow && headerStyles.color ? headerStyles.color : undefined;
-            const children = isHeaderRow
-              ? await convertInlineNodes((cell.children || []) as InlineNode[], { bold: isBold, size: 20, color: headerColor })
-              : await convertInlineNodes((cell.children || []) as InlineNode[], { size: 20 });
+            const headerBold = isHeaderCell ? (headerStyles.bold ?? true) : undefined;
+            const headerColor = isHeaderCell && headerStyles.color ? headerStyles.color : undefined;
+            const cellTextStyle = cellMeta.textStyle || {};
+            const inlineStyle: { bold?: boolean; italics?: boolean; color?: string; size: number } = { size: 20 };
+            if (typeof headerBold === 'boolean') {
+              inlineStyle.bold = headerBold;
+            }
+            if (headerColor) {
+              inlineStyle.color = headerColor;
+            }
+            if (typeof cellTextStyle.bold === 'boolean') {
+              inlineStyle.bold = cellTextStyle.bold;
+            }
+            if (typeof cellTextStyle.italics === 'boolean') {
+              inlineStyle.italics = cellTextStyle.italics;
+            }
+            if (cellTextStyle.color) {
+              inlineStyle.color = cellTextStyle.color;
+            }
 
-            const cellAlignment = alignments[colIndex];
+            const children = await convertInlineNodes((cell.children || []) as InlineNode[], inlineStyle);
+
+            const cellAlignment = cellMeta.alignment || alignments[columnIndex];
             let paragraphAlignment: (typeof AlignmentType)[keyof typeof AlignmentType] = AlignmentType.LEFT;
-            if (isHeaderRow) {
+            if (cellMeta.alignment) {
+              if (cellMeta.alignment === 'justify') {
+                paragraphAlignment = AlignmentType.JUSTIFIED;
+              } else if (cellMeta.alignment === 'center') {
+                paragraphAlignment = AlignmentType.CENTER;
+              } else if (cellMeta.alignment === 'right') {
+                paragraphAlignment = AlignmentType.RIGHT;
+              } else {
+                paragraphAlignment = AlignmentType.LEFT;
+              }
+            } else if (isHeaderRow) {
               paragraphAlignment = AlignmentType.CENTER;
             } else if (cellAlignment === 'center') {
               paragraphAlignment = AlignmentType.CENTER;
@@ -154,7 +205,7 @@ export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmp
 
             const whiteBorder: IBorderOptions = { style: BorderStyle.SINGLE, size: 0, color: 'FFFFFF' };
             const noneBorder: IBorderOptions = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
-            const isFirstColumn = colIndex === 0;
+            const isFirstColumn = columnIndex === 0;
 
             let borders: ITableCellOptions['borders'];
 
@@ -186,7 +237,9 @@ export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmp
             }
 
             let shading: ITableCellOptions['shading'];
-            if (isHeaderRow && headerStyles.shading) {
+            if (cellMeta.backgroundColor) {
+              shading = { fill: cellMeta.backgroundColor };
+            } else if (isHeaderRow && headerStyles.shading) {
               shading = headerStyles.shading;
             } else if (rowIndex > 0 && typeof zebraStyles === 'object') {
               const isOddDataRow = ((rowIndex - 1) % 2) === 0;
@@ -198,25 +251,33 @@ export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmp
 
             // Calculate vertical merge for this cell
             let rowSpan: number | undefined;
-            let cellSpansToLastRow = false;
-            if (!isHeaderRow && mergeInfo && dataRowIndex >= 0 && dataRowIndex < mergeInfo.length) {
-              const cellInfo = mergeInfo[dataRowIndex]?.[colIndex];
+            if (explicitSpans) {
+              const explicitRowSpan = Number(cellMeta.rowspan ?? cellMeta.rowSpan);
+              if (Number.isFinite(explicitRowSpan) && explicitRowSpan > 1) {
+                rowSpan = Math.floor(explicitRowSpan);
+              }
+            } else if (!isHeaderRow && mergeInfo && dataRowIndex >= 0 && dataRowIndex < mergeInfo.length) {
+              const cellInfo = mergeInfo[dataRowIndex]?.[columnIndex];
               if (cellInfo && cellInfo.rowspan > 1) {
                 rowSpan = cellInfo.rowspan;
-                // Check if this cell spans to the last data row
-                // dataRowIndex is 0-based index in data rows, mergeInfo.length is total data rows
-                cellSpansToLastRow = (dataRowIndex + cellInfo.rowspan >= mergeInfo.length);
               }
             }
             
             // Calculate horizontal merge (colspan) for this cell
             let colSpan: number | undefined;
-            if (!isHeaderRow && mergeInfo && dataRowIndex >= 0 && dataRowIndex < mergeInfo.length) {
-              const cellInfo = mergeInfo[dataRowIndex]?.[colIndex];
+            if (explicitSpans) {
+              const explicitColSpan = Number(cellMeta.colspan ?? cellMeta.colSpan);
+              if (Number.isFinite(explicitColSpan) && explicitColSpan > 1) {
+                colSpan = Math.floor(explicitColSpan);
+              }
+            } else if (!isHeaderRow && mergeInfo && dataRowIndex >= 0 && dataRowIndex < mergeInfo.length) {
+              const cellInfo = mergeInfo[dataRowIndex]?.[columnIndex];
               if (cellInfo && cellInfo.colspan > 1) {
                 colSpan = cellInfo.colspan;
               }
             }
+
+            const cellSpansToLastRow = rowSpan ? (rowIndex + rowSpan >= rowCount) : false;
             
             // Apply last row bottom border if this cell is in last row OR spans to last row
             if (!isHeaderRow && (isLastRow || cellSpansToLastRow)) {
@@ -225,9 +286,16 @@ export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmp
               }
             }
 
+            if (cellMeta.borders) {
+              const overrideBorders = normalizeHtmlBorders(cellMeta.borders);
+              if (overrideBorders) {
+                borders = { ...(borders || {}), ...overrideBorders };
+              }
+            }
+
             const cellConfig: ITableCellOptions = {
               children: [new Paragraph(paragraphOptions)],
-              verticalAlign: VerticalAlignTable.CENTER,
+              verticalAlign: mapVerticalAlign(cellMeta.verticalAlign) || VerticalAlignTable.CENTER,
               margins: cellStyles.margins || defaultMargins,
               borders,
               shading,
@@ -250,10 +318,18 @@ export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmp
     // This creates the visual effect of centering within the indented area
     const indentSize = listLevel > 0 ? convertInchesToTwip(0.5 * listLevel / 2) : undefined;
 
+    const alignment = defaultTableAlignment === 'left'
+      ? AlignmentType.LEFT
+      : defaultTableAlignment === 'right'
+        ? AlignmentType.RIGHT
+        : defaultTableAlignment === 'justify'
+          ? AlignmentType.JUSTIFIED
+          : AlignmentType.CENTER;
+
     return new Table({
       rows: rows,
       layout: TableLayoutType.AUTOFIT,
-      alignment: currentLayout === 'center' ? AlignmentType.CENTER : AlignmentType.LEFT,
+      alignment,
       indent: indentSize ? { size: indentSize, type: WidthType.DXA } : undefined,
     });
   }
@@ -262,9 +338,60 @@ export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmp
     enableMerge = enabled;
   }
 
-  function setTableLayout(layout: TableLayout): void {
-    currentLayout = layout;
+  return { convertTable, setMergeEmptyCells };
+}
+
+type HtmlBorderSpec = { style?: string; width?: number; color?: string };
+type HtmlBorderSet = { top?: HtmlBorderSpec; right?: HtmlBorderSpec; bottom?: HtmlBorderSpec; left?: HtmlBorderSpec };
+
+function mapVerticalAlign(
+  value?: 'top' | 'center' | 'bottom'
+): (typeof VerticalAlignTable)[keyof typeof VerticalAlignTable] | undefined {
+  if (value === 'top') return VerticalAlignTable.TOP;
+  if (value === 'bottom') return VerticalAlignTable.BOTTOM;
+  if (value === 'center') return VerticalAlignTable.CENTER;
+  return undefined;
+}
+
+function normalizeHtmlBorders(borders: HtmlBorderSet): ITableCellOptions['borders'] | undefined {
+  const top = toDocxBorder(borders.top);
+  const right = toDocxBorder(borders.right);
+  const bottom = toDocxBorder(borders.bottom);
+  const left = toDocxBorder(borders.left);
+  if (!top && !right && !bottom && !left) {
+    return undefined;
+  }
+  return {
+    ...(top ? { top } : null),
+    ...(right ? { right } : null),
+    ...(bottom ? { bottom } : null),
+    ...(left ? { left } : null),
+  };
+}
+
+function toDocxBorder(border?: HtmlBorderSpec): IBorderOptions | undefined {
+  if (!border) {
+    return undefined;
   }
 
-  return { convertTable, setMergeEmptyCells, setTableLayout };
+  const style = border.style?.toLowerCase();
+  let docxStyle: (typeof BorderStyle)[keyof typeof BorderStyle] = BorderStyle.SINGLE;
+  if (style === 'none' || style === 'hidden') {
+    docxStyle = BorderStyle.NONE;
+  } else if (style === 'dashed') {
+    docxStyle = BorderStyle.DASHED;
+  } else if (style === 'dotted') {
+    docxStyle = BorderStyle.DOTTED;
+  } else if (style === 'double') {
+    docxStyle = BorderStyle.DOUBLE;
+  }
+
+  const size = border.width ? Math.max(2, Math.round(border.width * 8)) : undefined;
+  const color = border.color || '000000';
+
+  return {
+    style: docxStyle,
+    size: docxStyle === BorderStyle.NONE ? 0 : (size ?? 4),
+    color,
+  };
 }

@@ -205,8 +205,8 @@ export class JsonCanvasRenderer extends BaseRenderer {
       maxX = maxY = 100;
     }
 
-    const width = maxX - minX + PADDING * 2;
-    const height = maxY - minY + PADDING * 2;
+    const width = Math.ceil(maxX - minX + PADDING * 2);
+    const height = Math.ceil(maxY - minY + PADDING * 2);
 
     return {
       minX,

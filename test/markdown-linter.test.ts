@@ -2,7 +2,7 @@
  * Test for markdown-linter
  */
 
-import { fixMarkdown, lintMarkdown, getDiagnostics, getAllCategories, getCategoryRules } from '../vscode/src/tools/markdown-linter';
+import { fixMarkdown, lintMarkdown, getDiagnostics, getAllCategories, getCategoryRules } from '../vscode/src/tools/markdown-linter.ts';
 
 // Test content with various issues
 const testContent = `#No space after hash
