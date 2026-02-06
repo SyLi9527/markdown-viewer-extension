@@ -97,6 +97,7 @@
     "fibjs": "^0.1.8",
     "knip": "^5.80.0",
     "linkedom": "^0.18.12",
+    "playwright": "^1.58.1",
     "typescript": "^5.9.3",
     "webextension-polyfill": "^0.12.0"
   },
