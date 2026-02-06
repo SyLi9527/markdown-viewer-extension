@@ -9,7 +9,7 @@ import {
   TableRow,
   BorderStyle,
   TableLayoutType,
-  VerticalAlign as VerticalAlignTable,
+  VerticalAlignTable,
   VerticalMergeType,
   WidthType,
   convertInchesToTwip,
@@ -19,6 +19,7 @@ import {
   type ParagraphChild,
 } from 'docx';
 import type { DOCXThemeStyles, DOCXTableNode } from '../types/docx';
+import type { TableAlignment } from '../types/settings';
 import type { InlineResult, InlineNode } from './docx-inline-converter';
 import { 
   calculateMergeInfoFromStringsWithAnalysis, 
@@ -33,6 +34,8 @@ interface TableConverterOptions {
   convertInlineNodes: ConvertInlineNodesFunction;
   /** Enable auto-merge of empty table cells */
   mergeEmptyCells?: boolean;
+  /** Default alignment for tables */
+  defaultTableAlignment?: TableAlignment;
 }
 
 export interface TableConverter {
@@ -46,7 +49,12 @@ export interface TableConverter {
  * @param options - Configuration options
  * @returns Table converter
  */
-export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmptyCells = false }: TableConverterOptions): TableConverter {
+export function createTableConverter({
+  themeStyles,
+  convertInlineNodes,
+  mergeEmptyCells = false,
+  defaultTableAlignment
+}: TableConverterOptions): TableConverter {
   // Default table styles
   const defaultMargins = { top: 80, bottom: 80, left: 100, right: 100 };
   
@@ -310,10 +318,18 @@ export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmp
     // This creates the visual effect of centering within the indented area
     const indentSize = listLevel > 0 ? convertInchesToTwip(0.5 * listLevel / 2) : undefined;
 
+    const alignment = defaultTableAlignment === 'left'
+      ? AlignmentType.LEFT
+      : defaultTableAlignment === 'right'
+        ? AlignmentType.RIGHT
+        : defaultTableAlignment === 'justify'
+          ? AlignmentType.JUSTIFIED
+          : AlignmentType.CENTER;
+
     return new Table({
       rows: rows,
       layout: TableLayoutType.AUTOFIT,
-      alignment: AlignmentType.CENTER,
+      alignment,
       indent: indentSize ? { size: indentSize, type: WidthType.DXA } : undefined,
     });
   }
@@ -328,7 +344,9 @@ export function createTableConverter({ themeStyles, convertInlineNodes, mergeEmp
 type HtmlBorderSpec = { style?: string; width?: number; color?: string };
 type HtmlBorderSet = { top?: HtmlBorderSpec; right?: HtmlBorderSpec; bottom?: HtmlBorderSpec; left?: HtmlBorderSpec };
 
-function mapVerticalAlign(value?: 'top' | 'center' | 'bottom'): VerticalAlignTable | undefined {
+function mapVerticalAlign(
+  value?: 'top' | 'center' | 'bottom'
+): (typeof VerticalAlignTable)[keyof typeof VerticalAlignTable] | undefined {
   if (value === 'top') return VerticalAlignTable.TOP;
   if (value === 'bottom') return VerticalAlignTable.BOTTOM;
   if (value === 'center') return VerticalAlignTable.CENTER;
@@ -357,7 +375,7 @@ function toDocxBorder(border?: HtmlBorderSpec): IBorderOptions | undefined {
   }
 
   const style = border.style?.toLowerCase();
-  let docxStyle: BorderStyle = BorderStyle.SINGLE;
+  let docxStyle: (typeof BorderStyle)[keyof typeof BorderStyle] = BorderStyle.SINGLE;
   if (style === 'none' || style === 'hidden') {
     docxStyle = BorderStyle.NONE;
   } else if (style === 'dashed') {

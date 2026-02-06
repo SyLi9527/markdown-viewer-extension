@@ -28,6 +28,8 @@ interface ListConverterOptions {
   convertInlineNodes: ConvertInlineNodesFunction;
   getListInstanceCounter: () => number;
   incrementListInstanceCounter: () => number;
+  registerOrderedListStart?: (start: number, level: number) => void;
+  getOrderedListReference?: (start: number, level: number) => string;
 }
 
 interface NumberingLevel {
@@ -35,6 +37,7 @@ interface NumberingLevel {
   format: (typeof LevelFormat)[keyof typeof LevelFormat];
   text: string;
   alignment: typeof AlignmentType.START;
+  start?: number;
   style: {
     paragraph: {
       indent: {
@@ -49,7 +52,7 @@ interface NumberingLevel {
  * Create numbering levels configuration for ordered lists
  * @returns Numbering levels configuration
  */
-export function createNumberingLevels(): NumberingLevel[] {
+export function createNumberingLevels(start = 1, level = 0): NumberingLevel[] {
   const levels: NumberingLevel[] = [];
   const formats: Array<(typeof LevelFormat)[keyof typeof LevelFormat]> = [
     LevelFormat.DECIMAL,
@@ -82,12 +85,21 @@ export function createNumberingLevels(): NumberingLevel[] {
       },
     });
   }
+  if (Number.isFinite(start) && start > 1 && level >= 0 && level < levels.length) {
+    levels[level].start = Math.floor(start);
+  }
   return levels;
 }
 
 export interface ListConverter {
   convertList(node: DOCXListNode): Promise<FileChild[]>;
-  convertListItem(ordered: boolean, item: ListItemNode, level: number, listInstance: number): Promise<FileChild[]>;
+  convertListItem(
+    ordered: boolean,
+    item: ListItemNode,
+    level: number,
+    listInstance: number,
+    orderedListReference: string
+  ): Promise<FileChild[]>;
   setConvertChildNode(fn: ConvertChildNodeFunction): void;
 }
 
@@ -100,7 +112,9 @@ export function createListConverter({
   themeStyles, 
   convertInlineNodes, 
   getListInstanceCounter,
-  incrementListInstanceCounter
+  incrementListInstanceCounter,
+  registerOrderedListStart,
+  getOrderedListReference
 }: ListConverterOptions): ListConverter {
   // Default styles
   const defaultRun = themeStyles.default?.run || { font: 'Arial', size: 22 };
@@ -121,18 +135,38 @@ export function createListConverter({
    * @param node - List AST node
    * @returns Array of DOCX FileChild elements
    */
-  async function convertList(node: DOCXListNode): Promise<FileChild[]> {
+  function resolveOrderedListReference(node: DOCXListNode, level: number): string {
+    const start = node.start ?? 1;
+    if (node.ordered && start > 1 && registerOrderedListStart && getOrderedListReference) {
+      registerOrderedListStart(start, level);
+      return getOrderedListReference(start, level);
+    }
+    return 'default-ordered-list';
+  }
+
+  async function convertListNode(node: DOCXListNode, level: number, listInstance: number): Promise<FileChild[]> {
     const items: FileChild[] = [];
-    const listInstance = incrementListInstanceCounter();
+    const orderedListReference = resolveOrderedListReference(node, level);
 
     for (const item of node.children) {
-      const converted = await convertListItem(node.ordered ?? false, item as ListItemNode, 0, listInstance);
+      const converted = await convertListItem(
+        node.ordered ?? false,
+        item as ListItemNode,
+        level,
+        listInstance,
+        orderedListReference
+      );
       if (converted) {
         items.push(...converted);
       }
     }
 
     return items;
+  }
+
+  async function convertList(node: DOCXListNode): Promise<FileChild[]> {
+    const listInstance = incrementListInstanceCounter();
+    return convertListNode(node, 0, listInstance);
   }
 
   /**
@@ -143,7 +177,13 @@ export function createListConverter({
    * @param listInstance - List instance number for numbering
    * @returns Array of DOCX FileChild elements
    */
-  async function convertListItem(ordered: boolean, node: ListItemNode, level: number, listInstance: number): Promise<FileChild[]> {
+  async function convertListItem(
+    ordered: boolean,
+    node: ListItemNode,
+    level: number,
+    listInstance: number,
+    orderedListReference: string
+  ): Promise<FileChild[]> {
     const items: FileChild[] = [];
     const isTaskList = node.checked !== null && node.checked !== undefined;
 
@@ -172,7 +212,7 @@ export function createListConverter({
           ? new Paragraph({
               ...baseParagraphConfig,
               numbering: {
-                reference: 'default-ordered-list',
+                reference: orderedListReference,
                 level: level,
                 instance: listInstance,
               },
@@ -185,8 +225,17 @@ export function createListConverter({
         items.push(paragraph);
       } else if (child.type === 'list') {
         const listChild = child as DOCXListNode;
+        const nestedReference = resolveOrderedListReference(listChild, level + 1);
         for (const nestedItem of listChild.children) {
-          items.push(...await convertListItem(listChild.ordered ?? false, nestedItem as ListItemNode, level + 1, listInstance));
+          items.push(
+            ...await convertListItem(
+              listChild.ordered ?? false,
+              nestedItem as ListItemNode,
+              level + 1,
+              listInstance,
+              nestedReference
+            )
+          );
         }
       } else if (convertChildNode) {
         // Handle other node types (e.g., blockquote, code, table) within list items

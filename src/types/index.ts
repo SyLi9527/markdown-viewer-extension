@@ -68,6 +68,7 @@ export type {
   ThemeCategoryInfo,
   ThemeRegistry,
   ThemeRegistryInfo,
+  CustomThemeBundle,
 } from './theme';
 
 // =============================================================================

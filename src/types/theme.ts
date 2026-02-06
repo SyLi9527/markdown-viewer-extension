@@ -132,9 +132,11 @@ export interface TableStyleConfig {
   };
   header: {
     fontWeight?: string;
+    fontSize?: string;
   };
   cell: {
     padding: string;
+    fontSize?: string;
   };
   zebra?: {
     enabled: boolean;
@@ -150,7 +152,7 @@ export interface TableStyleConfig {
  */
 export interface CodeThemeConfig {
   colors: Record<string, string>;
-  foreground?: string;
+  foreground: string;
 }
 
 // =============================================================================
@@ -236,6 +238,7 @@ export interface Theme {
   colorScheme: string;    // Reference to color scheme
   tableStyle: string;     // Reference to table style
   codeTheme: string;      // Reference to code theme
+  diagramStyle?: 'normal' | 'handDrawn';
 }
 
 /**
@@ -280,4 +283,22 @@ export interface ThemeRegistryInfo {
   id: string;
   name: string;
   category: string;
+}
+
+/**
+ * Custom theme bundle (stored in platform storage)
+ * Used to override a base preset with custom values.
+ */
+export interface CustomThemeBundle {
+  basePresetId: string;
+  overrides?: {
+    fontScheme?: Theme['fontScheme'];
+    diagramStyle?: Theme['diagramStyle'];
+  };
+  schemes?: {
+    layoutScheme?: Partial<LayoutScheme>;
+    colorScheme?: Partial<ColorScheme>;
+    tableStyle?: Partial<TableStyleConfig>;
+    codeTheme?: Partial<CodeThemeConfig>;
+  };
 }

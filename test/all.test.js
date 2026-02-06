@@ -1,14 +1,16 @@
 /**
- * All tests - Run all test suites
+ * Fibjs test entrypoint - delegate to Node for ESM/TS support.
  */
 
-import './markdown-block-splitter.test.js';
-import './markdown-processor.test.js';
-import './markdown-document.test.js';
-import './docx-math-converter.test.js';
-import './heading-numbering.test.ts';
-import './html-table-to-docx.test.ts';
-import './docx-table-converter.test.ts';
-import './docx-list-converter.test.ts';
-import './html-plugin-table-bypass.test.ts';
-import './docx-theme-mapping.test.ts';
+const { spawnSync } = require('child_process');
+const path = require('path');
+
+const nodeBinary = process.env.NODE_BINARY || 'node';
+const testEntry = path.resolve(__dirname, 'all.test.mjs');
+
+const result = spawnSync(nodeBinary, ['--import', 'tsx/esm', testEntry], {
+  stdio: 'inherit',
+  env: process.env,
+});
+
+process.exit(result.status ?? 1);

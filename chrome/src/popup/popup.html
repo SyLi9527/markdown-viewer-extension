@@ -147,6 +147,519 @@
             <div id="theme-description" class="settings-note"></div>
           </div>
 
+          <details class="custom-theme-details" id="custom-theme-details">
+            <summary data-i18n="settings_custom_theme_title">Custom Theme</summary>
+            <div class="custom-theme-content">
+              <div class="custom-theme-row">
+                <label for="custom-theme-base" data-i18n="settings_custom_theme_base">Base preset</label>
+                <select id="custom-theme-base"></select>
+              </div>
+              <div class="custom-theme-actions">
+                <button class="btn" id="custom-theme-generate" data-i18n="settings_custom_theme_generate">Generate from current</button>
+                <button class="btn" id="custom-theme-apply" data-i18n="settings_custom_theme_apply">Apply</button>
+                <button class="btn" id="custom-theme-save" data-i18n="settings_custom_theme_save">Save</button>
+                <button class="btn" id="custom-theme-restore" data-i18n="settings_custom_theme_restore">Restore last saved</button>
+              </div>
+              <div id="custom-theme-error" class="settings-note custom-theme-error"></div>
+
+              <div class="custom-theme-group">
+                <div class="custom-theme-group-header">
+                  <span data-i18n="settings_custom_theme_fonts">Fonts</span>
+                  <button type="button" class="custom-theme-advanced-toggle" data-target="custom-theme-fonts-advanced" data-i18n="settings_custom_theme_advanced">Advanced</button>
+                </div>
+                <div class="custom-theme-grid">
+                <div class="custom-theme-field">
+                    <label for="custom-font-body" data-i18n="settings_custom_theme_label_body_font">Body font</label>
+                    <select id="custom-font-body"></select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-font-headings" data-i18n="settings_custom_theme_label_headings_font">Headings font</label>
+                    <select id="custom-font-headings"></select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-font-code" data-i18n="settings_custom_theme_label_code_font">Code font</label>
+                    <select id="custom-font-code"></select>
+                  </div>
+                </div>
+                <div class="custom-theme-grid custom-theme-advanced" id="custom-theme-fonts-advanced">
+                  <div class="custom-theme-field">
+                    <label for="custom-font-h1" data-i18n="settings_custom_theme_label_h1_font">H1 font</label>
+                    <select id="custom-font-h1"></select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-font-h2" data-i18n="settings_custom_theme_label_h2_font">H2 font</label>
+                    <select id="custom-font-h2"></select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-font-h3" data-i18n="settings_custom_theme_label_h3_font">H3 font</label>
+                    <select id="custom-font-h3"></select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-font-h4" data-i18n="settings_custom_theme_label_h4_font">H4 font</label>
+                    <select id="custom-font-h4"></select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-font-h5" data-i18n="settings_custom_theme_label_h5_font">H5 font</label>
+                    <select id="custom-font-h5"></select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-font-h6" data-i18n="settings_custom_theme_label_h6_font">H6 font</label>
+                    <select id="custom-font-h6"></select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="custom-theme-group">
+                <div class="custom-theme-group-header">
+                  <span data-i18n="settings_custom_theme_layout">Layout</span>
+                  <button type="button" class="custom-theme-advanced-toggle" data-target="custom-theme-layout-advanced" data-i18n="settings_custom_theme_advanced">Advanced</button>
+                </div>
+                <div class="custom-theme-grid">
+                  <div class="custom-theme-field">
+                    <label for="custom-body-font-size" data-i18n="settings_custom_theme_label_body_font_size">Body font size (pt)</label>
+                    <input type="number" id="custom-body-font-size" min="6" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-body-line-height" data-i18n="settings_custom_theme_label_body_line_height">Body line height</label>
+                    <input type="number" id="custom-body-line-height" min="0.5" step="0.1">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h1-size" data-i18n="settings_custom_theme_label_h1_size">H1 size (pt)</label>
+                    <input type="number" id="custom-heading-h1-size" min="6" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h2-size" data-i18n="settings_custom_theme_label_h2_size">H2 size (pt)</label>
+                    <input type="number" id="custom-heading-h2-size" min="6" step="0.5">
+                  </div>
+                </div>
+                <div class="custom-theme-grid custom-theme-advanced" id="custom-theme-layout-advanced">
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h1-before" data-i18n="settings_custom_theme_label_h1_spacing_before">H1 spacing before (pt)</label>
+                    <input type="number" id="custom-heading-h1-before" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h1-after" data-i18n="settings_custom_theme_label_h1_spacing_after">H1 spacing after (pt)</label>
+                    <input type="number" id="custom-heading-h1-after" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h1-align" data-i18n="settings_custom_theme_label_h1_alignment">H1 alignment</label>
+                    <select id="custom-heading-h1-align">
+                      <option value="left" data-i18n="settings_custom_theme_option_left">Left</option>
+                      <option value="center" data-i18n="settings_custom_theme_option_center">Center</option>
+                      <option value="right" data-i18n="settings_custom_theme_option_right">Right</option>
+                    </select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h2-before" data-i18n="settings_custom_theme_label_h2_spacing_before">H2 spacing before (pt)</label>
+                    <input type="number" id="custom-heading-h2-before" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h2-after" data-i18n="settings_custom_theme_label_h2_spacing_after">H2 spacing after (pt)</label>
+                    <input type="number" id="custom-heading-h2-after" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h2-align" data-i18n="settings_custom_theme_label_h2_alignment">H2 alignment</label>
+                    <select id="custom-heading-h2-align">
+                      <option value="left" data-i18n="settings_custom_theme_option_left">Left</option>
+                      <option value="center" data-i18n="settings_custom_theme_option_center">Center</option>
+                      <option value="right" data-i18n="settings_custom_theme_option_right">Right</option>
+                    </select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h3-size" data-i18n="settings_custom_theme_label_h3_size">H3 size (pt)</label>
+                    <input type="number" id="custom-heading-h3-size" min="6" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h3-before" data-i18n="settings_custom_theme_label_h3_spacing_before">H3 spacing before (pt)</label>
+                    <input type="number" id="custom-heading-h3-before" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h3-after" data-i18n="settings_custom_theme_label_h3_spacing_after">H3 spacing after (pt)</label>
+                    <input type="number" id="custom-heading-h3-after" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h3-align" data-i18n="settings_custom_theme_label_h3_alignment">H3 alignment</label>
+                    <select id="custom-heading-h3-align">
+                      <option value="left" data-i18n="settings_custom_theme_option_left">Left</option>
+                      <option value="center" data-i18n="settings_custom_theme_option_center">Center</option>
+                      <option value="right" data-i18n="settings_custom_theme_option_right">Right</option>
+                    </select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h4-size" data-i18n="settings_custom_theme_label_h4_size">H4 size (pt)</label>
+                    <input type="number" id="custom-heading-h4-size" min="6" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h4-before" data-i18n="settings_custom_theme_label_h4_spacing_before">H4 spacing before (pt)</label>
+                    <input type="number" id="custom-heading-h4-before" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h4-after" data-i18n="settings_custom_theme_label_h4_spacing_after">H4 spacing after (pt)</label>
+                    <input type="number" id="custom-heading-h4-after" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h4-align" data-i18n="settings_custom_theme_label_h4_alignment">H4 alignment</label>
+                    <select id="custom-heading-h4-align">
+                      <option value="left" data-i18n="settings_custom_theme_option_left">Left</option>
+                      <option value="center" data-i18n="settings_custom_theme_option_center">Center</option>
+                      <option value="right" data-i18n="settings_custom_theme_option_right">Right</option>
+                    </select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h5-size" data-i18n="settings_custom_theme_label_h5_size">H5 size (pt)</label>
+                    <input type="number" id="custom-heading-h5-size" min="6" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h5-before" data-i18n="settings_custom_theme_label_h5_spacing_before">H5 spacing before (pt)</label>
+                    <input type="number" id="custom-heading-h5-before" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h5-after" data-i18n="settings_custom_theme_label_h5_spacing_after">H5 spacing after (pt)</label>
+                    <input type="number" id="custom-heading-h5-after" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h5-align" data-i18n="settings_custom_theme_label_h5_alignment">H5 alignment</label>
+                    <select id="custom-heading-h5-align">
+                      <option value="left" data-i18n="settings_custom_theme_option_left">Left</option>
+                      <option value="center" data-i18n="settings_custom_theme_option_center">Center</option>
+                      <option value="right" data-i18n="settings_custom_theme_option_right">Right</option>
+                    </select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h6-size" data-i18n="settings_custom_theme_label_h6_size">H6 size (pt)</label>
+                    <input type="number" id="custom-heading-h6-size" min="6" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h6-before" data-i18n="settings_custom_theme_label_h6_spacing_before">H6 spacing before (pt)</label>
+                    <input type="number" id="custom-heading-h6-before" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h6-after" data-i18n="settings_custom_theme_label_h6_spacing_after">H6 spacing after (pt)</label>
+                    <input type="number" id="custom-heading-h6-after" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-heading-h6-align" data-i18n="settings_custom_theme_label_h6_alignment">H6 alignment</label>
+                    <select id="custom-heading-h6-align">
+                      <option value="left" data-i18n="settings_custom_theme_option_left">Left</option>
+                      <option value="center" data-i18n="settings_custom_theme_option_center">Center</option>
+                      <option value="right" data-i18n="settings_custom_theme_option_right">Right</option>
+                    </select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-code-font-size" data-i18n="settings_custom_theme_label_code_font_size">Code font size (pt)</label>
+                    <input type="number" id="custom-code-font-size" min="6" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-block-paragraph-after" data-i18n="settings_custom_theme_label_paragraph_spacing_after">Paragraph spacing after (pt)</label>
+                    <input type="number" id="custom-block-paragraph-after" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-block-list-after" data-i18n="settings_custom_theme_label_list_spacing_after">List spacing after (pt)</label>
+                    <input type="number" id="custom-block-list-after" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-block-list-item-after" data-i18n="settings_custom_theme_label_list_item_spacing_after">List item spacing after (pt)</label>
+                    <input type="number" id="custom-block-list-item-after" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-block-blockquote-before" data-i18n="settings_custom_theme_label_blockquote_spacing_before">Blockquote spacing before (pt)</label>
+                    <input type="number" id="custom-block-blockquote-before" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-block-blockquote-after" data-i18n="settings_custom_theme_label_blockquote_spacing_after">Blockquote spacing after (pt)</label>
+                    <input type="number" id="custom-block-blockquote-after" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-block-blockquote-pad-v" data-i18n="settings_custom_theme_label_blockquote_padding_vertical">Blockquote padding vertical (pt)</label>
+                    <input type="number" id="custom-block-blockquote-pad-v" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-block-blockquote-pad-h" data-i18n="settings_custom_theme_label_blockquote_padding_horizontal">Blockquote padding horizontal (pt)</label>
+                    <input type="number" id="custom-block-blockquote-pad-h" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-block-code-after" data-i18n="settings_custom_theme_label_code_block_spacing_after">Code block spacing after (pt)</label>
+                    <input type="number" id="custom-block-code-after" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-block-table-after" data-i18n="settings_custom_theme_label_table_spacing_after">Table spacing after (pt)</label>
+                    <input type="number" id="custom-block-table-after" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-block-hr-before" data-i18n="settings_custom_theme_label_hr_spacing_before">Horizontal rule spacing before (pt)</label>
+                    <input type="number" id="custom-block-hr-before" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-block-hr-after" data-i18n="settings_custom_theme_label_hr_spacing_after">Horizontal rule spacing after (pt)</label>
+                    <input type="number" id="custom-block-hr-after" min="0" step="0.5">
+                  </div>
+                </div>
+              </div>
+
+              <div class="custom-theme-group">
+                <div class="custom-theme-group-header">
+                  <span data-i18n="settings_custom_theme_colors">Colors</span>
+                  <button type="button" class="custom-theme-advanced-toggle" data-target="custom-theme-colors-advanced" data-i18n="settings_custom_theme_advanced">Advanced</button>
+                </div>
+                <div class="custom-theme-grid">
+                  <div class="custom-theme-field">
+                    <label for="custom-color-text-primary" data-i18n="settings_custom_theme_label_text_primary">Text primary</label>
+                    <input type="text" id="custom-color-text-primary" placeholder="#111111">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-link" data-i18n="settings_custom_theme_label_link">Link</label>
+                    <input type="text" id="custom-color-link" placeholder="#0066cc">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-link-hover" data-i18n="settings_custom_theme_label_link_hover">Link hover</label>
+                    <input type="text" id="custom-color-link-hover" placeholder="#004499">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-code-bg" data-i18n="settings_custom_theme_label_code_background">Code background</label>
+                    <input type="text" id="custom-color-code-bg" placeholder="#f5f5f5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-blockquote-border" data-i18n="settings_custom_theme_label_blockquote_border">Blockquote border</label>
+                    <input type="text" id="custom-color-blockquote-border" placeholder="#aaaaaa">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-table-border" data-i18n="settings_custom_theme_label_table_border">Table border</label>
+                    <input type="text" id="custom-color-table-border" placeholder="#cccccc">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-table-header-bg" data-i18n="settings_custom_theme_label_table_header_background">Table header background</label>
+                    <input type="text" id="custom-color-table-header-bg" placeholder="#eeeeee">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-table-header-text" data-i18n="settings_custom_theme_label_table_header_text">Table header text</label>
+                    <input type="text" id="custom-color-table-header-text" placeholder="#111111">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-table-zebra-even" data-i18n="settings_custom_theme_label_table_zebra_even">Table zebra even</label>
+                    <input type="text" id="custom-color-table-zebra-even" placeholder="#fafafa">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-table-zebra-odd" data-i18n="settings_custom_theme_label_table_zebra_odd">Table zebra odd</label>
+                    <input type="text" id="custom-color-table-zebra-odd" placeholder="#ffffff">
+                  </div>
+                </div>
+                <div class="custom-theme-grid custom-theme-advanced" id="custom-theme-colors-advanced">
+                  <div class="custom-theme-field">
+                    <label for="custom-color-text-secondary" data-i18n="settings_custom_theme_label_text_secondary">Text secondary</label>
+                    <input type="text" id="custom-color-text-secondary" placeholder="#333333">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-text-muted" data-i18n="settings_custom_theme_label_text_muted">Text muted</label>
+                    <input type="text" id="custom-color-text-muted" placeholder="#777777">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-heading-h1" data-i18n="settings_custom_theme_label_h1_color">H1 color</label>
+                    <input type="text" id="custom-color-heading-h1" placeholder="#111111">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-heading-h2" data-i18n="settings_custom_theme_label_h2_color">H2 color</label>
+                    <input type="text" id="custom-color-heading-h2" placeholder="#111111">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-heading-h3" data-i18n="settings_custom_theme_label_h3_color">H3 color</label>
+                    <input type="text" id="custom-color-heading-h3" placeholder="#111111">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-heading-h4" data-i18n="settings_custom_theme_label_h4_color">H4 color</label>
+                    <input type="text" id="custom-color-heading-h4" placeholder="#111111">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-heading-h5" data-i18n="settings_custom_theme_label_h5_color">H5 color</label>
+                    <input type="text" id="custom-color-heading-h5" placeholder="#111111">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-color-heading-h6" data-i18n="settings_custom_theme_label_h6_color">H6 color</label>
+                    <input type="text" id="custom-color-heading-h6" placeholder="#111111">
+                  </div>
+                </div>
+              </div>
+
+              <div class="custom-theme-group">
+                <div class="custom-theme-group-header">
+                  <span data-i18n="settings_custom_theme_table">Table</span>
+                  <button type="button" class="custom-theme-advanced-toggle" data-target="custom-theme-table-advanced" data-i18n="settings_custom_theme_advanced">Advanced</button>
+                </div>
+                <div class="custom-theme-grid">
+                  <div class="custom-theme-field">
+                    <label for="custom-table-border-width" data-i18n="settings_custom_theme_label_table_border_width">Border width (pt)</label>
+                    <input type="number" id="custom-table-border-width" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-table-border-style" data-i18n="settings_custom_theme_label_table_border_style">Border style</label>
+                    <select id="custom-table-border-style">
+                      <option value="single" data-i18n="settings_custom_theme_option_border_single">Single</option>
+                      <option value="double" data-i18n="settings_custom_theme_option_border_double">Double</option>
+                      <option value="dashed" data-i18n="settings_custom_theme_option_border_dashed">Dashed</option>
+                      <option value="dotted" data-i18n="settings_custom_theme_option_border_dotted">Dotted</option>
+                      <option value="solid" data-i18n="settings_custom_theme_option_border_solid">Solid</option>
+                    </select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="custom-table-header-bold">
+                      <span data-i18n="settings_custom_theme_label_table_header_bold">Header bold</span>
+                    </label>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-table-cell-padding" data-i18n="settings_custom_theme_label_table_cell_padding">Cell padding (pt)</label>
+                    <input type="number" id="custom-table-cell-padding" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="custom-table-zebra-enabled">
+                      <span data-i18n="settings_custom_theme_label_table_zebra">Zebra stripes</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="custom-theme-grid custom-theme-advanced" id="custom-theme-table-advanced">
+                  <div class="custom-theme-field">
+                    <label for="custom-table-header-font-size" data-i18n="settings_custom_theme_label_table_header_font_size">Header font size (pt)</label>
+                    <input type="number" id="custom-table-header-font-size" min="6" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-table-header-top-width" data-i18n="settings_custom_theme_label_table_header_top_border_width">Header top border width (pt)</label>
+                    <input type="number" id="custom-table-header-top-width" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-table-header-top-style" data-i18n="settings_custom_theme_label_table_header_top_border_style">Header top border style</label>
+                    <select id="custom-table-header-top-style">
+                      <option value="single" data-i18n="settings_custom_theme_option_border_single">Single</option>
+                      <option value="double" data-i18n="settings_custom_theme_option_border_double">Double</option>
+                      <option value="dashed" data-i18n="settings_custom_theme_option_border_dashed">Dashed</option>
+                      <option value="dotted" data-i18n="settings_custom_theme_option_border_dotted">Dotted</option>
+                      <option value="solid" data-i18n="settings_custom_theme_option_border_solid">Solid</option>
+                    </select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-table-header-bottom-width" data-i18n="settings_custom_theme_label_table_header_bottom_border_width">Header bottom border width (pt)</label>
+                    <input type="number" id="custom-table-header-bottom-width" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-table-header-bottom-style" data-i18n="settings_custom_theme_label_table_header_bottom_border_style">Header bottom border style</label>
+                    <select id="custom-table-header-bottom-style">
+                      <option value="single" data-i18n="settings_custom_theme_option_border_single">Single</option>
+                      <option value="double" data-i18n="settings_custom_theme_option_border_double">Double</option>
+                      <option value="dashed" data-i18n="settings_custom_theme_option_border_dashed">Dashed</option>
+                      <option value="dotted" data-i18n="settings_custom_theme_option_border_dotted">Dotted</option>
+                      <option value="solid" data-i18n="settings_custom_theme_option_border_solid">Solid</option>
+                    </select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-table-row-bottom-width" data-i18n="settings_custom_theme_label_table_row_bottom_border_width">Row bottom border width (pt)</label>
+                    <input type="number" id="custom-table-row-bottom-width" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-table-row-bottom-style" data-i18n="settings_custom_theme_label_table_row_bottom_border_style">Row bottom border style</label>
+                    <select id="custom-table-row-bottom-style">
+                      <option value="single" data-i18n="settings_custom_theme_option_border_single">Single</option>
+                      <option value="double" data-i18n="settings_custom_theme_option_border_double">Double</option>
+                      <option value="dashed" data-i18n="settings_custom_theme_option_border_dashed">Dashed</option>
+                      <option value="dotted" data-i18n="settings_custom_theme_option_border_dotted">Dotted</option>
+                      <option value="solid" data-i18n="settings_custom_theme_option_border_solid">Solid</option>
+                    </select>
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-table-last-row-bottom-width" data-i18n="settings_custom_theme_label_table_last_row_border_width">Last row border width (pt)</label>
+                    <input type="number" id="custom-table-last-row-bottom-width" min="0" step="0.5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-table-last-row-bottom-style" data-i18n="settings_custom_theme_label_table_last_row_border_style">Last row border style</label>
+                    <select id="custom-table-last-row-bottom-style">
+                      <option value="single" data-i18n="settings_custom_theme_option_border_single">Single</option>
+                      <option value="double" data-i18n="settings_custom_theme_option_border_double">Double</option>
+                      <option value="dashed" data-i18n="settings_custom_theme_option_border_dashed">Dashed</option>
+                      <option value="dotted" data-i18n="settings_custom_theme_option_border_dotted">Dotted</option>
+                      <option value="solid" data-i18n="settings_custom_theme_option_border_solid">Solid</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="custom-theme-group">
+                <div class="custom-theme-group-header">
+                  <span data-i18n="settings_custom_theme_code">Code</span>
+                  <button type="button" class="custom-theme-advanced-toggle" data-target="custom-theme-code-advanced" data-i18n="settings_custom_theme_advanced">Advanced</button>
+                </div>
+                <div class="custom-theme-grid">
+                  <div class="custom-theme-field">
+                    <label for="custom-code-theme" data-i18n="settings_custom_theme_label_code_theme">Code theme</label>
+                    <select id="custom-code-theme"></select>
+                  </div>
+                </div>
+                <div class="custom-theme-grid custom-theme-advanced" id="custom-theme-code-advanced">
+                  <div class="custom-theme-field">
+                    <label for="custom-code-foreground" data-i18n="settings_custom_theme_label_code_foreground">Foreground</label>
+                    <input type="text" id="custom-code-foreground" placeholder="#24292e">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-code-token-keyword" data-i18n="settings_custom_theme_label_code_token_keyword">Keyword</label>
+                    <input type="text" id="custom-code-token-keyword" placeholder="#d73a49">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-code-token-string" data-i18n="settings_custom_theme_label_code_token_string">String</label>
+                    <input type="text" id="custom-code-token-string" placeholder="#032f62">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-code-token-comment" data-i18n="settings_custom_theme_label_code_token_comment">Comment</label>
+                    <input type="text" id="custom-code-token-comment" placeholder="#6a737d">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-code-token-number" data-i18n="settings_custom_theme_label_code_token_number">Number</label>
+                    <input type="text" id="custom-code-token-number" placeholder="#005cc5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-code-token-title" data-i18n="settings_custom_theme_label_code_token_title">Title</label>
+                    <input type="text" id="custom-code-token-title" placeholder="#6f42c1">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-code-token-attr" data-i18n="settings_custom_theme_label_code_token_attr">Attr</label>
+                    <input type="text" id="custom-code-token-attr" placeholder="#005cc5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-code-token-built-in" data-i18n="settings_custom_theme_label_code_token_built_in">Built-in</label>
+                    <input type="text" id="custom-code-token-built-in" placeholder="#e36209">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-code-token-literal" data-i18n="settings_custom_theme_label_code_token_literal">Literal</label>
+                    <input type="text" id="custom-code-token-literal" placeholder="#005cc5">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-code-token-type" data-i18n="settings_custom_theme_label_code_token_type">Type</label>
+                    <input type="text" id="custom-code-token-type" placeholder="#d73a49">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-code-token-variable" data-i18n="settings_custom_theme_label_code_token_variable">Variable</label>
+                    <input type="text" id="custom-code-token-variable" placeholder="#e36209">
+                  </div>
+                  <div class="custom-theme-field">
+                    <label for="custom-code-token-property" data-i18n="settings_custom_theme_label_code_token_property">Property</label>
+                    <input type="text" id="custom-code-token-property" placeholder="#005cc5">
+                  </div>
+                </div>
+              </div>
+
+              <div class="custom-theme-group">
+                <div class="custom-theme-group-header">
+                  <span data-i18n="settings_custom_theme_diagram">Diagrams</span>
+                </div>
+                <div class="custom-theme-grid">
+                  <div class="custom-theme-field">
+                    <label for="custom-diagram-style" data-i18n="settings_custom_theme_label_diagram_style">Diagram style</label>
+                    <select id="custom-diagram-style">
+                      <option value="normal" data-i18n="settings_custom_theme_option_diagram_normal">Normal</option>
+                      <option value="handDrawn" data-i18n="settings_custom_theme_option_diagram_hand_drawn">Hand-drawn</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+
           <div style="margin: 10px 0;">
             <label for="interface-language" data-i18n="settings_language_label"></label>
             <select id="interface-language">
