@@ -659,6 +659,18 @@
     "message": "Custom",
     "description": "Custom theme option label"
   },
+  "settings_custom_theme_error_invalid_color": {
+    "message": "{0} must be a valid hex color.",
+    "description": "Custom theme validation error for invalid color"
+  },
+  "settings_custom_theme_error_invalid_pt": {
+    "message": "{0} must be a valid pt value.",
+    "description": "Custom theme validation error for invalid pt value"
+  },
+  "settings_custom_theme_error_line_height": {
+    "message": "{0} must be between 0.5 and 3.0.",
+    "description": "Custom theme validation error for line height"
+  },
   "settings_custom_theme_label_body_font": {
     "message": "Body font",
     "description": "Custom theme label for body font"

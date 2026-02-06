@@ -389,6 +389,76 @@ export function createSettingsTabManager({
   }
 
   const headingLevels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
+  const customThemeFieldLabelKeys: Record<string, string> = {
+    textPrimary: 'settings_custom_theme_label_text_primary',
+    textSecondary: 'settings_custom_theme_label_text_secondary',
+    textMuted: 'settings_custom_theme_label_text_muted',
+    link: 'settings_custom_theme_label_link',
+    linkHover: 'settings_custom_theme_label_link_hover',
+    codeBg: 'settings_custom_theme_label_code_background',
+    blockquoteBorder: 'settings_custom_theme_label_blockquote_border',
+    tableBorder: 'settings_custom_theme_label_table_border',
+    tableHeaderBg: 'settings_custom_theme_label_table_header_background',
+    tableHeaderText: 'settings_custom_theme_label_table_header_text',
+    tableZebraEven: 'settings_custom_theme_label_table_zebra_even',
+    tableZebraOdd: 'settings_custom_theme_label_table_zebra_odd',
+    headingH1: 'settings_custom_theme_label_h1_color',
+    headingH2: 'settings_custom_theme_label_h2_color',
+    headingH3: 'settings_custom_theme_label_h3_color',
+    headingH4: 'settings_custom_theme_label_h4_color',
+    headingH5: 'settings_custom_theme_label_h5_color',
+    headingH6: 'settings_custom_theme_label_h6_color',
+    codeForeground: 'settings_custom_theme_label_code_foreground',
+    codeKeyword: 'settings_custom_theme_label_code_token_keyword',
+    codeString: 'settings_custom_theme_label_code_token_string',
+    codeComment: 'settings_custom_theme_label_code_token_comment',
+    codeNumber: 'settings_custom_theme_label_code_token_number',
+    codeTitle: 'settings_custom_theme_label_code_token_title',
+    codeAttr: 'settings_custom_theme_label_code_token_attr',
+    codeBuiltIn: 'settings_custom_theme_label_code_token_built_in',
+    codeLiteral: 'settings_custom_theme_label_code_token_literal',
+    codeType: 'settings_custom_theme_label_code_token_type',
+    codeVariable: 'settings_custom_theme_label_code_token_variable',
+    codeProperty: 'settings_custom_theme_label_code_token_property',
+    bodyFontSize: 'settings_custom_theme_label_body_font_size',
+    headingH1Size: 'settings_custom_theme_label_h1_size',
+    headingH2Size: 'settings_custom_theme_label_h2_size',
+    headingH3Size: 'settings_custom_theme_label_h3_size',
+    headingH4Size: 'settings_custom_theme_label_h4_size',
+    headingH5Size: 'settings_custom_theme_label_h5_size',
+    headingH6Size: 'settings_custom_theme_label_h6_size',
+    headingH1Before: 'settings_custom_theme_label_h1_spacing_before',
+    headingH1After: 'settings_custom_theme_label_h1_spacing_after',
+    headingH2Before: 'settings_custom_theme_label_h2_spacing_before',
+    headingH2After: 'settings_custom_theme_label_h2_spacing_after',
+    headingH3Before: 'settings_custom_theme_label_h3_spacing_before',
+    headingH3After: 'settings_custom_theme_label_h3_spacing_after',
+    headingH4Before: 'settings_custom_theme_label_h4_spacing_before',
+    headingH4After: 'settings_custom_theme_label_h4_spacing_after',
+    headingH5Before: 'settings_custom_theme_label_h5_spacing_before',
+    headingH5After: 'settings_custom_theme_label_h5_spacing_after',
+    headingH6Before: 'settings_custom_theme_label_h6_spacing_before',
+    headingH6After: 'settings_custom_theme_label_h6_spacing_after',
+    codeFontSize: 'settings_custom_theme_label_code_font_size',
+    blockParagraphAfter: 'settings_custom_theme_label_paragraph_spacing_after',
+    blockListAfter: 'settings_custom_theme_label_list_spacing_after',
+    blockListItemAfter: 'settings_custom_theme_label_list_item_spacing_after',
+    blockBlockquoteBefore: 'settings_custom_theme_label_blockquote_spacing_before',
+    blockBlockquoteAfter: 'settings_custom_theme_label_blockquote_spacing_after',
+    blockBlockquotePadV: 'settings_custom_theme_label_blockquote_padding_vertical',
+    blockBlockquotePadH: 'settings_custom_theme_label_blockquote_padding_horizontal',
+    blockCodeAfter: 'settings_custom_theme_label_code_block_spacing_after',
+    blockTableAfter: 'settings_custom_theme_label_table_spacing_after',
+    blockHrBefore: 'settings_custom_theme_label_hr_spacing_before',
+    blockHrAfter: 'settings_custom_theme_label_hr_spacing_after',
+    tableBorderWidth: 'settings_custom_theme_label_table_border_width',
+    tableHeaderTopWidth: 'settings_custom_theme_label_table_header_top_border_width',
+    tableHeaderBottomWidth: 'settings_custom_theme_label_table_header_bottom_border_width',
+    tableRowBottomWidth: 'settings_custom_theme_label_table_row_bottom_border_width',
+    tableLastRowBottomWidth: 'settings_custom_theme_label_table_last_row_border_width',
+    tableCellPadding: 'settings_custom_theme_label_table_cell_padding',
+    tableHeaderFontSize: 'settings_custom_theme_label_table_header_font_size'
+  };
 
   const codeTokenFields = [
     { id: 'custom-code-token-keyword', token: 'keyword' },
@@ -560,6 +630,30 @@ export function createSettingsTabManager({
     if (errorEl) {
       errorEl.textContent = message;
     }
+  }
+
+  function formatCustomThemeErrors(errors: string[]): string[] {
+    const invalidColorMatch = /^(.+) must be a valid hex color$/;
+    const invalidPtMatch = /^(.+) must be a valid pt value$/;
+    return errors.map((error) => {
+      const colorMatch = error.match(invalidColorMatch);
+      if (colorMatch) {
+        const labelKey = customThemeFieldLabelKeys[colorMatch[1]];
+        const label = labelKey ? translate(labelKey) : colorMatch[1];
+        return translate('settings_custom_theme_error_invalid_color', [label]);
+      }
+      const ptMatch = error.match(invalidPtMatch);
+      if (ptMatch) {
+        const labelKey = customThemeFieldLabelKeys[ptMatch[1]];
+        const label = labelKey ? translate(labelKey) : ptMatch[1];
+        return translate('settings_custom_theme_error_invalid_pt', [label]);
+      }
+      if (error.includes('lineHeight')) {
+        const label = translate('settings_custom_theme_label_body_line_height');
+        return translate('settings_custom_theme_error_line_height', [label]);
+      }
+      return error;
+    });
   }
 
   function applyThemeBundleToForm(bundle: ThemeBundle): void {
@@ -758,7 +852,7 @@ export function createSettingsTabManager({
     });
 
     if (!validation.ok) {
-      setCustomThemeError(validation.errors.join('; '));
+      setCustomThemeError(formatCustomThemeErrors(validation.errors).join('; '));
       return null;
     }
 

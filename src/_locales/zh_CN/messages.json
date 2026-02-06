@@ -659,6 +659,18 @@
     "message": "自定义",
     "description": "Custom theme option label"
   },
+  "settings_custom_theme_error_invalid_color": {
+    "message": "{0} 必须是有效的颜色值。",
+    "description": "Custom theme validation error for invalid color"
+  },
+  "settings_custom_theme_error_invalid_pt": {
+    "message": "{0} 必须是有效的 pt 数值。",
+    "description": "Custom theme validation error for invalid pt value"
+  },
+  "settings_custom_theme_error_line_height": {
+    "message": "{0} 必须在 0.5 到 3.0 之间。",
+    "description": "Custom theme validation error for line height"
+  },
   "settings_custom_theme_label_body_font": {
     "message": "正文字体",
     "description": "Custom theme label for body font"
