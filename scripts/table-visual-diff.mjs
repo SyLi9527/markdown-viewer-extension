@@ -261,11 +261,12 @@ for (const file of fixtureFiles) {
     let legacyHeight = legacyCanvas.height;
     let trimApplied = false;
 
-    if (trimBottom > 0 &&
-        domWidth === legacyWidth &&
-        domHeight + trimBottom === legacyHeight) {
-      legacyHeight = domHeight;
-      trimApplied = true;
+    if (trimBottom > 0 && domWidth === legacyWidth) {
+      const diff = legacyHeight - domHeight;
+      if (diff > 0 && diff <= trimBottom) {
+        legacyHeight = domHeight;
+        trimApplied = true;
+      }
     }
 
     if (domWidth !== legacyWidth || domHeight !== legacyHeight) {
