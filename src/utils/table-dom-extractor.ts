@@ -3,14 +3,14 @@ import { normalizeTableElement } from './table-dom-normalizer';
 
 export type StyleResolver = (node: Element) => CSSStyleDeclaration;
 
-export interface TableDomModelCell extends TableDomNormalized['cells'][0][0] {
+export type TableDomModelCell = TableDomNormalized['cells'][0][0] & {
   padding: TableDomPadding;
   border: { top: TableDomBorder; right: TableDomBorder; bottom: TableDomBorder; left: TableDomBorder };
   background: string;
   textAlign: string;
   verticalAlign: string;
   font: TableDomFont;
-}
+};
 
 export interface TableDomModel {
   rowCount: number;
