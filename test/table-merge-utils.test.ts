@@ -16,7 +16,7 @@ import {
 import { 
   calculateMergeInfoFromStringsWithAnalysis,
   calculateMergeInfoFromStrings
-} from '../src/utils/table-merge-utils';
+} from '../src/utils/table-merge-utils.ts';
 
 
 describe('Table Structure Analyzer', () => {

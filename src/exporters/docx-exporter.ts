@@ -213,7 +213,6 @@ class DocxExporter {
       convertInlineNodes: (nodes, style) => this.inlineConverter!.convertInlineNodes(nodes, style),
       mergeEmptyCells: this.tableMergeEmpty,
       defaultTableAlignment: this.tableAlignment,
-      listConverter: this.listConverter,
     });
 
     this.blockquoteConverter = createBlockquoteConverter({

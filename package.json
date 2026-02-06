@@ -15,7 +15,8 @@
     "ios:sim": "node mobile/build-app.js ios:sim",
     "android": "node mobile/build-app.js android",
     "macos": "node mobile/build-app.js macos",
-    "typecheck": "npx tsc --noEmit"
+    "typecheck": "npx tsc --noEmit",
+    "postinstall": "node scripts/install-fibjs.mjs"
   },
   "keywords": [
     "markdown",
@@ -91,12 +92,18 @@
     "@anthropic-ai/bedrock-sdk": "^0.26.0",
     "@anthropic-ai/sdk": "^0.71.2",
     "@types/chrome": "^0.1.32",
+    "@types/hast": "^3.0.4",
+    "@types/mdast": "^4.0.4",
     "@types/node": "^25.0.3",
+    "@types/pako": "^2.0.4",
+    "@types/unist": "^3.0.3",
     "@types/vscode": "^1.107.0",
     "@vscode/vsce": "^3.7.1",
     "fibjs": "^0.1.8",
     "knip": "^5.80.0",
     "linkedom": "^0.18.12",
+    "remark-stringify": "^11.0.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "webextension-polyfill": "^0.12.0"
   },
