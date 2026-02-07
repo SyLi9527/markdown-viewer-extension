@@ -250,10 +250,10 @@ function parseInlineNode(node: ChildNode, inherited: InlineNode['style'] | undef
 
   const style = mergeRunStyles(inherited, readInlineStyle(el));
 
-  if (tag === 'strong' || tag === 'b') {
+  if (tag === 'strong') {
     return [{ type: 'strong', children: parseInlineChildren(el, style), style } as InlineNode];
   }
-  if (tag === 'em' || tag === 'i') {
+  if (tag === 'em') {
     return [{ type: 'emphasis', children: parseInlineChildren(el, style), style } as InlineNode];
   }
   if (tag === 'u') {
@@ -262,7 +262,9 @@ function parseInlineNode(node: ChildNode, inherited: InlineNode['style'] | undef
   }
   if (tag === 'code') {
     const value = el.textContent || '';
-    return [{ type: 'inlineCode', value } as InlineNode];
+    const node: InlineNode = { type: 'inlineCode', value } as InlineNode;
+    if (style && Object.keys(style).length > 0) node.style = style;
+    return [node];
   }
   if (tag === 'a') {
     const url = el.getAttribute('href') || '#';
