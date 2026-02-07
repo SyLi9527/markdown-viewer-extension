@@ -67,15 +67,19 @@ export function createHtmlTableConverter({ themeStyles, inlineConverter, convert
         const borders = normalizeHtmlBorders(cell.style.borders);
         const shading = cell.style.backgroundColor ? { fill: cell.style.backgroundColor } : undefined;
         const padding = cell.style.padding || {};
+        const marginTop = typeof padding.top === 'number' ? pxToTwips(padding.top) : defaultMargins.top;
+        const marginRight = typeof padding.right === 'number' ? pxToTwips(padding.right) : defaultMargins.right;
+        const marginBottom = typeof padding.bottom === 'number' ? pxToTwips(padding.bottom) : defaultMargins.bottom;
+        const marginLeft = typeof padding.left === 'number' ? pxToTwips(padding.left) : defaultMargins.left;
 
         cells.push(new TableCell({
           children,
           verticalAlign: mapVerticalAlign(cell.style.verticalAlign),
           margins: {
-            top: pxToTwips(padding.top ?? defaultMargins.top),
-            right: pxToTwips(padding.right ?? defaultMargins.right),
-            bottom: pxToTwips(padding.bottom ?? defaultMargins.bottom),
-            left: pxToTwips(padding.left ?? defaultMargins.left),
+            top: marginTop,
+            right: marginRight,
+            bottom: marginBottom,
+            left: marginLeft,
           },
           borders: borders || undefined,
           shading,
@@ -142,12 +146,12 @@ function normalizeHtmlBorders(borders?: HtmlBorderSet) {
   if (!top && !right && !bottom && !left) {
     return undefined;
   }
-  return {
-    ...(top ? { top } : null),
-    ...(right ? { right } : null),
-    ...(bottom ? { bottom } : null),
-    ...(left ? { left } : null),
-  };
+  const normalized: { top?: typeof top; right?: typeof right; bottom?: typeof bottom; left?: typeof left } = {};
+  if (top) normalized.top = top;
+  if (right) normalized.right = right;
+  if (bottom) normalized.bottom = bottom;
+  if (left) normalized.left = left;
+  return normalized;
 }
 
 function toDocxBorder(border?: { style?: string; width?: number; color?: string }) {
