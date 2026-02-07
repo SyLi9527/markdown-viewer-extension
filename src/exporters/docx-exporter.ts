@@ -58,7 +58,9 @@ import { createTableConverter, type TableConverter } from './docx-table-converte
 import { createBlockquoteConverter, type BlockquoteConverter } from './docx-blockquote-converter';
 import { createListConverter, createNumberingLevels, type ListConverter } from './docx-list-converter';
 import { createInlineConverter, type InlineConverter, type InlineNode } from './docx-inline-converter';
+import { createHtmlTableConverter, type HtmlTableConverter } from './docx-html-table-converter';
 import { parseHtmlTablesToDocxNodes, parseHtmlTablesToDomElements } from '../utils/html-table-to-docx';
+import { parseHtmlToEditableAst, type HtmlTableNode } from '../utils/html-editable-parser';
 import { extractTableDomModel } from '../utils/table-dom-extractor';
 import { convertTableDomToDocx } from './docx-table-from-dom';
 import { applyDocxThemeOverrides } from './docx-theme-mapping';
@@ -114,6 +116,7 @@ class DocxExporter {
   private blockquoteConverter: BlockquoteConverter | null = null;
   private listConverter: ListConverter | null = null;
   private inlineConverter: InlineConverter | null = null;
+  private htmlTableConverter: HtmlTableConverter | null = null;
 
   constructor(renderer: PluginRenderer | null = null) {
     this.renderer = renderer;
@@ -216,6 +219,12 @@ class DocxExporter {
       mergeEmptyCells: this.tableMergeEmpty,
       defaultTableAlignment: this.tableAlignment,
       tableLayout: this.tableLayout,
+    });
+
+    this.htmlTableConverter = createHtmlTableConverter({
+      themeStyles: this.themeStyles,
+      inlineConverter: this.inlineConverter!,
+      convertBlock: async (node, listLevel) => this.convertNode(node, {}, listLevel, 0),
     });
 
     this.blockquoteConverter = createBlockquoteConverter({
@@ -829,6 +838,21 @@ class DocxExporter {
         }
         return elements.length === 1 ? elements[0] : elements;
       }
+
+      const editableAst = parseHtmlToEditableAst(htmlValue, { maxTableDepth: 3 });
+      if (editableAst && editableAst.length > 0 && this.htmlTableConverter) {
+        const elements: FileChild[] = [];
+        for (const child of editableAst) {
+          const converted = await this.convertNode(child as DOCXASTNode, parentStyle, listLevel, blockquoteNestLevel);
+          if (converted) {
+            if (Array.isArray(converted)) elements.push(...converted);
+            else elements.push(converted);
+          }
+        }
+        if (elements.length > 0) {
+          return elements.length === 1 ? elements[0] : elements;
+        }
+      }
     }
 
     const docxHelpers: DOCXHelpers = {
@@ -884,6 +908,8 @@ class DocxExporter {
         return await this.blockquoteConverter!.convertBlockquote(node as unknown as DOCXBlockquoteNode, listLevel);
       case 'table':
         return await this.tableConverter!.convertTable(node as unknown as DOCXTableNode, listLevel);
+      case 'htmlTable':
+        return await this.htmlTableConverter!.convertTable(node as unknown as HtmlTableNode, listLevel);
       case 'thematicBreak':
         return this.convertThematicBreak();
       case 'html':
