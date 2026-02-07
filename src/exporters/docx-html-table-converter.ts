@@ -90,7 +90,7 @@ export function createHtmlTableConverter({ themeStyles, inlineConverter, convert
     return new Table({
       rows,
       layout: TableLayoutType.AUTOFIT,
-      alignment: AlignmentType.CENTER,
+      alignment: AlignmentType.LEFT,
       indent: indentSize ? { size: indentSize, type: WidthType.DXA } : undefined,
     });
   }
@@ -135,20 +135,30 @@ function cssBorderStyle(style?: string): (typeof BorderStyle)[keyof typeof Borde
 
 function normalizeHtmlBorders(borders?: HtmlBorderSet) {
   if (!borders) return undefined;
-  const normalize = (border?: { style?: string; width?: number; color?: string }) => {
-    if (!border) return undefined;
-    return {
-      style: cssBorderStyle(border.style),
-      size: pxToEighths(border.width ?? 0),
-      color: normalizeCssColor(border.color) || '000000',
-    };
-  };
-
+  const top = toDocxBorder(borders.top);
+  const right = toDocxBorder(borders.right);
+  const bottom = toDocxBorder(borders.bottom);
+  const left = toDocxBorder(borders.left);
+  if (!top && !right && !bottom && !left) {
+    return undefined;
+  }
   return {
-    top: normalize(borders.top),
-    right: normalize(borders.right),
-    bottom: normalize(borders.bottom),
-    left: normalize(borders.left),
+    ...(top ? { top } : null),
+    ...(right ? { right } : null),
+    ...(bottom ? { bottom } : null),
+    ...(left ? { left } : null),
+  };
+}
+
+function toDocxBorder(border?: { style?: string; width?: number; color?: string }) {
+  if (!border) return undefined;
+  const width = typeof border.width === 'number' ? border.width : undefined;
+  if (!width || width <= 0) return undefined;
+  if (border.style?.toLowerCase() === 'none') return undefined;
+  return {
+    style: cssBorderStyle(border.style),
+    size: pxToEighths(width),
+    color: normalizeCssColor(border.color) || '000000',
   };
 }
 
