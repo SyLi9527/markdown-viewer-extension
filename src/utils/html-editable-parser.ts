@@ -147,7 +147,8 @@ function parseDiv(el: Element, ctx: { maxTableDepth: number; tableDepth: number 
 function parseList(el: Element, ctx: { maxTableDepth: number; tableDepth: number }): DOCXASTNode {
   const ordered = el.tagName.toLowerCase() === 'ol';
   const startAttr = ordered ? el.getAttribute('start') : null;
-  const start = startAttr ? Number.parseInt(startAttr, 10) : undefined;
+  const parsedStart = startAttr ? Number.parseInt(startAttr, 10) : NaN;
+  const start = Number.isFinite(parsedStart) ? parsedStart : undefined;
   const items = Array.from(el.children)
     .filter((child) => child.tagName.toLowerCase() === 'li')
     .map((li) => parseListItem(li as Element, ctx));
@@ -579,7 +580,7 @@ function getHeaderRowCount(table: Element, rows: HTMLTableRowElement[]): number 
   if (theadRows.length > 0) return theadRows.length;
   if (!rows[0]) return 0;
   const firstRow = rows[0];
-  const headerCells = Array.from(firstRow.querySelectorAll('th'));
+  const headerCells = getRowCells(firstRow).filter((cell) => cell.tagName.toLowerCase() === 'th');
   return headerCells.length > 0 ? 1 : 0;
 }
 
