@@ -57,6 +57,8 @@ interface ParseOptions {
 
 const BLOCK_TAGS = new Set(['p', 'div', 'table', 'ul', 'ol', 'hr']);
 const INLINE_TAGS = new Set(['span', 'strong', 'em', 'u', 'code', 'a', 'br']);
+const TEXT_NODE = typeof Node === 'undefined' ? 3 : Node.TEXT_NODE;
+const ELEMENT_NODE = typeof Node === 'undefined' ? 1 : Node.ELEMENT_NODE;
 
 export function parseHtmlToEditableAst(html: string, options: ParseOptions = {}): DOCXASTNode[] | null {
   if (!html || typeof DOMParser === 'undefined') return null;
@@ -81,12 +83,12 @@ function parseBlockContainer(container: Element | DocumentFragment, ctx: { maxTa
   };
 
   for (const node of Array.from(container.childNodes)) {
-    if (node.nodeType === Node.TEXT_NODE) {
+    if (node.nodeType === TEXT_NODE) {
       inlineBuffer.push(...parseInlineText(node.nodeValue || '', {}));
       continue;
     }
 
-    if (node.nodeType !== Node.ELEMENT_NODE) continue;
+    if (node.nodeType !== ELEMENT_NODE) continue;
     const el = node as Element;
     const tag = el.tagName.toLowerCase();
 
@@ -240,10 +242,10 @@ function parseInlineChildren(element: Element, inherited: InlineNode['style'] | 
 }
 
 function parseInlineNode(node: ChildNode, inherited: InlineNode['style'] | undefined): InlineNode[] {
-  if (node.nodeType === Node.TEXT_NODE) {
+  if (node.nodeType === TEXT_NODE) {
     return parseInlineText(node.nodeValue || '', inherited);
   }
-  if (node.nodeType !== Node.ELEMENT_NODE) return [];
+  if (node.nodeType !== ELEMENT_NODE) return [];
   const el = node as Element;
   const tag = el.tagName.toLowerCase();
 
