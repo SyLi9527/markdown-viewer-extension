@@ -10,6 +10,39 @@ if (!hasDomParser) {
 }
 
 describe('html-editable-parser', () => {
+  it('parses when Node is undefined', { skip: !hasDomParser }, () => {
+    const globalWithNode = globalThis as typeof globalThis & { Node?: any };
+    const hasNode = Object.prototype.hasOwnProperty.call(globalWithNode, 'Node');
+    const originalNode = globalWithNode.Node;
+
+    try {
+      if (hasNode) {
+        const descriptor = Object.getOwnPropertyDescriptor(globalWithNode, 'Node');
+        if (descriptor?.configurable) {
+          delete globalWithNode.Node;
+        } else {
+          globalWithNode.Node = undefined;
+        }
+      } else {
+        delete globalWithNode.Node;
+      }
+
+      const html = '<p>Hi</p>';
+      assert.doesNotThrow(() => {
+        parseHtmlToEditableAst(html, { maxTableDepth: 3 });
+      });
+      const blocks = parseHtmlToEditableAst(html, { maxTableDepth: 3 });
+      assert.ok(blocks);
+      assert.strictEqual(blocks?.[0]?.type, 'paragraph');
+    } finally {
+      if (hasNode) {
+        globalWithNode.Node = originalNode;
+      } else {
+        delete globalWithNode.Node;
+      }
+    }
+  });
+
   it('parses mixed HTML into block order', { skip: !hasDomParser }, () => {
     const html = `
       <p>Intro <strong>bold</strong></p>
