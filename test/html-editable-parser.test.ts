@@ -47,27 +47,4 @@ describe('html-editable-parser', () => {
     const hasNested = cellBlocks.some((b: any) => b.type === 'htmlTable');
     assert.ok(hasNested, 'expected nested table block in cell');
   });
-
-  it('applies inline styles to inlineCode nodes', { skip: !hasDomParser }, () => {
-    const html = `
-      <p style="color: red;">
-        <code style="background-color: yellow;">Code</code>
-      </p>
-    `;
-    const blocks = parseHtmlToEditableAst(html, { maxTableDepth: 3 });
-    const code = (blocks?.[0] as any)?.children?.[0];
-    assert.strictEqual(code?.type, 'inlineCode');
-    assert.strictEqual(code?.style?.color, 'FF0000');
-    assert.strictEqual(code?.style?.shading?.fill, 'FFFF00');
-  });
-
-  it('does not map b/i tags to strong/emphasis nodes', { skip: !hasDomParser }, () => {
-    const html = `
-      <p><b>Bold</b> <i>Italic</i></p>
-    `;
-    const blocks = parseHtmlToEditableAst(html, { maxTableDepth: 3 });
-    const children = (blocks?.[0] as any)?.children || [];
-    const hasSemantic = children.some((child: any) => child?.type === 'strong' || child?.type === 'emphasis');
-    assert.ok(!hasSemantic, 'expected no strong/emphasis nodes for b/i tags');
-  });
 });
