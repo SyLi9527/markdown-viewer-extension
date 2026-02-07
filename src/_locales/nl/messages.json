@@ -399,6 +399,506 @@
     "message": "Automatisch herladen wanneer lokaal bestand wijzigt (alleen file://).",
     "description": "Helper note for auto refresh option"
   },
+  "settings_custom_theme_advanced": {
+    "message": "Advanced",
+    "description": "Advanced toggle label"
+  },
+  "settings_custom_theme_applied": {
+    "message": "Custom theme applied.",
+    "description": "Toast when custom theme is applied"
+  },
+  "settings_custom_theme_apply": {
+    "message": "Apply",
+    "description": "Button to apply custom theme"
+  },
+  "settings_custom_theme_base": {
+    "message": "Base preset",
+    "description": "Label for base preset selector"
+  },
+  "settings_custom_theme_based_on": {
+    "message": "Based on {0}",
+    "description": "Description for custom theme based on a preset"
+  },
+  "settings_custom_theme_code": {
+    "message": "Code",
+    "description": "Custom theme code section"
+  },
+  "settings_custom_theme_colors": {
+    "message": "Colors",
+    "description": "Custom theme colors section"
+  },
+  "settings_custom_theme_diagram": {
+    "message": "Diagrams",
+    "description": "Custom theme diagram section"
+  },
+  "settings_custom_theme_error_invalid_color": {
+    "message": "{0} must be a valid hex color.",
+    "description": "Custom theme validation error for invalid color"
+  },
+  "settings_custom_theme_error_invalid_pt": {
+    "message": "{0} must be a valid pt value.",
+    "description": "Custom theme validation error for invalid pt value"
+  },
+  "settings_custom_theme_error_line_height": {
+    "message": "{0} must be between 0.5 and 3.0.",
+    "description": "Custom theme validation error for line height"
+  },
+  "settings_custom_theme_fonts": {
+    "message": "Fonts",
+    "description": "Custom theme fonts section"
+  },
+  "settings_custom_theme_generate": {
+    "message": "Generate from current",
+    "description": "Button to load current theme into custom editor"
+  },
+  "settings_custom_theme_label_blockquote_border": {
+    "message": "Blockquote border",
+    "description": "Custom theme label for blockquote border color"
+  },
+  "settings_custom_theme_label_blockquote_padding_horizontal": {
+    "message": "Blockquote padding horizontal (pt)",
+    "description": "Custom theme label for blockquote horizontal padding"
+  },
+  "settings_custom_theme_label_blockquote_padding_vertical": {
+    "message": "Blockquote padding vertical (pt)",
+    "description": "Custom theme label for blockquote vertical padding"
+  },
+  "settings_custom_theme_label_blockquote_spacing_after": {
+    "message": "Blockquote spacing after (pt)",
+    "description": "Custom theme label for blockquote spacing after"
+  },
+  "settings_custom_theme_label_blockquote_spacing_before": {
+    "message": "Blockquote spacing before (pt)",
+    "description": "Custom theme label for blockquote spacing before"
+  },
+  "settings_custom_theme_label_body_font": {
+    "message": "Body font",
+    "description": "Custom theme label for body font"
+  },
+  "settings_custom_theme_label_body_font_size": {
+    "message": "Body font size (pt)",
+    "description": "Custom theme label for body font size"
+  },
+  "settings_custom_theme_label_body_line_height": {
+    "message": "Body line height",
+    "description": "Custom theme label for body line height"
+  },
+  "settings_custom_theme_label_code_background": {
+    "message": "Code background",
+    "description": "Custom theme label for code background color"
+  },
+  "settings_custom_theme_label_code_block_spacing_after": {
+    "message": "Code block spacing after (pt)",
+    "description": "Custom theme label for code block spacing after"
+  },
+  "settings_custom_theme_label_code_font": {
+    "message": "Code font",
+    "description": "Custom theme label for code font"
+  },
+  "settings_custom_theme_label_code_font_size": {
+    "message": "Code font size (pt)",
+    "description": "Custom theme label for code font size"
+  },
+  "settings_custom_theme_label_code_foreground": {
+    "message": "Foreground",
+    "description": "Custom theme label for code foreground"
+  },
+  "settings_custom_theme_label_code_theme": {
+    "message": "Code theme",
+    "description": "Custom theme label for code theme"
+  },
+  "settings_custom_theme_label_code_token_attr": {
+    "message": "Attr",
+    "description": "Custom theme label for code attr token"
+  },
+  "settings_custom_theme_label_code_token_built_in": {
+    "message": "Built-in",
+    "description": "Custom theme label for code built-in token"
+  },
+  "settings_custom_theme_label_code_token_comment": {
+    "message": "Comment",
+    "description": "Custom theme label for code comment token"
+  },
+  "settings_custom_theme_label_code_token_keyword": {
+    "message": "Keyword",
+    "description": "Custom theme label for code keyword token"
+  },
+  "settings_custom_theme_label_code_token_literal": {
+    "message": "Literal",
+    "description": "Custom theme label for code literal token"
+  },
+  "settings_custom_theme_label_code_token_number": {
+    "message": "Number",
+    "description": "Custom theme label for code number token"
+  },
+  "settings_custom_theme_label_code_token_property": {
+    "message": "Property",
+    "description": "Custom theme label for code property token"
+  },
+  "settings_custom_theme_label_code_token_string": {
+    "message": "String",
+    "description": "Custom theme label for code string token"
+  },
+  "settings_custom_theme_label_code_token_title": {
+    "message": "Title",
+    "description": "Custom theme label for code title token"
+  },
+  "settings_custom_theme_label_code_token_type": {
+    "message": "Type",
+    "description": "Custom theme label for code type token"
+  },
+  "settings_custom_theme_label_code_token_variable": {
+    "message": "Variable",
+    "description": "Custom theme label for code variable token"
+  },
+  "settings_custom_theme_label_diagram_style": {
+    "message": "Diagram style",
+    "description": "Custom theme label for diagram style"
+  },
+  "settings_custom_theme_label_h1_alignment": {
+    "message": "H1 alignment",
+    "description": "Custom theme label for H1 alignment"
+  },
+  "settings_custom_theme_label_h1_color": {
+    "message": "H1 color",
+    "description": "Custom theme label for H1 color"
+  },
+  "settings_custom_theme_label_h1_font": {
+    "message": "H1 font",
+    "description": "Custom theme label for H1 font"
+  },
+  "settings_custom_theme_label_h1_size": {
+    "message": "H1 size (pt)",
+    "description": "Custom theme label for H1 size"
+  },
+  "settings_custom_theme_label_h1_spacing_after": {
+    "message": "H1 spacing after (pt)",
+    "description": "Custom theme label for H1 spacing after"
+  },
+  "settings_custom_theme_label_h1_spacing_before": {
+    "message": "H1 spacing before (pt)",
+    "description": "Custom theme label for H1 spacing before"
+  },
+  "settings_custom_theme_label_h2_alignment": {
+    "message": "H2 alignment",
+    "description": "Custom theme label for H2 alignment"
+  },
+  "settings_custom_theme_label_h2_color": {
+    "message": "H2 color",
+    "description": "Custom theme label for H2 color"
+  },
+  "settings_custom_theme_label_h2_font": {
+    "message": "H2 font",
+    "description": "Custom theme label for H2 font"
+  },
+  "settings_custom_theme_label_h2_size": {
+    "message": "H2 size (pt)",
+    "description": "Custom theme label for H2 size"
+  },
+  "settings_custom_theme_label_h2_spacing_after": {
+    "message": "H2 spacing after (pt)",
+    "description": "Custom theme label for H2 spacing after"
+  },
+  "settings_custom_theme_label_h2_spacing_before": {
+    "message": "H2 spacing before (pt)",
+    "description": "Custom theme label for H2 spacing before"
+  },
+  "settings_custom_theme_label_h3_alignment": {
+    "message": "H3 alignment",
+    "description": "Custom theme label for H3 alignment"
+  },
+  "settings_custom_theme_label_h3_color": {
+    "message": "H3 color",
+    "description": "Custom theme label for H3 color"
+  },
+  "settings_custom_theme_label_h3_font": {
+    "message": "H3 font",
+    "description": "Custom theme label for H3 font"
+  },
+  "settings_custom_theme_label_h3_size": {
+    "message": "H3 size (pt)",
+    "description": "Custom theme label for H3 size"
+  },
+  "settings_custom_theme_label_h3_spacing_after": {
+    "message": "H3 spacing after (pt)",
+    "description": "Custom theme label for H3 spacing after"
+  },
+  "settings_custom_theme_label_h3_spacing_before": {
+    "message": "H3 spacing before (pt)",
+    "description": "Custom theme label for H3 spacing before"
+  },
+  "settings_custom_theme_label_h4_alignment": {
+    "message": "H4 alignment",
+    "description": "Custom theme label for H4 alignment"
+  },
+  "settings_custom_theme_label_h4_color": {
+    "message": "H4 color",
+    "description": "Custom theme label for H4 color"
+  },
+  "settings_custom_theme_label_h4_font": {
+    "message": "H4 font",
+    "description": "Custom theme label for H4 font"
+  },
+  "settings_custom_theme_label_h4_size": {
+    "message": "H4 size (pt)",
+    "description": "Custom theme label for H4 size"
+  },
+  "settings_custom_theme_label_h4_spacing_after": {
+    "message": "H4 spacing after (pt)",
+    "description": "Custom theme label for H4 spacing after"
+  },
+  "settings_custom_theme_label_h4_spacing_before": {
+    "message": "H4 spacing before (pt)",
+    "description": "Custom theme label for H4 spacing before"
+  },
+  "settings_custom_theme_label_h5_alignment": {
+    "message": "H5 alignment",
+    "description": "Custom theme label for H5 alignment"
+  },
+  "settings_custom_theme_label_h5_color": {
+    "message": "H5 color",
+    "description": "Custom theme label for H5 color"
+  },
+  "settings_custom_theme_label_h5_font": {
+    "message": "H5 font",
+    "description": "Custom theme label for H5 font"
+  },
+  "settings_custom_theme_label_h5_size": {
+    "message": "H5 size (pt)",
+    "description": "Custom theme label for H5 size"
+  },
+  "settings_custom_theme_label_h5_spacing_after": {
+    "message": "H5 spacing after (pt)",
+    "description": "Custom theme label for H5 spacing after"
+  },
+  "settings_custom_theme_label_h5_spacing_before": {
+    "message": "H5 spacing before (pt)",
+    "description": "Custom theme label for H5 spacing before"
+  },
+  "settings_custom_theme_label_h6_alignment": {
+    "message": "H6 alignment",
+    "description": "Custom theme label for H6 alignment"
+  },
+  "settings_custom_theme_label_h6_color": {
+    "message": "H6 color",
+    "description": "Custom theme label for H6 color"
+  },
+  "settings_custom_theme_label_h6_font": {
+    "message": "H6 font",
+    "description": "Custom theme label for H6 font"
+  },
+  "settings_custom_theme_label_h6_size": {
+    "message": "H6 size (pt)",
+    "description": "Custom theme label for H6 size"
+  },
+  "settings_custom_theme_label_h6_spacing_after": {
+    "message": "H6 spacing after (pt)",
+    "description": "Custom theme label for H6 spacing after"
+  },
+  "settings_custom_theme_label_h6_spacing_before": {
+    "message": "H6 spacing before (pt)",
+    "description": "Custom theme label for H6 spacing before"
+  },
+  "settings_custom_theme_label_headings_font": {
+    "message": "Headings font",
+    "description": "Custom theme label for headings font"
+  },
+  "settings_custom_theme_label_hr_spacing_after": {
+    "message": "Horizontal rule spacing after (pt)",
+    "description": "Custom theme label for horizontal rule spacing after"
+  },
+  "settings_custom_theme_label_hr_spacing_before": {
+    "message": "Horizontal rule spacing before (pt)",
+    "description": "Custom theme label for horizontal rule spacing before"
+  },
+  "settings_custom_theme_label_link": {
+    "message": "Link",
+    "description": "Custom theme label for link color"
+  },
+  "settings_custom_theme_label_link_hover": {
+    "message": "Link hover",
+    "description": "Custom theme label for link hover color"
+  },
+  "settings_custom_theme_label_list_item_spacing_after": {
+    "message": "List item spacing after (pt)",
+    "description": "Custom theme label for list item spacing after"
+  },
+  "settings_custom_theme_label_list_spacing_after": {
+    "message": "List spacing after (pt)",
+    "description": "Custom theme label for list spacing after"
+  },
+  "settings_custom_theme_label_paragraph_spacing_after": {
+    "message": "Paragraph spacing after (pt)",
+    "description": "Custom theme label for paragraph spacing after"
+  },
+  "settings_custom_theme_label_table_border": {
+    "message": "Table border",
+    "description": "Custom theme label for table border color"
+  },
+  "settings_custom_theme_label_table_border_style": {
+    "message": "Border style",
+    "description": "Custom theme label for table border style"
+  },
+  "settings_custom_theme_label_table_border_width": {
+    "message": "Border width (pt)",
+    "description": "Custom theme label for table border width"
+  },
+  "settings_custom_theme_label_table_cell_padding": {
+    "message": "Cell padding (pt)",
+    "description": "Custom theme label for table cell padding"
+  },
+  "settings_custom_theme_label_table_header_background": {
+    "message": "Table header background",
+    "description": "Custom theme label for table header background color"
+  },
+  "settings_custom_theme_label_table_header_bold": {
+    "message": "Header bold",
+    "description": "Custom theme label for table header bold"
+  },
+  "settings_custom_theme_label_table_header_bottom_border_style": {
+    "message": "Header bottom border style",
+    "description": "Custom theme label for header bottom border style"
+  },
+  "settings_custom_theme_label_table_header_bottom_border_width": {
+    "message": "Header bottom border width (pt)",
+    "description": "Custom theme label for header bottom border width"
+  },
+  "settings_custom_theme_label_table_header_font_size": {
+    "message": "Header font size (pt)",
+    "description": "Custom theme label for table header font size"
+  },
+  "settings_custom_theme_label_table_header_text": {
+    "message": "Table header text",
+    "description": "Custom theme label for table header text color"
+  },
+  "settings_custom_theme_label_table_header_top_border_style": {
+    "message": "Header top border style",
+    "description": "Custom theme label for header top border style"
+  },
+  "settings_custom_theme_label_table_header_top_border_width": {
+    "message": "Header top border width (pt)",
+    "description": "Custom theme label for header top border width"
+  },
+  "settings_custom_theme_label_table_last_row_border_style": {
+    "message": "Last row border style",
+    "description": "Custom theme label for last row border style"
+  },
+  "settings_custom_theme_label_table_last_row_border_width": {
+    "message": "Last row border width (pt)",
+    "description": "Custom theme label for last row border width"
+  },
+  "settings_custom_theme_label_table_row_bottom_border_style": {
+    "message": "Row bottom border style",
+    "description": "Custom theme label for row bottom border style"
+  },
+  "settings_custom_theme_label_table_row_bottom_border_width": {
+    "message": "Row bottom border width (pt)",
+    "description": "Custom theme label for row bottom border width"
+  },
+  "settings_custom_theme_label_table_spacing_after": {
+    "message": "Table spacing after (pt)",
+    "description": "Custom theme label for table spacing after"
+  },
+  "settings_custom_theme_label_table_zebra": {
+    "message": "Zebra stripes",
+    "description": "Custom theme label for table zebra stripes"
+  },
+  "settings_custom_theme_label_table_zebra_even": {
+    "message": "Table zebra even",
+    "description": "Custom theme label for table zebra even color"
+  },
+  "settings_custom_theme_label_table_zebra_odd": {
+    "message": "Table zebra odd",
+    "description": "Custom theme label for table zebra odd color"
+  },
+  "settings_custom_theme_label_text_muted": {
+    "message": "Text muted",
+    "description": "Custom theme label for muted text color"
+  },
+  "settings_custom_theme_label_text_primary": {
+    "message": "Text primary",
+    "description": "Custom theme label for primary text color"
+  },
+  "settings_custom_theme_label_text_secondary": {
+    "message": "Text secondary",
+    "description": "Custom theme label for secondary text color"
+  },
+  "settings_custom_theme_layout": {
+    "message": "Layout",
+    "description": "Custom theme layout section"
+  },
+  "settings_custom_theme_option": {
+    "message": "Custom",
+    "description": "Custom theme option label"
+  },
+  "settings_custom_theme_option_border_dashed": {
+    "message": "Dashed",
+    "description": "Custom theme option for dashed border style"
+  },
+  "settings_custom_theme_option_border_dotted": {
+    "message": "Dotted",
+    "description": "Custom theme option for dotted border style"
+  },
+  "settings_custom_theme_option_border_double": {
+    "message": "Double",
+    "description": "Custom theme option for double border style"
+  },
+  "settings_custom_theme_option_border_single": {
+    "message": "Single",
+    "description": "Custom theme option for single border style"
+  },
+  "settings_custom_theme_option_border_solid": {
+    "message": "Solid",
+    "description": "Custom theme option for solid border style"
+  },
+  "settings_custom_theme_option_center": {
+    "message": "Center",
+    "description": "Custom theme option for center alignment"
+  },
+  "settings_custom_theme_option_diagram_hand_drawn": {
+    "message": "Hand-drawn",
+    "description": "Custom theme option for hand-drawn diagram style"
+  },
+  "settings_custom_theme_option_diagram_normal": {
+    "message": "Normal",
+    "description": "Custom theme option for normal diagram style"
+  },
+  "settings_custom_theme_option_left": {
+    "message": "Left",
+    "description": "Custom theme option for left alignment"
+  },
+  "settings_custom_theme_option_right": {
+    "message": "Right",
+    "description": "Custom theme option for right alignment"
+  },
+  "settings_custom_theme_restore": {
+    "message": "Restore last saved",
+    "description": "Button to restore saved custom theme"
+  },
+  "settings_custom_theme_restore_empty": {
+    "message": "No saved custom theme.",
+    "description": "Toast when restoring without saved custom theme"
+  },
+  "settings_custom_theme_save": {
+    "message": "Save",
+    "description": "Button to save custom theme"
+  },
+  "settings_custom_theme_saved": {
+    "message": "Custom theme saved.",
+    "description": "Toast when custom theme is saved"
+  },
+  "settings_custom_theme_table": {
+    "message": "Table",
+    "description": "Custom theme table section"
+  },
+  "settings_custom_theme_title": {
+    "message": "Custom Theme",
+    "description": "Title for custom theme editor"
+  },
+  "settings_docx_code_font_size_pt": {
+    "message": "Codelettergrootte (pt)",
+    "description": "Numeric override for code font size"
+  },
   "settings_docx_emoji_style": {
     "message": "Emoji-stijl",
     "description": "Label for the emoji style selector in DOCX export settings"
@@ -419,6 +919,26 @@
     "message": "Windows-stijl",
     "description": "Option for Windows emoji style"
   },
+  "settings_docx_heading_alignment": {
+    "message": "Uitlijning van koppen",
+    "description": "Heading alignment override"
+  },
+  "settings_docx_heading_alignment_default": {
+    "message": "Themastandaard",
+    "description": "Use theme alignment for headings"
+  },
+  "settings_docx_heading_scale_pct": {
+    "message": "Schaal voor kopgrootte (%)",
+    "description": "Numeric override for heading size scale"
+  },
+  "settings_docx_heading_spacing_after_pt": {
+    "message": "Afstand na koppen (pt)",
+    "description": "Numeric override for heading spacing after"
+  },
+  "settings_docx_heading_spacing_before_pt": {
+    "message": "Afstand v����r koppen (pt)",
+    "description": "Numeric override for heading spacing before"
+  },
   "settings_docx_hr_display": {
     "message": "DOCX: Horizontale lijn verwerking",
     "description": "Label for DOCX horizontal rule handling selector"
@@ -438,6 +958,22 @@
   "settings_docx_hr_display_page_break": {
     "message": "Pagina-einde",
     "description": "Option to export horizontal rules as page breaks in DOCX"
+  },
+  "settings_docx_table_border_width_pt": {
+    "message": "Tabelrandbreedte (pt)",
+    "description": "Numeric override for table border width"
+  },
+  "settings_docx_table_cell_padding_pt": {
+    "message": "Celopvulling van tabel (pt)",
+    "description": "Numeric override for table cell padding"
+  },
+  "settings_docx_theme_mapping_note": {
+    "message": "Laat leeg om de themastandaard te gebruiken. Gebruik 0 om nul te forceren.",
+    "description": "Note explaining DOCX theme mapping overrides"
+  },
+  "settings_docx_theme_mapping_title": {
+    "message": "DOCX-themamapping",
+    "description": "Section title for DOCX theme mapping options"
   },
   "settings_frontmatter_display": {
     "message": "Frontmatter weergave:",
@@ -547,6 +1083,30 @@
     "message": "Ondersteunde formaten",
     "description": "Title for supported file formats section in settings"
   },
+  "settings_table_alignment": {
+    "message": "Tabeluitlijning:",
+    "description": "Label for table alignment selector"
+  },
+  "settings_table_alignment_center": {
+    "message": "Midden",
+    "description": "Option to center tables"
+  },
+  "settings_table_alignment_justify": {
+    "message": "Uitvullen",
+    "description": "Option to justify tables (full width)"
+  },
+  "settings_table_alignment_left": {
+    "message": "Links",
+    "description": "Option to align tables to the left"
+  },
+  "settings_table_alignment_note": {
+    "message": "Van toepassing op voorbeeldweergave en DOCX-export.",
+    "description": "Helper note for table alignment option"
+  },
+  "settings_table_alignment_right": {
+    "message": "Rechts",
+    "description": "Option to align tables to the right"
+  },
   "settings_table_layout": {
     "message": "Tabelindeling",
     "description": "Label for table layout selector"
@@ -567,29 +1127,17 @@
     "message": "Indien ingeschakeld, wordt de tabelstructuur geanalyseerd en worden lege cellen slim samengevoegd.",
     "description": "Helper note for the table merge option"
   },
-  "settings_table_alignment": {
-    "message": "Tabeluitlijning:",
-    "description": "Label for table alignment selector"
+  "settings_table_style": {
+    "message": "Tabelstijl:",
+    "description": "Label for table style selector"
   },
-  "settings_table_alignment_left": {
-    "message": "Links",
-    "description": "Option to align tables to the left"
+  "settings_table_style_follow_theme": {
+    "message": "Thema volgen",
+    "description": "Option to follow theme table style"
   },
-  "settings_table_alignment_center": {
-    "message": "Midden",
-    "description": "Option to center tables"
-  },
-  "settings_table_alignment_right": {
-    "message": "Rechts",
-    "description": "Option to align tables to the right"
-  },
-  "settings_table_alignment_justify": {
-    "message": "Uitvullen",
-    "description": "Option to justify tables (full width)"
-  },
-  "settings_table_alignment_note": {
-    "message": "Van toepassing op voorbeeldweergave en DOCX-export.",
-    "description": "Helper note for table alignment option"
+  "settings_table_style_note": {
+    "message": "Overschrijft de tabelstijl van het thema in de voorbeeldweergave en DOCX-export.",
+    "description": "Helper note for table style override"
   },
   "settings_theme_changed": {
     "message": "Thema succesvol gewijzigd. Herlaad de pagina om de wijzigingen te zien.",
@@ -666,57 +1214,5 @@
   "zoom": {
     "message": "Zoomen",
     "description": "Menu item for zoom"
-  },
-  "settings_docx_heading_scale_pct": {
-    "message": "Schaal voor kopgrootte (%)",
-    "description": "Numeric override for heading size scale"
-  },
-  "settings_docx_heading_spacing_before_pt": {
-    "message": "Afstand v����r koppen (pt)",
-    "description": "Numeric override for heading spacing before"
-  },
-  "settings_docx_heading_spacing_after_pt": {
-    "message": "Afstand na koppen (pt)",
-    "description": "Numeric override for heading spacing after"
-  },
-  "settings_docx_heading_alignment": {
-    "message": "Uitlijning van koppen",
-    "description": "Heading alignment override"
-  },
-  "settings_docx_heading_alignment_default": {
-    "message": "Themastandaard",
-    "description": "Use theme alignment for headings"
-  },
-  "settings_docx_code_font_size_pt": {
-    "message": "Codelettergrootte (pt)",
-    "description": "Numeric override for code font size"
-  },
-  "settings_docx_table_border_width_pt": {
-    "message": "Tabelrandbreedte (pt)",
-    "description": "Numeric override for table border width"
-  },
-  "settings_docx_table_cell_padding_pt": {
-    "message": "Celopvulling van tabel (pt)",
-    "description": "Numeric override for table cell padding"
-  },
-  "settings_docx_theme_mapping_title": {
-    "message": "DOCX-themamapping",
-    "description": "Section title for DOCX theme mapping options"
-  },
-  "settings_docx_theme_mapping_note": {
-    "message": "Laat leeg om de themastandaard te gebruiken. Gebruik 0 om nul te forceren.",
-    "description": "Note explaining DOCX theme mapping overrides"
-  },
-  "settings_table_style": {
-    "message": "Tabelstijl:",
-    "description": "Label for table style selector"
-  },
-  "settings_table_style_follow_theme": {
-    "message": "Thema volgen",
-    "description": "Option to follow theme table style"
-  },
-  "settings_table_style_note": {
-    "message": "Overschrijft de tabelstijl van het thema in de voorbeeldweergave en DOCX-export.",
-    "description": "Helper note for table style override"
   }
 }
