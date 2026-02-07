@@ -190,6 +190,11 @@ interface SupportedExtensions {
 export type FrontmatterDisplay = 'hide' | 'table' | 'raw';
 
 /**
+ * Table layout mode
+ */
+export type TableLayout = 'left' | 'center';
+
+/**
  * User settings structure
  */
 interface Settings {
@@ -209,6 +214,7 @@ interface Settings {
   tableMergeEmpty?: boolean;
   tableAlignment?: TableAlignment;
   tableStyleOverride?: string;
+  tableLayout?: TableLayout;
 }
 
 /**
@@ -267,6 +273,7 @@ export function createSettingsTabManager({
     tableMergeEmpty: true,
     tableAlignment: 'center',
     tableStyleOverride: 'theme',
+    tableLayout: 'center',
   };
   let currentTheme = 'default';
   let themes: ThemeDefinition[] = [];
@@ -1430,6 +1437,21 @@ export function createSettingsTabManager({
       }
     }
 
+    // Table layout
+    const tableLayoutEl = document.getElementById('table-layout') as HTMLSelectElement | null;
+    if (tableLayoutEl) {
+      tableLayoutEl.value = settings.tableLayout || 'center';
+      if (!tableLayoutEl.dataset.listenerAdded) {
+        tableLayoutEl.dataset.listenerAdded = 'true';
+        tableLayoutEl.addEventListener('change', async () => {
+          settings.tableLayout = tableLayoutEl.value as TableLayout;
+          await saveSettingsToStorage();
+          // Notify all tabs to re-render
+          notifySettingChanged('tableLayout', settings.tableLayout);
+        });
+      }
+    }
+
     // Auto Refresh settings (Chrome only)
     loadAutoRefreshSettingsUI();
 
@@ -2032,6 +2054,7 @@ export function createSettingsTabManager({
         tableMergeEmpty: true,
         tableAlignment: 'center',
         tableStyleOverride: 'theme',
+        tableLayout: 'center',
       };
 
       await storageSet({

@@ -547,6 +547,18 @@
     "message": "지원 형식",
     "description": "Title for supported file formats section in settings"
   },
+  "settings_table_layout": {
+    "message": "테이블 레이아웃",
+    "description": "Label for table layout selector"
+  },
+  "settings_table_layout_center": {
+    "message": "가운데",
+    "description": "Table layout option: center aligned"
+  },
+  "settings_table_layout_left": {
+    "message": "왼쪽",
+    "description": "Table layout option: left aligned"
+  },
   "settings_table_merge_empty": {
     "message": "스마트 테이블 셀 병합",
     "description": "Checkbox label for enabling automatic vertical merging of empty table cells"

@@ -547,6 +547,18 @@
     "message": "支持的文件格式",
     "description": "支持的格式部分标题"
   },
+  "settings_table_layout": {
+    "message": "表格布局",
+    "description": "Label for table layout selector"
+  },
+  "settings_table_layout_center": {
+    "message": "居中",
+    "description": "Option for centered tables"
+  },
+  "settings_table_layout_left": {
+    "message": "靠左",
+    "description": "Option for left-aligned tables"
+  },
   "settings_table_merge_empty": {
     "message": "智能表格单元格合并",
     "description": "Checkbox label for enabling automatic vertical merging of empty table cells"

@@ -101,6 +101,7 @@ class DocxExporter {
   private frontmatterDisplay: FrontmatterDisplay = 'hide';
   private tableMergeEmpty = true;  // Default: enabled
   private tableAlignment: TableAlignment = 'center';
+  private tableLayout: 'left' | 'center' = 'center';  // Default: center
   private docxHeadingScalePct: number | null = null;
   private docxHeadingSpacingBeforePt: number | null = null;
   private docxHeadingSpacingAfterPt: number | null = null;
@@ -108,7 +109,6 @@ class DocxExporter {
   private docxCodeFontSizePt: number | null = null;
   private docxTableBorderWidthPt: number | null = null;
   private docxTableCellPaddingPt: number | null = null;
-
   // Converters (initialized in exportToDocx)
   private tableConverter: TableConverter | null = null;
   private blockquoteConverter: BlockquoteConverter | null = null;
@@ -215,6 +215,7 @@ class DocxExporter {
       convertInlineNodes: (nodes, style) => this.inlineConverter!.convertInlineNodes(nodes, style),
       mergeEmptyCells: this.tableMergeEmpty,
       defaultTableAlignment: this.tableAlignment,
+      tableLayout: this.tableLayout,
     });
 
     this.blockquoteConverter = createBlockquoteConverter({
@@ -248,6 +249,7 @@ class DocxExporter {
             frontmatterDisplay,
             tableMergeEmpty,
             tableAlignment,
+            tableLayout,
             docxHeadingScalePct,
             docxHeadingSpacingBeforePt,
             docxHeadingSpacingAfterPt,
@@ -261,6 +263,7 @@ class DocxExporter {
             settings.get('frontmatterDisplay'),
             settings.get('tableMergeEmpty'),
             settings.get('tableAlignment'),
+            settings.get('tableLayout'),
             settings.get('docxHeadingScalePct'),
             settings.get('docxHeadingSpacingBeforePt'),
             settings.get('docxHeadingSpacingAfterPt'),
@@ -273,9 +276,14 @@ class DocxExporter {
           this.docxEmojiStyle = emojiStyle === 'native' ? 'system' : 'system'; // Map to internal naming
           this.frontmatterDisplay = frontmatterDisplay;
           this.tableMergeEmpty = tableMergeEmpty;
-          this.tableAlignment = (tableAlignment === 'left' || tableAlignment === 'center' || tableAlignment === 'right' || tableAlignment === 'justify')
+          const normalizedTableAlignment = (tableAlignment === 'left' || tableAlignment === 'center' || tableAlignment === 'right' || tableAlignment === 'justify')
             ? tableAlignment
             : 'center';
+          const normalizedTableLayout = (tableLayout === 'left' || tableLayout === 'center')
+            ? tableLayout
+            : (normalizedTableAlignment === 'left' ? 'left' : 'center');
+          this.tableAlignment = normalizedTableAlignment;
+          this.tableLayout = normalizedTableLayout;
           this.docxHeadingScalePct = (typeof docxHeadingScalePct === 'number' && !Number.isNaN(docxHeadingScalePct)) ? docxHeadingScalePct : null;
           this.docxHeadingSpacingBeforePt = (typeof docxHeadingSpacingBeforePt === 'number' && !Number.isNaN(docxHeadingSpacingBeforePt)) ? docxHeadingSpacingBeforePt : null;
           this.docxHeadingSpacingAfterPt = (typeof docxHeadingSpacingAfterPt === 'number' && !Number.isNaN(docxHeadingSpacingAfterPt)) ? docxHeadingSpacingAfterPt : null;
@@ -290,6 +298,7 @@ class DocxExporter {
           this.frontmatterDisplay = 'hide';
           this.tableMergeEmpty = true;
           this.tableAlignment = 'center';
+          this.tableLayout = 'center';
           this.docxHeadingScalePct = null;
           this.docxHeadingSpacingBeforePt = null;
           this.docxHeadingSpacingAfterPt = null;
@@ -303,6 +312,7 @@ class DocxExporter {
         this.frontmatterDisplay = 'hide';
         this.tableMergeEmpty = true;
         this.tableAlignment = 'center';
+        this.tableLayout = 'center';
         this.docxHeadingScalePct = null;
         this.docxHeadingSpacingBeforePt = null;
         this.docxHeadingSpacingAfterPt = null;
