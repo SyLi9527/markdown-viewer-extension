@@ -104,6 +104,10 @@ export function registerRemarkPlugins(
   // Create a unified plugin that processes all plugins in a single AST traversal
   processor.use(function unifiedPluginProcessor() {
     return (tree: Node) => {
+      for (const plugin of plugins) {
+        (plugin as { resetState?: () => void }).resetState?.();
+      }
+
       // Collect all unique node types that plugins are interested in
       const nodeTypes = new Set<string>();
       for (const plugin of plugins) {

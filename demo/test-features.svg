@@ -34,7 +34,7 @@
     <rect x="380" y="80" width="160" height="80" class="box"/>
     <text x="460" y="105" text-anchor="middle" class="chinese-text">特殊字符测试</text>
     <text x="460" y="125" text-anchor="middle" class="chinese-text">❌⚠️✅🔥💡📝</text>
-    <text x="460" y="145" text-anchor="middle" class="chinese-text">Symbols: @#$%^&*</text>
+    <text x="460" y="145" text-anchor="middle" class="chinese-text">Symbols: @#$%^&amp;*</text>
     
     <!-- Feature 4: foreignObject Test -->
     <rect x="20" y="180" width="160" height="100" class="success-box"/>

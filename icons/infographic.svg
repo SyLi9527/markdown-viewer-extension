@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Infographic">
+  <rect width="128" height="128" rx="16" fill="#fff7ed"/>
+  <rect x="20" y="22" width="88" height="20" rx="6" fill="#fb923c"/>
+  <rect x="20" y="54" width="52" height="18" rx="6" fill="#fdba74"/>
+  <rect x="78" y="54" width="30" height="18" rx="6" fill="#fed7aa"/>
+  <rect x="20" y="82" width="88" height="24" rx="6" fill="#f97316"/>
+</svg>

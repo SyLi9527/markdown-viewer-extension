@@ -1,9 +1,21 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import * as xml from 'xml';
+let htmlDoc;
+try {
+  const xml = await import('xml');
+  if (xml?.Document) {
+    htmlDoc = new xml.Document('text/html');
+  }
+} catch {}
 
-// Setup fibjs DOM as global document for DOM-related tests
-const htmlDoc = new xml.Document('text/html');
+if (!htmlDoc) {
+  const { DOMParser } = await import('linkedom');
+  htmlDoc = new DOMParser().parseFromString(
+    '<!doctype html><html><body></body></html>',
+    'text/html'
+  );
+}
+
 globalThis.document = htmlDoc;
 
 // Define Node constants for fibjs (not provided by fibjs xml module)

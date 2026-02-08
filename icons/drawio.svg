@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="drawio">
+  <rect width="128" height="128" rx="16" fill="#fff1f2"/>
+  <rect x="18" y="28" width="36" height="28" rx="6" fill="#fb7185"/>
+  <rect x="74" y="28" width="36" height="28" rx="6" fill="#f43f5e"/>
+  <rect x="46" y="76" width="36" height="28" rx="6" fill="#e11d48"/>
+  <path d="M54 42 H74" stroke="#be123c" stroke-width="4" fill="none"/>
+  <path d="M64 56 V76" stroke="#be123c" stroke-width="4" fill="none"/>
+</svg>

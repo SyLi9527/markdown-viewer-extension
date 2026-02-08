@@ -16,8 +16,14 @@ interface AstNode {
 }
 
 export class HtmlPlugin extends BasePlugin {
+  private pendingStyle = '';
+
   constructor() {
     super('html');
+  }
+
+  resetState(): void {
+    this.pendingStyle = '';
   }
 
   /**
@@ -90,9 +96,20 @@ export class HtmlPlugin extends BasePlugin {
       return null;
     }
 
-    const htmlContent = node.value?.trim() || '';
+    let htmlContent = node.value?.trim() || '';
     if (!htmlContent) {
       return null;
+    }
+
+    // If this block is only a <style>...</style>, cache it and wait for the next HTML block
+    if (isStyleOnlyBlock(htmlContent)) {
+      this.pendingStyle += htmlContent;
+      return null;
+    }
+
+    if (this.pendingStyle) {
+      htmlContent = this.pendingStyle + htmlContent;
+      this.pendingStyle = '';
     }
 
     // Sanitize HTML and check if it has meaningful content
@@ -104,6 +121,15 @@ export class HtmlPlugin extends BasePlugin {
 
     return htmlContent;
   }
+}
+
+function isStyleOnlyBlock(html: string): boolean {
+  const trimmed = html.trim();
+  if (!trimmed) return false;
+  if (!trimmed.startsWith('<style')) return false;
+  if (!trimmed.endsWith('</style>')) return false;
+  // Ensure only a single top-level style tag
+  return /^<style[\s\S]*<\/style>$/.test(trimmed);
 }
 
 function isLocalImageSrc(src: string): boolean {
