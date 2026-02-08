@@ -55,6 +55,11 @@ interface ParseOptions {
   maxTableDepth?: number;
 }
 
+interface BlockStyle {
+  alignment?: 'left' | 'center' | 'right' | 'justify';
+  spacing?: { before?: number; after?: number };
+}
+
 const BLOCK_TAGS = new Set(['p', 'div', 'table', 'ul', 'ol', 'hr']);
 const INLINE_TAGS = new Set(['span', 'strong', 'em', 'u', 'code', 'a', 'br']);
 const TEXT_NODE = typeof Node === 'undefined' ? 3 : Node.TEXT_NODE;
@@ -63,34 +68,49 @@ const ELEMENT_NODE = typeof Node === 'undefined' ? 1 : Node.ELEMENT_NODE;
 export function parseHtmlToEditableAst(html: string, options: ParseOptions = {}): DOCXASTNode[] | null {
   if (!html || typeof DOMParser === 'undefined') return null;
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
+  const doc = parser.parseFromString(
+    `<!doctype html><html><head></head><body>${html}</body></html>`,
+    'text/html'
+  );
   const body = doc.body;
   if (!body) return null;
   const maxTableDepth = options.maxTableDepth ?? 3;
-  return parseBlockContainer(body, { maxTableDepth, tableDepth: 0 });
+  return parseBlockContainer(body, { maxTableDepth, tableDepth: 0 }, {}, {});
 }
 
-function parseBlockContainer(container: Element | DocumentFragment, ctx: { maxTableDepth: number; tableDepth: number }): DOCXASTNode[] {
+function parseBlockContainer(
+  container: Element | DocumentFragment,
+  ctx: { maxTableDepth: number; tableDepth: number },
+  inheritedInline: InlineNode['style'] = {},
+  inheritedBlock: BlockStyle = {}
+): DOCXASTNode[] {
   const blocks: DOCXASTNode[] = [];
   let inlineBuffer: InlineNode[] = [];
 
   const flushInline = () => {
     const cleaned = trimInlineBuffer(inlineBuffer);
     if (cleaned.length > 0) {
-      blocks.push({ type: 'paragraph', children: cleaned });
+      const para: DOCXASTNode = { type: 'paragraph', children: cleaned };
+      if (inheritedBlock.alignment) para.alignment = inheritedBlock.alignment;
+      if (inheritedBlock.spacing) para.spacing = inheritedBlock.spacing;
+      blocks.push(para);
     }
     inlineBuffer = [];
   };
 
   for (const node of Array.from(container.childNodes)) {
     if (node.nodeType === TEXT_NODE) {
-      inlineBuffer.push(...parseInlineText(node.nodeValue || '', {}));
+      inlineBuffer.push(...parseInlineText(node.nodeValue || '', inheritedInline));
       continue;
     }
 
     if (node.nodeType !== ELEMENT_NODE) continue;
     const el = node as Element;
     const tag = el.tagName.toLowerCase();
+
+    if (tag === 'style') {
+      continue;
+    }
 
     if (tag === 'br') {
       inlineBuffer.push({ type: 'break' } as InlineNode);
@@ -99,16 +119,18 @@ function parseBlockContainer(container: Element | DocumentFragment, ctx: { maxTa
 
     if (BLOCK_TAGS.has(tag)) {
       flushInline();
+      const nextInline = mergeRunStyles(inheritedInline, readInlineStyle(el));
+      const nextBlock = { ...inheritedBlock, ...readBlockStyle(el) };
       if (tag === 'p') {
-        blocks.push(parseParagraph(el));
+        blocks.push(parseParagraph(el, nextInline, nextBlock));
       } else if (tag === 'div') {
-        const divBlocks = parseDiv(el, ctx);
+        const divBlocks = parseDiv(el, ctx, nextInline, nextBlock);
         blocks.push(...divBlocks);
       } else if (tag === 'table') {
         const table = parseTable(el, ctx);
         if (table) blocks.push(table);
       } else if (tag === 'ul' || tag === 'ol') {
-        blocks.push(parseList(el, ctx));
+        blocks.push(parseList(el, ctx, nextInline, nextBlock));
       } else if (tag === 'hr') {
         blocks.push({ type: 'thematicBreak' });
       }
@@ -116,12 +138,12 @@ function parseBlockContainer(container: Element | DocumentFragment, ctx: { maxTa
     }
 
     if (INLINE_TAGS.has(tag) || tag === 'span') {
-      inlineBuffer.push(...parseInlineElement(el, {}));
+      inlineBuffer.push(...parseInlineElement(el, inheritedInline));
       continue;
     }
 
     // Unknown tags: treat as container
-    const nestedBlocks = parseBlockContainer(el, ctx);
+    const nestedBlocks = parseBlockContainer(el, ctx, inheritedInline, inheritedBlock);
     if (nestedBlocks.length > 0) {
       flushInline();
       blocks.push(...nestedBlocks);
@@ -132,38 +154,77 @@ function parseBlockContainer(container: Element | DocumentFragment, ctx: { maxTa
   return blocks;
 }
 
-function parseParagraph(el: Element): DOCXASTNode {
-  const style = readInlineStyle(el);
-  const children = parseInlineChildren(el, style);
-  return { type: 'paragraph', children: children.length ? children : [{ type: 'text', value: '' }] };
+function parseParagraph(el: Element, inlineStyle: InlineNode['style'], blockStyle: BlockStyle): DOCXASTNode {
+  const children = parseInlineChildren(el, inlineStyle);
+  const node: DOCXASTNode = { type: 'paragraph', children: children.length ? children : [{ type: 'text', value: '' }] };
+  if (blockStyle.alignment) node.alignment = blockStyle.alignment;
+  if (blockStyle.spacing) node.spacing = blockStyle.spacing;
+  return node;
 }
 
-function parseDiv(el: Element, ctx: { maxTableDepth: number; tableDepth: number }): DOCXASTNode[] {
+function parseDiv(
+  el: Element,
+  ctx: { maxTableDepth: number; tableDepth: number },
+  inlineStyle: InlineNode['style'],
+  blockStyle: BlockStyle
+): DOCXASTNode[] {
   const hasBlockChild = Array.from(el.children).some((child) => BLOCK_TAGS.has(child.tagName.toLowerCase()));
   if (!hasBlockChild) {
-    return [parseParagraph(el)];
+    return [parseParagraph(el, inlineStyle, blockStyle)];
   }
-  return parseBlockContainer(el, ctx);
+  return parseBlockContainer(el, ctx, inlineStyle, blockStyle);
 }
 
-function parseList(el: Element, ctx: { maxTableDepth: number; tableDepth: number }): DOCXASTNode {
+function parseList(
+  el: Element,
+  ctx: { maxTableDepth: number; tableDepth: number },
+  inlineStyle: InlineNode['style'],
+  blockStyle: BlockStyle
+): DOCXASTNode {
   const ordered = el.tagName.toLowerCase() === 'ol';
   const startAttr = ordered ? el.getAttribute('start') : null;
   const parsedStart = startAttr ? Number.parseInt(startAttr, 10) : NaN;
   const start = Number.isFinite(parsedStart) ? parsedStart : undefined;
   const items = Array.from(el.children)
     .filter((child) => child.tagName.toLowerCase() === 'li')
-    .map((li) => parseListItem(li as Element, ctx));
+    .map((li) => parseListItem(li as Element, ctx, inlineStyle, blockStyle));
 
   return { type: 'list', ordered, start, children: items };
 }
 
-function parseListItem(el: Element, ctx: { maxTableDepth: number; tableDepth: number }): DOCXASTNode {
-  const blocks = parseBlockContainer(el, ctx);
+function parseListItem(
+  el: Element,
+  ctx: { maxTableDepth: number; tableDepth: number },
+  inlineStyle: InlineNode['style'],
+  blockStyle: BlockStyle
+): DOCXASTNode {
+  const blocks = parseBlockContainer(el, ctx, inlineStyle, blockStyle);
   if (blocks.length === 0) {
     return { type: 'listItem', children: [{ type: 'paragraph', children: [{ type: 'text', value: '' }] }] };
   }
   return { type: 'listItem', children: blocks } as DOCXASTNode;
+}
+
+function pxToTwips(px?: number): number | undefined {
+  if (typeof px !== 'number') return undefined;
+  return Math.round(px * 15);
+}
+
+function parseBlockAlignment(value?: string | null): BlockStyle['alignment'] {
+  if (!value) return undefined;
+  const normalized = value.trim();
+  if (!normalized) return undefined;
+  return parseTextAlign(normalized);
+}
+
+function readBlockStyle(el: Element): BlockStyle {
+  const style = parseStyleAttribute(el.getAttribute('style'));
+  const alignment = parseBlockAlignment(style['text-align'] || el.getAttribute('align'));
+  const [top, , bottom] = parseBox(style.margin);
+  const before = pxToTwips(parsePx(style['margin-top']) ?? top);
+  const after = pxToTwips(parsePx(style['margin-bottom']) ?? bottom);
+  const spacing = (before || after) ? { before, after } : undefined;
+  return { alignment, spacing };
 }
 
 function parseTable(tableEl: Element, ctx: { maxTableDepth: number; tableDepth: number }): HtmlTableNode | null {
@@ -204,7 +265,8 @@ function parseTable(tableEl: Element, ctx: { maxTableDepth: number; tableDepth: 
 
       const cellStyle = mergeCellStyles(tableStyle, rowStyle, readCellStyle(cell));
       const isHeaderCell = cell.tagName.toLowerCase() === 'th';
-      const children = parseBlockContainer(cell, { ...ctx, tableDepth });
+      const cellInline = readInlineStyle(cell);
+      const children = parseBlockContainer(cell, { ...ctx, tableDepth }, cellInline, {});
 
       parsedCells.push({
         type: 'htmlTableCell',
@@ -321,6 +383,9 @@ function readInlineStyle(el: Element): InlineNode['style'] {
   if (typeof italics === 'boolean') run.italics = italics;
   if (style['text-decoration']?.includes('underline')) {
     run.underline = { type: 'single' as const };
+  }
+  if (style['text-decoration']?.includes('line-through')) {
+    run.strike = true;
   }
   if (style['font-family']) run.font = style['font-family'];
   if (style['font-size']) {

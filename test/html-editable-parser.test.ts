@@ -80,4 +80,25 @@ describe('html-editable-parser', () => {
     const hasNested = cellBlocks.some((b: any) => b.type === 'htmlTable');
     assert.ok(hasNested, 'expected nested table block in cell');
   });
+
+  it('skips style tags', { skip: !hasDomParser }, () => {
+    const html = `<style>p{color:red}</style><p>Hi</p>`;
+    const blocks = parseHtmlToEditableAst(html, { maxTableDepth: 3 });
+    assert.ok(blocks);
+    assert.strictEqual(blocks?.length, 1);
+    assert.strictEqual(blocks?.[0]?.type, 'paragraph');
+  });
+
+  it('inherits container color to text', { skip: !hasDomParser }, () => {
+    const html = `<div style="color:#ff0000"><p>Hi</p></div>`;
+    const blocks = parseHtmlToEditableAst(html, { maxTableDepth: 3 });
+    const text = (blocks?.[0] as any)?.children?.[0];
+    assert.strictEqual(text?.style?.color, 'FF0000');
+  });
+
+  it('captures paragraph alignment', { skip: !hasDomParser }, () => {
+    const html = `<p style="text-align:center">Center</p>`;
+    const blocks = parseHtmlToEditableAst(html, { maxTableDepth: 3 });
+    assert.strictEqual((blocks?.[0] as any)?.alignment, 'center');
+  });
 });
