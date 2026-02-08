@@ -265,7 +265,7 @@ function sanitizeElementAttributes(element: Element): void {
  * Walk the node tree and remove dangerous elements/attributes
  * @param root - Root node to sanitize
  */
-function sanitizeNodeTree(root: DocumentFragment): void {
+function sanitizeNodeTree(root: ParentNode): void {
   const blockedTags = new Set(['SCRIPT', 'IFRAME', 'OBJECT', 'EMBED', 'AUDIO', 'VIDEO']);
   const stack: Element[] = [];
 
@@ -313,10 +313,10 @@ function sanitizeNodeTree(root: DocumentFragment): void {
  */
 export function sanitizeRenderedHtml(html: string): string {
   try {
-    const template = document.createElement('template');
-    template.innerHTML = html;
-    sanitizeNodeTree(template.content);
-    return template.innerHTML;
+    const container = document.createElement('div');
+    container.innerHTML = html;
+    sanitizeNodeTree(container);
+    return container.innerHTML;
   } catch (error) {
     return html;
   }
