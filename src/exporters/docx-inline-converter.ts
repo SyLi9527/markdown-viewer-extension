@@ -70,6 +70,7 @@ interface ParentStyle extends Partial<IRunOptions> {
  */
 interface BaseNode {
   type: string;
+  style?: ParentStyle;
 }
 
 interface TextNode extends BaseNode {
@@ -334,7 +335,9 @@ export function createInlineConverter({
     };
 
     for (const node of nodes) {
-      const converted = await convertInlineNode(node, defaultStyle);
+      const nodeStyle = (node as BaseNode).style || {};
+      const mergedStyle = { ...defaultStyle, ...nodeStyle };
+      const converted = await convertInlineNode(node, mergedStyle);
       if (converted) {
         if (Array.isArray(converted)) {
           runs.push(...converted);
@@ -355,29 +358,31 @@ export function createInlineConverter({
    */
   async function convertInlineNode(node: InlineNode, parentStyle: ParentStyle = {}): Promise<InlineResult | InlineResult[] | null> {
     console.log('[DOCX] convertInlineNode:', node.type);
+    const nodeStyle = (node as BaseNode).style || {};
+    const mergedStyle = { ...parentStyle, ...nodeStyle };
     switch (node.type) {
       case 'text':
-        return convertTextWithEmoji(node.value, parentStyle);
+        return convertTextWithEmoji(node.value, mergedStyle);
 
       case 'strong':
-        return await convertInlineNodes(node.children, { ...parentStyle, bold: true });
+        return await convertInlineNodes(node.children, { ...mergedStyle, bold: true });
 
       case 'emphasis':
-        return await convertInlineNodes(node.children, { ...parentStyle, italics: true });
+        return await convertInlineNodes(node.children, { ...mergedStyle, italics: true });
 
       case 'delete':
-        return await convertInlineNodes(node.children, { ...parentStyle, strike: true });
+        return await convertInlineNodes(node.children, { ...mergedStyle, strike: true });
 
       case 'superscript':
-        return await convertInlineNodes(node.children, { ...parentStyle, superScript: true });
+        return await convertInlineNodes(node.children, { ...mergedStyle, superScript: true });
 
       case 'subscript':
-        return await convertInlineNodes(node.children, { ...parentStyle, subScript: true });
+        return await convertInlineNodes(node.children, { ...mergedStyle, subScript: true });
 
       case 'inlineCode': {
         const codeStyle = themeStyles.characterStyles.code;
         return new TextRun({
-          ...parentStyle,
+          ...mergedStyle,
           text: node.value,
           font: codeStyle.font,
           size: codeStyle.size,
@@ -386,16 +391,16 @@ export function createInlineConverter({
       }
 
       case 'link':
-        return await convertLink(node, parentStyle);
+        return await convertLink(node, mergedStyle);
 
       case 'linkReference':
-        return await convertLinkReference(node, parentStyle);
+        return await convertLinkReference(node, mergedStyle);
 
       case 'image':
         return await convertImage(node);
 
       case 'inlineMath':
-        return await convertInlineMath(node, parentStyle);
+        return await convertInlineMath(node, mergedStyle);
 
       case 'break':
         return new TextRun({ text: '', break: 1 });
@@ -406,7 +411,7 @@ export function createInlineConverter({
           return new TextRun({ text: '', break: 1 });
         }
         const textContent = htmlValue.replace(/<[^>]+>/g, '');
-        return convertTextWithEmoji(textContent, parentStyle);
+        return convertTextWithEmoji(textContent, mergedStyle);
       }
 
       default:

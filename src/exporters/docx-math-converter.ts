@@ -4,13 +4,13 @@
  */
 
 import { convertToXmlComponent, XmlComponent } from 'docx';
-import { mathjax } from 'mathjax-full/js/mathjax';
-import { TeX } from 'mathjax-full/js/input/tex';
-import { AllPackages } from 'mathjax-full/js/input/tex/AllPackages';
-import { liteAdaptor } from 'mathjax-full/js/adaptors/liteAdaptor';
-import { RegisterHTMLHandler } from 'mathjax-full/js/handlers/html';
-import { SerializedMmlVisitor } from 'mathjax-full/js/core/MmlTree/SerializedMmlVisitor';
-import { STATE } from 'mathjax-full/js/core/MathItem';
+import { mathjax } from 'mathjax-full/js/mathjax.js';
+import { TeX } from 'mathjax-full/js/input/tex.js';
+import { AllPackages } from 'mathjax-full/js/input/tex/AllPackages.js';
+import { liteAdaptor } from 'mathjax-full/js/adaptors/liteAdaptor.js';
+import { RegisterHTMLHandler } from 'mathjax-full/js/handlers/html.js';
+import { SerializedMmlVisitor } from 'mathjax-full/js/core/MmlTree/SerializedMmlVisitor.js';
+import { STATE } from 'mathjax-full/js/core/MathItem.js';
 import { mml2omml } from './mml2omml';
 import { xml2js } from 'xml-js';
 import type { Element as XmlElement } from 'xml-js';
