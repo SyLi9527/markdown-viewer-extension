@@ -615,6 +615,7 @@ function containsOnlyTables(body: HTMLElement | null): boolean {
 
   const clone = body.cloneNode(true) as HTMLElement;
   clone.querySelectorAll('table').forEach((table) => table.remove());
+  clone.querySelectorAll('style,script').forEach((node) => node.remove());
 
   const remainingText = (clone.textContent || '').replace(/\s+/g, '');
   if (remainingText.length > 0) {

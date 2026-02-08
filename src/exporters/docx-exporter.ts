@@ -61,6 +61,7 @@ import { createInlineConverter, type InlineConverter, type InlineNode } from './
 import { createHtmlTableConverter, type HtmlTableConverter } from './docx-html-table-converter';
 import { parseHtmlTablesToDocxNodes, parseHtmlTablesToDomElements } from '../utils/html-table-to-docx';
 import { parseHtmlToEditableAst, type HtmlTableNode } from '../utils/html-editable-parser';
+import { preprocessHtmlForDocx } from '../utils/html-style-preprocessor';
 import { extractTableDomModel } from '../utils/table-dom-extractor';
 import { convertTableDomToDocx } from './docx-table-from-dom';
 import { applyDocxThemeOverrides } from './docx-theme-mapping';
@@ -806,7 +807,8 @@ class DocxExporter {
     blockquoteNestLevel = 0
   ): Promise<FileChild | FileChild[] | null> {
     if (node.type === 'html' && this.tableConverter) {
-      const htmlValue = typeof node.value === 'string' ? node.value : '';
+      const rawHtml = typeof node.value === 'string' ? node.value : '';
+      const htmlValue = preprocessHtmlForDocx(rawHtml);
       const domTables = this.convertHtmlTablesFromDom(htmlValue);
       if (domTables) {
         return domTables;
@@ -954,12 +956,18 @@ class DocxExporter {
       parentStyle
     );
     const spacing = this.themeStyles?.default?.paragraph?.spacing || { before: 0, after: 200, line: 276 };
+    const nodeSpacing = (node as { spacing?: { before?: number; after?: number } }).spacing;
+    const nodeAlignment = (node as { alignment?: string }).alignment;
 
     return new Paragraph({
       children: children.length > 0 ? children : undefined,
       text: children.length === 0 ? '' : undefined,
-      spacing: { before: spacing.before, after: spacing.after, line: spacing.line },
-      alignment: AlignmentType.LEFT,
+      spacing: {
+        before: nodeSpacing?.before ?? spacing.before,
+        after: nodeSpacing?.after ?? spacing.after,
+        line: spacing.line
+      },
+      alignment: nodeAlignment ? (this.toAlignmentType(nodeAlignment) ?? AlignmentType.LEFT) : AlignmentType.LEFT,
     });
   }
 
