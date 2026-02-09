@@ -1439,6 +1439,7 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
             titleSpacing: 0,
             leadingWidth: 0,
             leading: const SizedBox.shrink(),
+            shape: Border(bottom: BorderSide(color: Colors.grey.shade300, width: 0.5)),
             title: Row(
               children: [
                 // Left side: TOC only
