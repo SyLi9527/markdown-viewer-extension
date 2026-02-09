@@ -238,15 +238,29 @@ function applyZoomToElement(el: HTMLElement, zoomLevel: number): void {
     el.style.zoom = String(zoomLevel);
   } else {
     // Use transform: scale() for iOS WKWebView
+    // transform doesn't affect layout size, so we must compensate height
+    // on the parent to avoid blank space (zoom < 1) or clipping (zoom > 1).
+    const parent = el.parentElement;
     if (zoomLevel === 1) {
       el.style.transform = '';
       el.style.transformOrigin = '';
       el.style.width = '';
+      if (parent) parent.style.height = '';
     } else {
       el.style.transform = `scale(${zoomLevel})`;
       el.style.transformOrigin = 'top left';
       // Compensate width so scaled content doesn't overflow
       el.style.width = `${100 / zoomLevel}%`;
+      // Compensate parent height: layout height stays original,
+      // but visual height = scrollHeight * zoomLevel
+      if (parent) {
+        const updateHeight = () => {
+          parent.style.height = `${el.scrollHeight * zoomLevel}px`;
+        };
+        updateHeight();
+        // Re-measure after content may have reflowed
+        requestAnimationFrame(updateHeight);
+      }
     }
   }
 }
@@ -510,6 +524,17 @@ export async function renderMarkdownFlow(options: RenderMarkdownFlowOptions): Pr
       });
     } finally {
       afterProcessAll?.();
+    }
+
+    // After async tasks (diagrams etc.) may have changed content height,
+    // re-compensate parent height for transform: scale() on iOS
+    if (!supportsCSSZoom() && zoomLevel !== 1) {
+      const parent = container.parentElement;
+      if (parent) {
+        requestAnimationFrame(() => {
+          parent.style.height = `${container.scrollHeight * zoomLevel}px`;
+        });
+      }
     }
 
     // Clear task manager reference

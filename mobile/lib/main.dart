@@ -301,6 +301,28 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
     }
   }
 
+  /// Set page zoom via viewport initial-scale (iOS) or JS setFontSize (Android)
+  Future<void> _setPageZoom(int fontSize) async {
+    try {
+      if (Platform.isIOS || Platform.isMacOS) {
+        // Use viewport meta tag initial-scale for browser-level zoom on iOS
+        // This avoids CSS transform issues (blank area) and doesn't need native WKWebView access
+        final scale = fontSize / 16.0;
+        await _controller.runJavaScript(
+          "var m=document.querySelector('meta[name=viewport]');"
+          "if(m){var w=Math.round(screen.width/$scale);"
+          "m.setAttribute('content','width='+w+',initial-scale=$scale,maximum-scale=$scale,user-scalable=no');}",
+        );
+      } else {
+        await _controller.runJavaScript(
+          "if(window.setFontSize){window.setFontSize($fontSize);}",
+        );
+      }
+    } catch (e) {
+      debugPrint('[Mobile] Failed to set page zoom: $e');
+    }
+  }
+
   Future<void> _checkWebViewReady() async {
     for (int i = 0; i < 20; i++) {
       try {
@@ -313,11 +335,9 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
             _webViewReady = true;
           });
 
-          // Apply saved font size (zoom level) before loading content
+          // Apply saved font size (zoom level) via native pageZoom
           final savedFontSize = settingsService.fontSize;
-          await _controller.runJavaScript(
-            "if(window.setFontSize){window.setFontSize($savedFontSize);}",
-          );
+          await _setPageZoom(savedFontSize);
           
           // Load pending content if any
           if (_pendingContent != null) {
@@ -423,6 +443,15 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
         case 'FETCH_ASSET':
           if (payload is Map && isEnvelope) {
             _handleFetchAssetEnvelope(
+              Map<String, dynamic>.from(payload),
+              envelopeId,
+            );
+          }
+          break;
+
+        case 'FETCH_REMOTE':
+          if (payload is Map && isEnvelope) {
+            _handleFetchRemoteEnvelope(
               Map<String, dynamic>.from(payload),
               envelopeId,
             );
@@ -889,6 +918,45 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
       _respondToWebViewEnvelope(requestId, data: content);
     } catch (e) {
       debugPrint('[Mobile] FETCH_ASSET error for ${payload['path']}: $e');
+      _respondToWebViewEnvelope(requestId, error: e.toString());
+    }
+  }
+
+  /// Fetches remote URL via native HTTP client to avoid CORS restrictions in WebView
+  Future<void> _handleFetchRemoteEnvelope(
+    Map<String, dynamic> payload,
+    String requestId,
+  ) async {
+    try {
+      final url = payload['url'] as String?;
+      if (url == null) {
+        _respondToWebViewEnvelope(requestId, error: 'Missing url parameter');
+        return;
+      }
+
+      final client = HttpClient();
+      try {
+        final request = await client.getUrl(Uri.parse(url));
+        final response = await request.close();
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          final bytes = await response.fold<List<int>>(
+            <int>[],
+            (list, chunk) => list..addAll(chunk),
+          );
+          final base64Content = base64Encode(bytes);
+          _respondToWebViewEnvelope(requestId, data: {'content': base64Content});
+        } else {
+          _respondToWebViewEnvelope(
+            requestId,
+            error: 'HTTP ${response.statusCode}: ${response.reasonPhrase}',
+          );
+        }
+      } finally {
+        client.close();
+      }
+    } catch (e) {
+      debugPrint('[Mobile] FETCH_REMOTE error for ${payload['url']}: $e');
       _respondToWebViewEnvelope(requestId, error: e.toString());
     }
   }

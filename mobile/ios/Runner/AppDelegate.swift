@@ -61,11 +61,23 @@ import UIKit
     open url: URL,
     options: [UIApplication.OpenURLOptionsKey: Any] = [:]
   ) -> Bool {
-    // Handle file opened from Files app or other apps
     if url.isFileURL {
+      // Handle file opened from Files app or other apps
       handleFileURL(url)
       return true
     }
+    
+    if url.scheme == "markdown-viewer" {
+      // Custom URL scheme: markdown-viewer:///path/to/file.md
+      // Used for testing via simctl openurl
+      let filePath = url.path
+      if !filePath.isEmpty {
+        let fileURL = URL(fileURLWithPath: filePath)
+        handleFileURL(fileURL)
+        return true
+      }
+    }
+    
     return super.application(app, open: url, options: options)
   }
   
