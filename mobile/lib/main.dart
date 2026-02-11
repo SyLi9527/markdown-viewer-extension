@@ -27,11 +27,13 @@ import 'pages/settings_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Only init services that don't trigger filesystem permission dialogs
   await settingsService.init();
-  await cacheStorage.init();
   await localization.init();
   await themeRegistry.init();
-  await recentFilesService.init();
+  // Start UI first, then init filesystem-dependent services
+  // (cacheStorage and recentFilesService call getApplicationDocumentsDirectory
+  // which triggers a macOS permission dialog and would black-screen the window)
   runApp(const MarkdownViewerApp());
 }
 
@@ -113,6 +115,8 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
   // Platform channel for receiving files from Android/iOS
   static const _fileChannel = MethodChannel('com.xicilion.markdownviewer/file');
 
+  bool _servicesReady = false;
+
   @override
   void initState() {
     super.initState();
@@ -120,14 +124,14 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
     // Load saved theme
     _currentTheme = settingsService.theme;
     
-    // Listen to recent files changes
-    recentFilesService.addListener(_onRecentFilesChanged);
-    
     // Listen to locale changes for UI rebuild
     localization.addListener(_onLocaleChanged);
     
     // Set up file receiving handler
     _setupFileReceiver();
+
+    // Init filesystem-dependent services after UI is visible
+    _initDeferredServices();
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -177,6 +181,20 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
     }
 
     _initWebView();
+  }
+
+  /// Initialize filesystem-dependent services after UI is visible
+  /// (cacheStorage / recentFilesService use getApplicationDocumentsDirectory
+  ///  which may trigger a macOS permission dialog on first launch)
+  Future<void> _initDeferredServices() async {
+    await cacheStorage.init();
+    await recentFilesService.init();
+    recentFilesService.addListener(_onRecentFilesChanged);
+    if (mounted) {
+      setState(() {
+        _servicesReady = true;
+      });
+    }
   }
   
   /// Set up platform channel to receive files from native side
