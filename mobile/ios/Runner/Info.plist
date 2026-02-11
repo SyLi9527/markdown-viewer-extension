@@ -57,7 +57,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>com.example.markdownViewerMobile</string>
+			<string>com.xicilion.markdownviewer</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>markdown-viewer</string>

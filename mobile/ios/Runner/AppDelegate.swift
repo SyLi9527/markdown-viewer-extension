@@ -38,7 +38,7 @@ import UIKit
   
   private func setupMethodChannel(with messenger: FlutterBinaryMessenger) {
     fileChannel = FlutterMethodChannel(
-      name: "com.example.markdown_viewer_mobile/file",
+      name: "com.xicilion.markdownviewer/file",
       binaryMessenger: messenger
     )
     

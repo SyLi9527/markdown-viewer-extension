@@ -111,7 +111,7 @@ class _MarkdownViewerHomeState extends State<MarkdownViewerHome> {
   String _exportPhase = 'processing';
   
   // Platform channel for receiving files from Android/iOS
-  static const _fileChannel = MethodChannel('com.example.markdown_viewer_mobile/file');
+  static const _fileChannel = MethodChannel('com.xicilion.markdownviewer/file');
 
   @override
   void initState() {

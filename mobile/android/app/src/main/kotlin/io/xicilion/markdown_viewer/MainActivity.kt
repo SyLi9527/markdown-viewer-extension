@@ -10,7 +10,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 class MainActivity : FlutterActivity() {
-    private val CHANNEL = "com.example.markdown_viewer_mobile/file"
+    private val CHANNEL = "com.xicilion.markdownviewer/file"
     private var pendingFileContent: String? = null
     private var pendingFileName: String? = null
     private var methodChannel: MethodChannel? = null
