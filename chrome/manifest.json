@@ -65,6 +65,7 @@
         "*.woff",
         "*.ttf",
         "_locales/*/messages.json",
+        "_locales/registry.json",
         "themes/font-config.json",
         "themes/registry.json",
         "themes/presets/*.json",
