@@ -14,11 +14,13 @@ import {
   Table,
   convertInchesToTwip,
   TableOfContents,
+} from 'docx';
+import type {
   ParagraphChild,
-  type IStylesOptions,
-  type IBaseParagraphStyleOptions,
-  type IDocumentDefaultsOptions,
-  type IParagraphStylePropertiesOptions,
+  IStylesOptions,
+  IBaseParagraphStyleOptions,
+  IDocumentDefaultsOptions,
+  IParagraphStylePropertiesOptions,
 } from 'docx';
 import { mathJaxReady, convertLatex2Math } from './docx-math-converter';
 import { unified, type Processor } from 'unified';

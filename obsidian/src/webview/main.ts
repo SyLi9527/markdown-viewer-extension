@@ -534,15 +534,13 @@ async function loadThemesForSettings(): Promise<void> {
 
 async function loadLocalesForSettings(): Promise<void> {
   if (!settingsPanel) return;
-  try {
-    const registryJson = await platform.resource.fetch('_locales/registry.json');
-    const registry = JSON.parse(registryJson) as {
-      locales: Array<{ code: string; name: string }>;
-    };
+
+  const registry = Localization.getLocaleRegistry();
+  if (registry) {
     const locales: LocaleOption[] = registry.locales;
     settingsPanel.setLocales(locales);
-  } catch (error) {
-    console.warn('[Obsidian Viewer] Failed to load locales:', error);
+  } else {
+    console.warn('[Obsidian Viewer] Locale registry not available');
   }
 }
 

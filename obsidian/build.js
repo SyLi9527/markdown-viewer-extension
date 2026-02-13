@@ -160,6 +160,20 @@ function copyAssets() {
   );
   console.log('  • manifest.json');
 
+  // LICENSE
+  const licenseSrc = path.join(projectRoot, 'LICENSE');
+  if (fs.existsSync(licenseSrc)) {
+    fs.copyFileSync(licenseSrc, path.join(outdir, 'LICENSE'));
+    console.log('  • LICENSE');
+  }
+
+  // README.md
+  const readmeSrc = path.join(projectRoot, 'README.md');
+  if (fs.existsSync(readmeSrc)) {
+    fs.copyFileSync(readmeSrc, path.join(outdir, 'README.md'));
+    console.log('  • README.md');
+  }
+
   // Locales
   copyDirectory(
     path.join(projectRoot, 'src', '_locales'),

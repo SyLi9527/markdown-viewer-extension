@@ -4,12 +4,10 @@
  */
 
 import Localization, { DEFAULT_SETTING_LOCALE } from '../../utils/localization';
+import type { LocaleInfo, LocaleRegistry } from '../../utils/localization';
 import { translate, applyI18nText, getUiLocale } from './i18n-helpers';
 import { storageGet, storageSet } from './storage-helper';
 import type { EmojiStyle } from '../../types/docx.js';
-import type { TableAlignment } from '../../types/settings';
-import type { CustomThemeBundle, Theme, LayoutScheme, ColorScheme, TableStyleConfig, CodeThemeConfig } from '../../types/index';
-import { mergeCustomTheme, validateCustomThemeInputs } from '../../utils/custom-theme';
 
 // Helper: Send message compatible with both Chrome and Firefox
 function safeSendMessage(message: unknown): void {
@@ -97,10 +95,6 @@ interface ThemeDefinition {
   description_en: string;
   category: string;
   featured: boolean;
-  layoutScheme?: string;
-  colorScheme?: string;
-  tableStyle?: string;
-  codeTheme?: string;
 }
 
 /**
@@ -118,57 +112,6 @@ interface ThemeCategoryInfo {
 interface ThemeRegistry {
   categories: Record<string, ThemeCategoryInfo>;
   themes: ThemeRegistryInfo[];
-}
-
-/**
- * Table style registry info
- */
-interface TableStyleRegistryInfo {
-  id: string;
-  file: string;
-}
-
-/**
- * Table style definition loaded from table style file
- */
-interface TableStyleDefinition {
-  id: string;
-  name: string;
-  name_en: string;
-  description: string;
-  description_en: string;
-}
-
-/**
- * Table style registry structure
- */
-interface TableStyleRegistry {
-  version: string;
-  styles: TableStyleRegistryInfo[];
-}
-
-/**
- * Locale info from registry
- */
-interface LocaleInfo {
-  code: string;
-  name: string;
-}
-
-/**
- * Locale registry structure
- */
-interface LocaleRegistry {
-  version: string;
-  locales: LocaleInfo[];
-}
-
-interface ThemeBundle {
-  theme: Theme;
-  layout: LayoutScheme;
-  color: ColorScheme;
-  table: TableStyleConfig;
-  code: CodeThemeConfig;
 }
 
 /**
@@ -190,6 +133,11 @@ interface SupportedExtensions {
 export type FrontmatterDisplay = 'hide' | 'table' | 'raw';
 
 /**
+ * Table layout mode
+ */
+export type TableLayout = 'left' | 'center';
+
+/**
  * User settings structure
  */
 interface Settings {
@@ -197,18 +145,10 @@ interface Settings {
   preferredLocale: string;
   docxHrDisplay: 'pageBreak' | 'line' | 'hide';
   docxEmojiStyle?: EmojiStyle;
-  docxHeadingScalePct?: number | null;
-  docxHeadingSpacingBeforePt?: number | null;
-  docxHeadingSpacingAfterPt?: number | null;
-  docxHeadingAlignment?: TableAlignment | null;
-  docxCodeFontSizePt?: number | null;
-  docxTableBorderWidthPt?: number | null;
-  docxTableCellPaddingPt?: number | null;
   supportedExtensions?: SupportedExtensions;
   frontmatterDisplay?: FrontmatterDisplay;
   tableMergeEmpty?: boolean;
-  tableAlignment?: TableAlignment;
-  tableStyleOverride?: string;
+  tableLayout?: TableLayout;
 }
 
 /**
@@ -230,6 +170,7 @@ export interface SettingsTabManager {
   resetSettings: () => Promise<void>;
   getSettings: () => Settings;
   loadThemes: () => Promise<void>;
+  setupLanguageSelector: () => Promise<void>;
 }
 
 /**
@@ -247,13 +188,6 @@ export function createSettingsTabManager({
     preferredLocale: DEFAULT_SETTING_LOCALE,
     docxHrDisplay: 'hide',
     docxEmojiStyle: 'system',
-    docxHeadingScalePct: null,
-    docxHeadingSpacingBeforePt: null,
-    docxHeadingSpacingAfterPt: null,
-    docxHeadingAlignment: null,
-    docxCodeFontSizePt: null,
-    docxTableBorderWidthPt: null,
-    docxTableCellPaddingPt: null,
     supportedExtensions: {
       mermaid: true,
       vega: true,
@@ -265,886 +199,21 @@ export function createSettingsTabManager({
     },
     frontmatterDisplay: 'hide',
     tableMergeEmpty: true,
-    tableAlignment: 'center',
-    tableStyleOverride: 'theme',
+    tableLayout: 'center',
   };
   let currentTheme = 'default';
   let themes: ThemeDefinition[] = [];
   let registry: ThemeRegistry | null = null;
-  let tableStyleRegistry: TableStyleRegistry | null = null;
-  let tableStyles: TableStyleDefinition[] = [];
   let localeRegistry: LocaleRegistry | null = null;
-  let customThemeBundle: CustomThemeBundle | null = null;
-  let fontOptions: Array<{ id: string; label: string }> = [];
-  let codeThemeOptions: Array<{ id: string; label: string }> = [];
-  const themeBundleCache = new Map<string, ThemeBundle>();
 
-  function parseOptionalNumber(value: unknown, min?: number): number | null {
-    if (value === null || value === undefined || value === '') {
-      return null;
+  /**
+   * Ensure locale registry is available (from Localization cache).
+   */
+  function ensureLocaleRegistry(): LocaleRegistry | null {
+    if (!localeRegistry) {
+      localeRegistry = Localization.getLocaleRegistry();
     }
-    const parsed = typeof value === 'number' ? value : Number(value);
-    if (!Number.isFinite(parsed)) {
-      return null;
-    }
-    if (typeof min === 'number' && parsed < min) {
-      return null;
-    }
-    return parsed;
-  }
-
-  function setNumberInputValue(el: HTMLInputElement, value: number | null | undefined): void {
-    el.value = (typeof value === 'number' && Number.isFinite(value)) ? String(value) : '';
-  }
-
-  function normalizeTableStyleOverride(value: unknown): string {
-    if (typeof value !== 'string') {
-      return 'theme';
-    }
-    const trimmed = value.trim();
-    return trimmed ? trimmed : 'theme';
-  }
-
-  function normalizeHexColor(value: string | null | undefined): string | undefined {
-    if (!value) {
-      return undefined;
-    }
-    const trimmed = value.trim();
-    if (!trimmed) {
-      return undefined;
-    }
-    return trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
-  }
-
-  function stripPt(value: string | undefined): number | null {
-    if (!value) {
-      return null;
-    }
-    const trimmed = value.trim();
-    if (!trimmed) {
-      return null;
-    }
-    const numeric = trimmed.endsWith('pt') ? trimmed.slice(0, -2) : trimmed;
-    const parsed = Number(numeric);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-
-  function toPtString(value: number | null | undefined): string | undefined {
-    if (value === null || value === undefined || Number.isNaN(value)) {
-      return undefined;
-    }
-    return `${value}pt`;
-  }
-
-  function getInputValue(id: string): string {
-    const el = document.getElementById(id) as HTMLInputElement | null;
-    return el?.value ?? '';
-  }
-
-  function getNumberValue(id: string): number | null {
-    const value = getInputValue(id);
-    if (!value) {
-      return null;
-    }
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-
-  function getSelectValue(id: string): string {
-    const el = document.getElementById(id) as HTMLSelectElement | null;
-    return el?.value ?? '';
-  }
-
-  function getCheckboxValue(id: string): boolean {
-    const el = document.getElementById(id) as HTMLInputElement | null;
-    return Boolean(el?.checked);
-  }
-
-  function setInputValueById(id: string, value: string | null | undefined): void {
-    const el = document.getElementById(id) as HTMLInputElement | null;
-    if (el) {
-      el.value = value ?? '';
-    }
-  }
-
-  function setNumberValueById(id: string, value: number | null | undefined): void {
-    const el = document.getElementById(id) as HTMLInputElement | null;
-    if (el) {
-      el.value = (typeof value === 'number' && Number.isFinite(value)) ? String(value) : '';
-    }
-  }
-
-  function setSelectValueById(id: string, value: string | null | undefined): void {
-    const el = document.getElementById(id) as HTMLSelectElement | null;
-    if (el && typeof value === 'string') {
-      el.value = value;
-    }
-  }
-
-  function setCheckboxValueById(id: string, value: boolean | null | undefined): void {
-    const el = document.getElementById(id) as HTMLInputElement | null;
-    if (el) {
-      el.checked = Boolean(value);
-    }
-  }
-
-  const headingLevels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
-  const customThemeFieldLabelKeys: Record<string, string> = {
-    textPrimary: 'settings_custom_theme_label_text_primary',
-    textSecondary: 'settings_custom_theme_label_text_secondary',
-    textMuted: 'settings_custom_theme_label_text_muted',
-    link: 'settings_custom_theme_label_link',
-    linkHover: 'settings_custom_theme_label_link_hover',
-    codeBg: 'settings_custom_theme_label_code_background',
-    blockquoteBorder: 'settings_custom_theme_label_blockquote_border',
-    tableBorder: 'settings_custom_theme_label_table_border',
-    tableHeaderBg: 'settings_custom_theme_label_table_header_background',
-    tableHeaderText: 'settings_custom_theme_label_table_header_text',
-    tableZebraEven: 'settings_custom_theme_label_table_zebra_even',
-    tableZebraOdd: 'settings_custom_theme_label_table_zebra_odd',
-    headingH1: 'settings_custom_theme_label_h1_color',
-    headingH2: 'settings_custom_theme_label_h2_color',
-    headingH3: 'settings_custom_theme_label_h3_color',
-    headingH4: 'settings_custom_theme_label_h4_color',
-    headingH5: 'settings_custom_theme_label_h5_color',
-    headingH6: 'settings_custom_theme_label_h6_color',
-    codeForeground: 'settings_custom_theme_label_code_foreground',
-    codeKeyword: 'settings_custom_theme_label_code_token_keyword',
-    codeString: 'settings_custom_theme_label_code_token_string',
-    codeComment: 'settings_custom_theme_label_code_token_comment',
-    codeNumber: 'settings_custom_theme_label_code_token_number',
-    codeTitle: 'settings_custom_theme_label_code_token_title',
-    codeAttr: 'settings_custom_theme_label_code_token_attr',
-    codeBuiltIn: 'settings_custom_theme_label_code_token_built_in',
-    codeLiteral: 'settings_custom_theme_label_code_token_literal',
-    codeType: 'settings_custom_theme_label_code_token_type',
-    codeVariable: 'settings_custom_theme_label_code_token_variable',
-    codeProperty: 'settings_custom_theme_label_code_token_property',
-    bodyFontSize: 'settings_custom_theme_label_body_font_size',
-    headingH1Size: 'settings_custom_theme_label_h1_size',
-    headingH2Size: 'settings_custom_theme_label_h2_size',
-    headingH3Size: 'settings_custom_theme_label_h3_size',
-    headingH4Size: 'settings_custom_theme_label_h4_size',
-    headingH5Size: 'settings_custom_theme_label_h5_size',
-    headingH6Size: 'settings_custom_theme_label_h6_size',
-    headingH1Before: 'settings_custom_theme_label_h1_spacing_before',
-    headingH1After: 'settings_custom_theme_label_h1_spacing_after',
-    headingH2Before: 'settings_custom_theme_label_h2_spacing_before',
-    headingH2After: 'settings_custom_theme_label_h2_spacing_after',
-    headingH3Before: 'settings_custom_theme_label_h3_spacing_before',
-    headingH3After: 'settings_custom_theme_label_h3_spacing_after',
-    headingH4Before: 'settings_custom_theme_label_h4_spacing_before',
-    headingH4After: 'settings_custom_theme_label_h4_spacing_after',
-    headingH5Before: 'settings_custom_theme_label_h5_spacing_before',
-    headingH5After: 'settings_custom_theme_label_h5_spacing_after',
-    headingH6Before: 'settings_custom_theme_label_h6_spacing_before',
-    headingH6After: 'settings_custom_theme_label_h6_spacing_after',
-    codeFontSize: 'settings_custom_theme_label_code_font_size',
-    blockParagraphAfter: 'settings_custom_theme_label_paragraph_spacing_after',
-    blockListAfter: 'settings_custom_theme_label_list_spacing_after',
-    blockListItemAfter: 'settings_custom_theme_label_list_item_spacing_after',
-    blockBlockquoteBefore: 'settings_custom_theme_label_blockquote_spacing_before',
-    blockBlockquoteAfter: 'settings_custom_theme_label_blockquote_spacing_after',
-    blockBlockquotePadV: 'settings_custom_theme_label_blockquote_padding_vertical',
-    blockBlockquotePadH: 'settings_custom_theme_label_blockquote_padding_horizontal',
-    blockCodeAfter: 'settings_custom_theme_label_code_block_spacing_after',
-    blockTableAfter: 'settings_custom_theme_label_table_spacing_after',
-    blockHrBefore: 'settings_custom_theme_label_hr_spacing_before',
-    blockHrAfter: 'settings_custom_theme_label_hr_spacing_after',
-    tableBorderWidth: 'settings_custom_theme_label_table_border_width',
-    tableHeaderTopWidth: 'settings_custom_theme_label_table_header_top_border_width',
-    tableHeaderBottomWidth: 'settings_custom_theme_label_table_header_bottom_border_width',
-    tableRowBottomWidth: 'settings_custom_theme_label_table_row_bottom_border_width',
-    tableLastRowBottomWidth: 'settings_custom_theme_label_table_last_row_border_width',
-    tableCellPadding: 'settings_custom_theme_label_table_cell_padding',
-    tableHeaderFontSize: 'settings_custom_theme_label_table_header_font_size'
-  };
-
-  const codeTokenFields = [
-    { id: 'custom-code-token-keyword', token: 'keyword' },
-    { id: 'custom-code-token-string', token: 'string' },
-    { id: 'custom-code-token-comment', token: 'comment' },
-    { id: 'custom-code-token-number', token: 'number' },
-    { id: 'custom-code-token-title', token: 'title' },
-    { id: 'custom-code-token-attr', token: 'attr' },
-    { id: 'custom-code-token-built-in', token: 'built_in' },
-    { id: 'custom-code-token-literal', token: 'literal' },
-    { id: 'custom-code-token-type', token: 'type' },
-    { id: 'custom-code-token-variable', token: 'variable' },
-    { id: 'custom-code-token-property', token: 'property' }
-  ];
-
-  async function loadCustomThemeBundle(): Promise<void> {
-    try {
-      const result = await storageGet(['customThemeBundle']);
-      customThemeBundle = (result.customThemeBundle as CustomThemeBundle) || null;
-    } catch (error) {
-      console.error('Failed to load custom theme bundle:', error);
-      customThemeBundle = null;
-    }
-  }
-
-  async function fetchJson<T>(path: string): Promise<T> {
-    const response = await fetch(chrome.runtime.getURL(path));
-    return await response.json() as T;
-  }
-
-  async function fetchThemeBundle(themeId: string): Promise<ThemeBundle> {
-    const cached = themeBundleCache.get(themeId);
-    if (cached) {
-      return cached;
-    }
-    const theme = await fetchJson<Theme>(`themes/presets/${themeId}.json`);
-    const [layout, color, table, code] = await Promise.all([
-      fetchJson<LayoutScheme>(`themes/layout-schemes/${theme.layoutScheme}.json`),
-      fetchJson<ColorScheme>(`themes/color-schemes/${theme.colorScheme}.json`),
-      fetchJson<TableStyleConfig>(`themes/table-styles/${theme.tableStyle}.json`),
-      fetchJson<CodeThemeConfig>(`themes/code-themes/${theme.codeTheme}.json`)
-    ]);
-    const bundle = { theme, layout, color, table, code };
-    themeBundleCache.set(themeId, bundle);
-    return bundle;
-  }
-
-  async function loadFontOptions(): Promise<void> {
-    if (fontOptions.length > 0) {
-      return;
-    }
-    try {
-      const fontConfig = await fetchJson<{ fonts: Record<string, { displayName?: string }> }>('themes/font-config.json');
-      fontOptions = Object.keys(fontConfig.fonts).map((key) => ({
-        id: key,
-        label: fontConfig.fonts[key].displayName || key
-      }));
-    } catch (error) {
-      console.error('Failed to load font config:', error);
-      fontOptions = [];
-    }
-  }
-
-  function populateFontSelect(selectEl: HTMLSelectElement, allowEmpty: boolean): void {
-    selectEl.innerHTML = '';
-    if (allowEmpty) {
-      const emptyOption = document.createElement('option');
-      emptyOption.value = '';
-      emptyOption.textContent = '--';
-      selectEl.appendChild(emptyOption);
-    }
-    fontOptions.forEach((font) => {
-      const option = document.createElement('option');
-      option.value = font.id;
-      option.textContent = font.label;
-      selectEl.appendChild(option);
-    });
-  }
-
-  function populateFontSelects(): void {
-    const selectIds = [
-      { id: 'custom-font-body', allowEmpty: false },
-      { id: 'custom-font-headings', allowEmpty: true },
-      { id: 'custom-font-code', allowEmpty: false },
-      { id: 'custom-font-h1', allowEmpty: true },
-      { id: 'custom-font-h2', allowEmpty: true },
-      { id: 'custom-font-h3', allowEmpty: true },
-      { id: 'custom-font-h4', allowEmpty: true },
-      { id: 'custom-font-h5', allowEmpty: true },
-      { id: 'custom-font-h6', allowEmpty: true }
-    ];
-    selectIds.forEach(({ id, allowEmpty }) => {
-      const el = document.getElementById(id) as HTMLSelectElement | null;
-      if (el) {
-        populateFontSelect(el, allowEmpty);
-      }
-    });
-  }
-
-  async function loadCodeThemeOptions(): Promise<void> {
-    if (codeThemeOptions.length > 0) {
-      return;
-    }
-    const ids = Array.from(
-      new Set(themes.map((theme) => theme.codeTheme).filter((id): id is string => Boolean(id)))
-    );
-    const options: Array<{ id: string; label: string }> = [];
-    for (const id of ids) {
-      try {
-        const codeTheme = await fetchJson<CodeThemeConfig & { name?: string }>(`themes/code-themes/${id}.json`);
-        options.push({ id, label: codeTheme.name || id });
-      } catch (error) {
-        options.push({ id, label: id });
-      }
-    }
-    codeThemeOptions = options;
-  }
-
-  function populateCodeThemeSelect(): void {
-    const select = document.getElementById('custom-code-theme') as HTMLSelectElement | null;
-    if (!select) {
-      return;
-    }
-    select.innerHTML = '';
-    codeThemeOptions.forEach((theme) => {
-      const option = document.createElement('option');
-      option.value = theme.id;
-      option.textContent = theme.label;
-      select.appendChild(option);
-    });
-  }
-
-  function populateCustomThemeBaseSelect(): void {
-    const select = document.getElementById('custom-theme-base') as HTMLSelectElement | null;
-    if (!select) {
-      return;
-    }
-    select.innerHTML = '';
-    const locale = getUiLocale();
-    const useEnglish = !locale.startsWith('zh');
-    themes.forEach((theme) => {
-      if (theme.id === 'custom') return;
-      const option = document.createElement('option');
-      option.value = theme.id;
-      option.textContent = useEnglish ? theme.name_en : theme.name;
-      select.appendChild(option);
-    });
-  }
-
-  function setupAdvancedToggles(): void {
-    document.querySelectorAll<HTMLButtonElement>('.custom-theme-advanced-toggle').forEach((button) => {
-      if (button.dataset.listenerAdded) {
-        return;
-      }
-      button.dataset.listenerAdded = 'true';
-      button.addEventListener('click', () => {
-        const targetId = button.dataset.target;
-        if (!targetId) return;
-        const target = document.getElementById(targetId);
-        if (target) {
-          target.classList.toggle('is-open');
-        }
-      });
-    });
-  }
-
-  function setCustomThemeError(message: string): void {
-    const errorEl = document.getElementById('custom-theme-error');
-    if (errorEl) {
-      errorEl.textContent = message;
-    }
-  }
-
-  function formatCustomThemeErrors(errors: string[]): string[] {
-    const invalidColorMatch = /^(.+) must be a valid hex color$/;
-    const invalidPtMatch = /^(.+) must be a valid pt value$/;
-    return errors.map((error) => {
-      const colorMatch = error.match(invalidColorMatch);
-      if (colorMatch) {
-        const labelKey = customThemeFieldLabelKeys[colorMatch[1]];
-        const label = labelKey ? translate(labelKey) : colorMatch[1];
-        return translate('settings_custom_theme_error_invalid_color', [label]);
-      }
-      const ptMatch = error.match(invalidPtMatch);
-      if (ptMatch) {
-        const labelKey = customThemeFieldLabelKeys[ptMatch[1]];
-        const label = labelKey ? translate(labelKey) : ptMatch[1];
-        return translate('settings_custom_theme_error_invalid_pt', [label]);
-      }
-      if (error.includes('lineHeight')) {
-        const label = translate('settings_custom_theme_label_body_line_height');
-        return translate('settings_custom_theme_error_line_height', [label]);
-      }
-      return error;
-    });
-  }
-
-  function applyThemeBundleToForm(bundle: ThemeBundle): void {
-    const { theme, layout, color, table, code } = bundle;
-
-    setSelectValueById('custom-font-body', theme.fontScheme.body.fontFamily);
-    setSelectValueById('custom-font-headings', theme.fontScheme.headings?.fontFamily || '');
-    setSelectValueById('custom-font-code', theme.fontScheme.code.fontFamily);
-    headingLevels.forEach((level) => {
-      const heading = theme.fontScheme.headings?.[level] as { fontFamily?: string } | undefined;
-      setSelectValueById(`custom-font-${level}`, heading?.fontFamily || '');
-    });
-
-    setNumberValueById('custom-body-font-size', stripPt(layout.body.fontSize));
-    setNumberValueById('custom-body-line-height', layout.body.lineHeight);
-    setNumberValueById('custom-heading-h1-size', stripPt(layout.headings.h1.fontSize));
-    setNumberValueById('custom-heading-h2-size', stripPt(layout.headings.h2.fontSize));
-    headingLevels.forEach((level) => {
-      const heading = layout.headings[level];
-      setNumberValueById(`custom-heading-${level}-size`, stripPt(heading.fontSize));
-      setNumberValueById(`custom-heading-${level}-before`, stripPt(heading.spacingBefore));
-      setNumberValueById(`custom-heading-${level}-after`, stripPt(heading.spacingAfter));
-      setSelectValueById(`custom-heading-${level}-align`, heading.alignment || 'left');
-    });
-    setNumberValueById('custom-code-font-size', stripPt(layout.code.fontSize));
-    setNumberValueById('custom-block-paragraph-after', stripPt(layout.blocks.paragraph?.spacingAfter));
-    setNumberValueById('custom-block-list-after', stripPt(layout.blocks.list?.spacingAfter));
-    setNumberValueById('custom-block-list-item-after', stripPt(layout.blocks.listItem?.spacingAfter));
-    setNumberValueById('custom-block-blockquote-before', stripPt(layout.blocks.blockquote?.spacingBefore));
-    setNumberValueById('custom-block-blockquote-after', stripPt(layout.blocks.blockquote?.spacingAfter));
-    setNumberValueById('custom-block-blockquote-pad-v', stripPt(layout.blocks.blockquote?.paddingVertical));
-    setNumberValueById('custom-block-blockquote-pad-h', stripPt(layout.blocks.blockquote?.paddingHorizontal));
-    setNumberValueById('custom-block-code-after', stripPt(layout.blocks.codeBlock?.spacingAfter));
-    setNumberValueById('custom-block-table-after', stripPt(layout.blocks.table?.spacingAfter));
-    setNumberValueById('custom-block-hr-before', stripPt(layout.blocks.horizontalRule?.spacingBefore));
-    setNumberValueById('custom-block-hr-after', stripPt(layout.blocks.horizontalRule?.spacingAfter));
-
-    setInputValueById('custom-color-text-primary', color.text.primary);
-    setInputValueById('custom-color-text-secondary', color.text.secondary);
-    setInputValueById('custom-color-text-muted', color.text.muted);
-    setInputValueById('custom-color-link', color.accent.link);
-    setInputValueById('custom-color-link-hover', color.accent.linkHover);
-    setInputValueById('custom-color-code-bg', color.background.code);
-    setInputValueById('custom-color-blockquote-border', color.blockquote.border);
-    setInputValueById('custom-color-table-border', color.table.border);
-    setInputValueById('custom-color-table-header-bg', color.table.headerBackground);
-    setInputValueById('custom-color-table-header-text', color.table.headerText);
-    setInputValueById('custom-color-table-zebra-even', color.table.zebraEven);
-    setInputValueById('custom-color-table-zebra-odd', color.table.zebraOdd);
-    headingLevels.forEach((level) => {
-      setInputValueById(`custom-color-heading-${level}`, color.headings?.[level] || '');
-    });
-
-    setNumberValueById('custom-table-border-width', stripPt(table.border?.all?.width));
-    setSelectValueById('custom-table-border-style', table.border?.all?.style || 'single');
-    setCheckboxValueById('custom-table-header-bold', table.header?.fontWeight === 'bold');
-    setNumberValueById('custom-table-cell-padding', stripPt(table.cell.padding));
-    setCheckboxValueById('custom-table-zebra-enabled', Boolean(table.zebra?.enabled));
-    setNumberValueById('custom-table-header-font-size', stripPt(table.header?.fontSize));
-    setNumberValueById('custom-table-header-top-width', stripPt(table.border?.headerTop?.width));
-    setSelectValueById('custom-table-header-top-style', table.border?.headerTop?.style || 'single');
-    setNumberValueById('custom-table-header-bottom-width', stripPt(table.border?.headerBottom?.width));
-    setSelectValueById('custom-table-header-bottom-style', table.border?.headerBottom?.style || 'single');
-    setNumberValueById('custom-table-row-bottom-width', stripPt(table.border?.rowBottom?.width));
-    setSelectValueById('custom-table-row-bottom-style', table.border?.rowBottom?.style || 'single');
-    setNumberValueById('custom-table-last-row-bottom-width', stripPt(table.border?.lastRowBottom?.width));
-    setSelectValueById('custom-table-last-row-bottom-style', table.border?.lastRowBottom?.style || 'single');
-
-    const codeThemeId = (code as CodeThemeConfig & { id?: string }).id;
-    setSelectValueById('custom-code-theme', codeThemeId || '');
-    setInputValueById('custom-code-foreground', code.foreground || '');
-    codeTokenFields.forEach(({ id, token }) => {
-      setInputValueById(id, code.colors?.[token] || '');
-    });
-
-    setSelectValueById('custom-diagram-style', theme.diagramStyle || 'normal');
-  }
-
-  async function loadCustomThemeForm(bundle?: CustomThemeBundle | null): Promise<void> {
-    const basePresetId = bundle?.basePresetId || currentTheme || 'default';
-    setSelectValueById('custom-theme-base', basePresetId);
-    const baseBundle = await fetchThemeBundle(basePresetId);
-    const resolved = bundle
-      ? mergeCustomTheme(baseBundle.theme, baseBundle.layout, baseBundle.color, baseBundle.table, baseBundle.code, bundle)
-      : baseBundle;
-    applyThemeBundleToForm(resolved);
-  }
-
-  function getHeadingConfigFromForm(level: typeof headingLevels[number]): Partial<LayoutScheme['headings'][typeof level]> | null {
-    const size = getNumberValue(`custom-heading-${level}-size`);
-    const before = getNumberValue(`custom-heading-${level}-before`);
-    const after = getNumberValue(`custom-heading-${level}-after`);
-    const align = getSelectValue(`custom-heading-${level}-align`);
-    const heading: Partial<LayoutScheme['headings'][typeof level]> = {};
-    if (size !== null) heading.fontSize = toPtString(size);
-    if (before !== null) heading.spacingBefore = toPtString(before);
-    if (after !== null) heading.spacingAfter = toPtString(after);
-    if (align) heading.alignment = align as 'left' | 'center' | 'right';
-    return Object.keys(heading).length > 0 ? heading : null;
-  }
-
-  function getBlockConfigFromForm(prefix: string): Partial<LayoutScheme['blocks'][keyof LayoutScheme['blocks']]> | null {
-    const before = getNumberValue(`${prefix}-before`);
-    const after = getNumberValue(`${prefix}-after`);
-    const padV = getNumberValue(`${prefix}-pad-v`);
-    const padH = getNumberValue(`${prefix}-pad-h`);
-    const block: Partial<LayoutScheme['blocks'][keyof LayoutScheme['blocks']]> = {};
-    if (before !== null) block.spacingBefore = toPtString(before);
-    if (after !== null) block.spacingAfter = toPtString(after);
-    if (padV !== null) block.paddingVertical = toPtString(padV);
-    if (padH !== null) block.paddingHorizontal = toPtString(padH);
-    return Object.keys(block).length > 0 ? block : null;
-  }
-
-  async function buildCustomThemeBundleFromForm(): Promise<CustomThemeBundle | null> {
-    const basePresetId = getSelectValue('custom-theme-base') || 'default';
-
-    const colors = {
-      textPrimary: getInputValue('custom-color-text-primary'),
-      textSecondary: getInputValue('custom-color-text-secondary'),
-      textMuted: getInputValue('custom-color-text-muted'),
-      link: getInputValue('custom-color-link'),
-      linkHover: getInputValue('custom-color-link-hover'),
-      codeBg: getInputValue('custom-color-code-bg'),
-      blockquoteBorder: getInputValue('custom-color-blockquote-border'),
-      tableBorder: getInputValue('custom-color-table-border'),
-      tableHeaderBg: getInputValue('custom-color-table-header-bg'),
-      tableHeaderText: getInputValue('custom-color-table-header-text'),
-      tableZebraEven: getInputValue('custom-color-table-zebra-even'),
-      tableZebraOdd: getInputValue('custom-color-table-zebra-odd'),
-      headingH1: getInputValue('custom-color-heading-h1'),
-      headingH2: getInputValue('custom-color-heading-h2'),
-      headingH3: getInputValue('custom-color-heading-h3'),
-      headingH4: getInputValue('custom-color-heading-h4'),
-      headingH5: getInputValue('custom-color-heading-h5'),
-      headingH6: getInputValue('custom-color-heading-h6'),
-      codeForeground: getInputValue('custom-code-foreground'),
-      codeKeyword: getInputValue('custom-code-token-keyword'),
-      codeString: getInputValue('custom-code-token-string'),
-      codeComment: getInputValue('custom-code-token-comment'),
-      codeNumber: getInputValue('custom-code-token-number'),
-      codeTitle: getInputValue('custom-code-token-title'),
-      codeAttr: getInputValue('custom-code-token-attr'),
-      codeBuiltIn: getInputValue('custom-code-token-built-in'),
-      codeLiteral: getInputValue('custom-code-token-literal'),
-      codeType: getInputValue('custom-code-token-type'),
-      codeVariable: getInputValue('custom-code-token-variable'),
-      codeProperty: getInputValue('custom-code-token-property')
-    };
-
-    const ptValues = {
-      bodyFontSize: getNumberValue('custom-body-font-size'),
-      headingH1Size: getNumberValue('custom-heading-h1-size'),
-      headingH2Size: getNumberValue('custom-heading-h2-size'),
-      headingH3Size: getNumberValue('custom-heading-h3-size'),
-      headingH4Size: getNumberValue('custom-heading-h4-size'),
-      headingH5Size: getNumberValue('custom-heading-h5-size'),
-      headingH6Size: getNumberValue('custom-heading-h6-size'),
-      headingH1Before: getNumberValue('custom-heading-h1-before'),
-      headingH1After: getNumberValue('custom-heading-h1-after'),
-      headingH2Before: getNumberValue('custom-heading-h2-before'),
-      headingH2After: getNumberValue('custom-heading-h2-after'),
-      headingH3Before: getNumberValue('custom-heading-h3-before'),
-      headingH3After: getNumberValue('custom-heading-h3-after'),
-      headingH4Before: getNumberValue('custom-heading-h4-before'),
-      headingH4After: getNumberValue('custom-heading-h4-after'),
-      headingH5Before: getNumberValue('custom-heading-h5-before'),
-      headingH5After: getNumberValue('custom-heading-h5-after'),
-      headingH6Before: getNumberValue('custom-heading-h6-before'),
-      headingH6After: getNumberValue('custom-heading-h6-after'),
-      codeFontSize: getNumberValue('custom-code-font-size'),
-      blockParagraphAfter: getNumberValue('custom-block-paragraph-after'),
-      blockListAfter: getNumberValue('custom-block-list-after'),
-      blockListItemAfter: getNumberValue('custom-block-list-item-after'),
-      blockBlockquoteBefore: getNumberValue('custom-block-blockquote-before'),
-      blockBlockquoteAfter: getNumberValue('custom-block-blockquote-after'),
-      blockBlockquotePadV: getNumberValue('custom-block-blockquote-pad-v'),
-      blockBlockquotePadH: getNumberValue('custom-block-blockquote-pad-h'),
-      blockCodeAfter: getNumberValue('custom-block-code-after'),
-      blockTableAfter: getNumberValue('custom-block-table-after'),
-      blockHrBefore: getNumberValue('custom-block-hr-before'),
-      blockHrAfter: getNumberValue('custom-block-hr-after'),
-      tableBorderWidth: getNumberValue('custom-table-border-width'),
-      tableHeaderTopWidth: getNumberValue('custom-table-header-top-width'),
-      tableHeaderBottomWidth: getNumberValue('custom-table-header-bottom-width'),
-      tableRowBottomWidth: getNumberValue('custom-table-row-bottom-width'),
-      tableLastRowBottomWidth: getNumberValue('custom-table-last-row-bottom-width'),
-      tableCellPadding: getNumberValue('custom-table-cell-padding'),
-      tableHeaderFontSize: getNumberValue('custom-table-header-font-size')
-    };
-
-    const validation = validateCustomThemeInputs({
-      colors,
-      ptValues,
-      lineHeight: getNumberValue('custom-body-line-height')
-    });
-
-    if (!validation.ok) {
-      setCustomThemeError(formatCustomThemeErrors(validation.errors).join('; '));
-      return null;
-    }
-
-    setCustomThemeError('');
-
-    const fontScheme: Theme['fontScheme'] = { body: { fontFamily: getSelectValue('custom-font-body') }, headings: {}, code: { fontFamily: getSelectValue('custom-font-code') } };
-    const headingsFont = getSelectValue('custom-font-headings');
-    if (headingsFont) {
-      fontScheme.headings.fontFamily = headingsFont;
-    }
-    headingLevels.forEach((level) => {
-      const font = getSelectValue(`custom-font-${level}`);
-      if (font) {
-        fontScheme.headings[level] = { fontFamily: font };
-      }
-    });
-
-    const layoutScheme: Partial<LayoutScheme> = {};
-    const bodyFontSize = getNumberValue('custom-body-font-size');
-    const bodyLineHeight = getNumberValue('custom-body-line-height');
-    if (bodyFontSize !== null || bodyLineHeight !== null) {
-      const body: Partial<LayoutScheme['body']> = {};
-      if (bodyFontSize !== null) {
-        body.fontSize = toPtString(bodyFontSize);
-      }
-      if (bodyLineHeight !== null) {
-        body.lineHeight = bodyLineHeight;
-      }
-      layoutScheme.body = body as LayoutScheme['body'];
-    }
-    type HeadingOverride = Partial<LayoutScheme['headings'][typeof headingLevels[number]]>;
-    const headings: Partial<Record<typeof headingLevels[number], HeadingOverride>> = {};
-    headingLevels.forEach((level) => {
-      const heading = getHeadingConfigFromForm(level);
-      if (heading) {
-        headings[level] = heading;
-      }
-    });
-    if (Object.keys(headings).length > 0) {
-      layoutScheme.headings = headings as LayoutScheme['headings'];
-    }
-    const codeFontSize = getNumberValue('custom-code-font-size');
-    if (codeFontSize !== null) {
-      layoutScheme.code = { fontSize: toPtString(codeFontSize) || '10pt' };
-    }
-    const blocks: Partial<LayoutScheme['blocks']> = {};
-    const paragraph = getBlockConfigFromForm('custom-block-paragraph');
-    if (paragraph) blocks.paragraph = paragraph;
-    const list = getBlockConfigFromForm('custom-block-list');
-    if (list) blocks.list = list;
-    const listItem = getBlockConfigFromForm('custom-block-list-item');
-    if (listItem) blocks.listItem = listItem;
-    const blockquoteBlock = getBlockConfigFromForm('custom-block-blockquote');
-    if (blockquoteBlock) blocks.blockquote = blockquoteBlock;
-    const codeBlock = getBlockConfigFromForm('custom-block-code');
-    if (codeBlock) blocks.codeBlock = codeBlock;
-    const tableBlock = getBlockConfigFromForm('custom-block-table');
-    if (tableBlock) blocks.table = tableBlock;
-    const hrBlock = getBlockConfigFromForm('custom-block-hr');
-    if (hrBlock) blocks.horizontalRule = hrBlock;
-    if (Object.keys(blocks).length > 0) {
-      layoutScheme.blocks = blocks as LayoutScheme['blocks'];
-    }
-
-    const colorScheme: Partial<ColorScheme> = {};
-    const text: Partial<ColorScheme['text']> = {};
-    const textPrimary = normalizeHexColor(colors.textPrimary);
-    const textSecondary = normalizeHexColor(colors.textSecondary);
-    const textMuted = normalizeHexColor(colors.textMuted);
-    if (textPrimary) text.primary = textPrimary;
-    if (textSecondary) text.secondary = textSecondary;
-    if (textMuted) text.muted = textMuted;
-    if (Object.keys(text).length > 0) {
-      colorScheme.text = text as ColorScheme['text'];
-    }
-    const accent: Partial<ColorScheme['accent']> = {};
-    const link = normalizeHexColor(colors.link);
-    const linkHover = normalizeHexColor(colors.linkHover);
-    if (link) accent.link = link;
-    if (linkHover) accent.linkHover = linkHover;
-    if (Object.keys(accent).length > 0) {
-      colorScheme.accent = accent as ColorScheme['accent'];
-    }
-    const background: Partial<ColorScheme['background']> = {};
-    const codeBg = normalizeHexColor(colors.codeBg);
-    if (codeBg) background.code = codeBg;
-    if (Object.keys(background).length > 0) {
-      colorScheme.background = background as ColorScheme['background'];
-    }
-    const blockquoteColor: Partial<ColorScheme['blockquote']> = {};
-    const blockquoteBorder = normalizeHexColor(colors.blockquoteBorder);
-    if (blockquoteBorder) blockquoteColor.border = blockquoteBorder;
-    if (Object.keys(blockquoteColor).length > 0) {
-      colorScheme.blockquote = blockquoteColor as ColorScheme['blockquote'];
-    }
-    const tableColors: Partial<ColorScheme['table']> = {};
-    const tableBorder = normalizeHexColor(colors.tableBorder);
-    const headerBg = normalizeHexColor(colors.tableHeaderBg);
-    const headerText = normalizeHexColor(colors.tableHeaderText);
-    const zebraEven = normalizeHexColor(colors.tableZebraEven);
-    const zebraOdd = normalizeHexColor(colors.tableZebraOdd);
-    if (tableBorder) tableColors.border = tableBorder;
-    if (headerBg) tableColors.headerBackground = headerBg;
-    if (headerText) tableColors.headerText = headerText;
-    if (zebraEven) tableColors.zebraEven = zebraEven;
-    if (zebraOdd) tableColors.zebraOdd = zebraOdd;
-    if (Object.keys(tableColors).length > 0) {
-      colorScheme.table = tableColors as ColorScheme['table'];
-    }
-    const headingColors: Partial<ColorScheme['headings']> = {};
-    const headingColorMap: Record<string, string | undefined> = {
-      h1: normalizeHexColor(colors.headingH1),
-      h2: normalizeHexColor(colors.headingH2),
-      h3: normalizeHexColor(colors.headingH3),
-      h4: normalizeHexColor(colors.headingH4),
-      h5: normalizeHexColor(colors.headingH5),
-      h6: normalizeHexColor(colors.headingH6)
-    };
-    headingLevels.forEach((level) => {
-      const color = headingColorMap[level];
-      if (color) {
-        headingColors[level] = color;
-      }
-    });
-    if (Object.keys(headingColors).length > 0) {
-      colorScheme.headings = headingColors as ColorScheme['headings'];
-    }
-
-    const tableStyle: Partial<TableStyleConfig> = {};
-    const borderStyle = getSelectValue('custom-table-border-style');
-    const borderWidth = getNumberValue('custom-table-border-width');
-    if (borderWidth !== null) {
-      tableStyle.border = {
-        all: { width: toPtString(borderWidth) || '1pt', style: borderStyle || 'single' }
-      };
-    }
-    const headerBold = getCheckboxValue('custom-table-header-bold');
-    tableStyle.header = { fontWeight: headerBold ? 'bold' : 'normal' };
-    const headerFontSize = getNumberValue('custom-table-header-font-size');
-    if (headerFontSize !== null) {
-      tableStyle.header.fontSize = toPtString(headerFontSize);
-    }
-    const cellPadding = getNumberValue('custom-table-cell-padding');
-    if (cellPadding !== null) {
-      tableStyle.cell = { padding: toPtString(cellPadding) || '8pt' };
-    } else {
-      tableStyle.cell = { padding: '8pt' };
-    }
-    tableStyle.zebra = { enabled: getCheckboxValue('custom-table-zebra-enabled') };
-    const headerTopWidth = getNumberValue('custom-table-header-top-width');
-    const headerTopStyle = getSelectValue('custom-table-header-top-style');
-    if (headerTopWidth !== null) {
-      tableStyle.border = { ...(tableStyle.border || {}), headerTop: { width: toPtString(headerTopWidth) || '1pt', style: headerTopStyle || 'single' } };
-    }
-    const headerBottomWidth = getNumberValue('custom-table-header-bottom-width');
-    const headerBottomStyle = getSelectValue('custom-table-header-bottom-style');
-    if (headerBottomWidth !== null) {
-      tableStyle.border = { ...(tableStyle.border || {}), headerBottom: { width: toPtString(headerBottomWidth) || '1pt', style: headerBottomStyle || 'single' } };
-    }
-    const rowBottomWidth = getNumberValue('custom-table-row-bottom-width');
-    const rowBottomStyle = getSelectValue('custom-table-row-bottom-style');
-    if (rowBottomWidth !== null) {
-      tableStyle.border = { ...(tableStyle.border || {}), rowBottom: { width: toPtString(rowBottomWidth) || '1pt', style: rowBottomStyle || 'single' } };
-    }
-    const lastRowWidth = getNumberValue('custom-table-last-row-bottom-width');
-    const lastRowStyle = getSelectValue('custom-table-last-row-bottom-style');
-    if (lastRowWidth !== null) {
-      tableStyle.border = { ...(tableStyle.border || {}), lastRowBottom: { width: toPtString(lastRowWidth) || '1pt', style: lastRowStyle || 'single' } };
-    }
-
-    const codeThemeId = getSelectValue('custom-code-theme');
-    let codeTheme: CodeThemeConfig = { colors: {}, foreground: '' };
-    try {
-      if (codeThemeId) {
-        codeTheme = await fetchJson<CodeThemeConfig>(`themes/code-themes/${codeThemeId}.json`);
-      }
-    } catch (error) {
-      console.warn('Failed to load code theme', codeThemeId, error);
-    }
-    const codeForeground = normalizeHexColor(colors.codeForeground);
-    if (codeForeground) {
-      codeTheme.foreground = codeForeground;
-    }
-    codeTokenFields.forEach(({ token, id }) => {
-      const value = normalizeHexColor(getInputValue(id));
-      if (value) {
-        codeTheme.colors = { ...codeTheme.colors, [token]: value };
-      }
-    });
-
-    const diagramStyle = getSelectValue('custom-diagram-style') as Theme['diagramStyle'];
-
-    return {
-      basePresetId,
-      overrides: {
-        fontScheme,
-        diagramStyle
-      },
-      schemes: {
-        layoutScheme,
-        colorScheme,
-        tableStyle,
-        codeTheme
-      }
-    };
-  }
-
-  async function saveCustomThemeBundle(bundle: CustomThemeBundle, apply: boolean): Promise<void> {
-    await storageSet({ customThemeBundle: bundle });
-    customThemeBundle = bundle;
-    if (apply) {
-      await storageSet({ selectedTheme: 'custom' });
-      currentTheme = 'custom';
-      notifySettingChanged('themeId', 'custom');
-      showMessage(translate('settings_custom_theme_applied'), 'success');
-    } else {
-      showMessage(translate('settings_custom_theme_saved'), 'success');
-    }
-    loadThemes();
-  }
-
-  async function initializeCustomThemeUI(): Promise<void> {
-    const detailsEl = document.getElementById('custom-theme-details');
-    if (!detailsEl) {
-      return;
-    }
-
-    setupAdvancedToggles();
-    await loadFontOptions();
-    populateFontSelects();
-    await loadCodeThemeOptions();
-    populateCodeThemeSelect();
-    populateCustomThemeBaseSelect();
-
-    const baseSelect = document.getElementById('custom-theme-base') as HTMLSelectElement | null;
-    if (baseSelect && !baseSelect.dataset.listenerAdded) {
-      baseSelect.dataset.listenerAdded = 'true';
-      baseSelect.addEventListener('change', async () => {
-        const basePresetId = baseSelect.value || 'default';
-        await loadCustomThemeForm({ basePresetId });
-      });
-    }
-
-    const generateBtn = document.getElementById('custom-theme-generate') as HTMLButtonElement | null;
-    if (generateBtn && !generateBtn.dataset.listenerAdded) {
-      generateBtn.dataset.listenerAdded = 'true';
-      generateBtn.addEventListener('click', async () => {
-        if (currentTheme === 'custom' && customThemeBundle) {
-          await loadCustomThemeForm(customThemeBundle);
-        } else {
-          await loadCustomThemeForm({ basePresetId: currentTheme || 'default' });
-        }
-      });
-    }
-
-    const applyBtn = document.getElementById('custom-theme-apply') as HTMLButtonElement | null;
-    if (applyBtn && !applyBtn.dataset.listenerAdded) {
-      applyBtn.dataset.listenerAdded = 'true';
-      applyBtn.addEventListener('click', async () => {
-        const bundle = await buildCustomThemeBundleFromForm();
-        if (!bundle) return;
-        await saveCustomThemeBundle(bundle, true);
-      });
-    }
-
-    const saveBtn = document.getElementById('custom-theme-save') as HTMLButtonElement | null;
-    if (saveBtn && !saveBtn.dataset.listenerAdded) {
-      saveBtn.dataset.listenerAdded = 'true';
-      saveBtn.addEventListener('click', async () => {
-        const bundle = await buildCustomThemeBundleFromForm();
-        if (!bundle) return;
-        await saveCustomThemeBundle(bundle, false);
-      });
-    }
-
-    const restoreBtn = document.getElementById('custom-theme-restore') as HTMLButtonElement | null;
-    if (restoreBtn && !restoreBtn.dataset.listenerAdded) {
-      restoreBtn.dataset.listenerAdded = 'true';
-      restoreBtn.addEventListener('click', async () => {
-        if (!customThemeBundle) {
-          showMessage(translate('settings_custom_theme_restore_empty'), 'info');
-          return;
-        }
-        await loadCustomThemeForm(customThemeBundle);
-      });
-    }
-
-    if (customThemeBundle) {
-      await loadCustomThemeForm(customThemeBundle);
-    } else {
-      await loadCustomThemeForm({ basePresetId: currentTheme || 'default' });
-    }
+    return localeRegistry;
   }
 
   /**
@@ -1160,30 +229,10 @@ export function createSettingsTabManager({
       if (!settings.docxHrDisplay) {
         settings.docxHrDisplay = 'hide';
       }
-      settings.docxHeadingScalePct = parseOptionalNumber(settings.docxHeadingScalePct, 1);
-      settings.docxHeadingSpacingBeforePt = parseOptionalNumber(settings.docxHeadingSpacingBeforePt, 0);
-      settings.docxHeadingSpacingAfterPt = parseOptionalNumber(settings.docxHeadingSpacingAfterPt, 0);
-      settings.docxHeadingAlignment = (settings.docxHeadingAlignment === 'left' || settings.docxHeadingAlignment === 'center' ||
-        settings.docxHeadingAlignment === 'right' || settings.docxHeadingAlignment === 'justify')
-        ? settings.docxHeadingAlignment
-        : null;
-      settings.docxCodeFontSizePt = parseOptionalNumber(settings.docxCodeFontSizePt, 0);
-      settings.docxTableBorderWidthPt = parseOptionalNumber(settings.docxTableBorderWidthPt, 0);
-      settings.docxTableCellPaddingPt = parseOptionalNumber(settings.docxTableCellPaddingPt, 0);
-      if (settings.tableAlignment !== 'left' && settings.tableAlignment !== 'center' &&
-          settings.tableAlignment !== 'right' && settings.tableAlignment !== 'justify') {
-        settings.tableAlignment = 'center';
-      }
-      settings.tableStyleOverride = normalizeTableStyleOverride(settings.tableStyleOverride);
 
       // Load selected theme
       const themeResult = await storageGet(['selectedTheme']);
       currentTheme = (themeResult.selectedTheme as string) || 'default';
-
-      await loadCustomThemeBundle();
-      if (currentTheme === 'custom' && !customThemeBundle) {
-        currentTheme = 'default';
-      }
     } catch (error) {
       console.error('Failed to load settings:', error);
     }
@@ -1211,49 +260,11 @@ export function createSettingsTabManager({
       }
     }
 
-    // Locale selector
-    const localeSelect = document.getElementById('interface-language') as HTMLSelectElement | null;
-    if (localeSelect) {
-      void loadLocalesIntoSelect(localeSelect);
+    // Language selector button (new compact design)
+    setupLanguageSelector();
 
-      // Add change listener for immediate language change (only once)
-      if (!localeSelect.dataset.listenerAdded) {
-        localeSelect.dataset.listenerAdded = 'true';
-        localeSelect.addEventListener('change', async (event) => {
-          const target = event.target as HTMLSelectElement;
-          const newLocale = target.value;
-          try {
-            settings.preferredLocale = newLocale;
-            await storageSet({
-              markdownViewerSettings: settings
-            });
-
-            await Localization.setPreferredLocale(newLocale);
-            safeSendMessage({
-              id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-              type: 'LOCALE_CHANGED',
-              payload: { locale: newLocale },
-              timestamp: Date.now(),
-              source: 'popup-settings',
-            });
-            applyI18nText();
-
-            // Reload themes and table styles to update names
-            void loadThemes().then(() => initializeCustomThemeUI());
-            void loadTableStyles();
-
-            showMessage(translate('settings_language_changed'), 'success');
-          } catch (error) {
-            console.error('Failed to change language:', error);
-            showMessage(translate('settings_save_failed'), 'error');
-          }
-        });
-      }
-    }
-
-    // Load themes + table styles
-    void loadThemes().then(() => initializeCustomThemeUI());
-    void loadTableStyles();
+    // Load themes
+    loadThemes();
 
     // DOCX: Horizontal rule display
     const docxHrDisplayEl = document.getElementById('docx-hr-display') as HTMLSelectElement | null;
@@ -1278,94 +289,6 @@ export function createSettingsTabManager({
         docxEmojiStyleEl.dataset.listenerAdded = 'true';
         docxEmojiStyleEl.addEventListener('change', async () => {
           settings.docxEmojiStyle = docxEmojiStyleEl.value as EmojiStyle;
-          await saveSettingsToStorage();
-        });
-      }
-    }
-
-    // DOCX: Theme mapping overrides
-    const docxHeadingScaleEl = document.getElementById('docx-heading-scale-pct') as HTMLInputElement | null;
-    if (docxHeadingScaleEl) {
-      setNumberInputValue(docxHeadingScaleEl, settings.docxHeadingScalePct);
-      if (!docxHeadingScaleEl.dataset.listenerAdded) {
-        docxHeadingScaleEl.dataset.listenerAdded = 'true';
-        docxHeadingScaleEl.addEventListener('change', async () => {
-          settings.docxHeadingScalePct = parseOptionalNumber(docxHeadingScaleEl.value, 1);
-          await saveSettingsToStorage();
-        });
-      }
-    }
-
-    const docxHeadingSpacingBeforeEl = document.getElementById('docx-heading-spacing-before-pt') as HTMLInputElement | null;
-    if (docxHeadingSpacingBeforeEl) {
-      setNumberInputValue(docxHeadingSpacingBeforeEl, settings.docxHeadingSpacingBeforePt);
-      if (!docxHeadingSpacingBeforeEl.dataset.listenerAdded) {
-        docxHeadingSpacingBeforeEl.dataset.listenerAdded = 'true';
-        docxHeadingSpacingBeforeEl.addEventListener('change', async () => {
-          settings.docxHeadingSpacingBeforePt = parseOptionalNumber(docxHeadingSpacingBeforeEl.value, 0);
-          await saveSettingsToStorage();
-        });
-      }
-    }
-
-    const docxHeadingSpacingAfterEl = document.getElementById('docx-heading-spacing-after-pt') as HTMLInputElement | null;
-    if (docxHeadingSpacingAfterEl) {
-      setNumberInputValue(docxHeadingSpacingAfterEl, settings.docxHeadingSpacingAfterPt);
-      if (!docxHeadingSpacingAfterEl.dataset.listenerAdded) {
-        docxHeadingSpacingAfterEl.dataset.listenerAdded = 'true';
-        docxHeadingSpacingAfterEl.addEventListener('change', async () => {
-          settings.docxHeadingSpacingAfterPt = parseOptionalNumber(docxHeadingSpacingAfterEl.value, 0);
-          await saveSettingsToStorage();
-        });
-      }
-    }
-
-    const docxHeadingAlignmentEl = document.getElementById('docx-heading-alignment') as HTMLSelectElement | null;
-    if (docxHeadingAlignmentEl) {
-      docxHeadingAlignmentEl.value = settings.docxHeadingAlignment ?? '';
-      if (!docxHeadingAlignmentEl.dataset.listenerAdded) {
-        docxHeadingAlignmentEl.dataset.listenerAdded = 'true';
-        docxHeadingAlignmentEl.addEventListener('change', async () => {
-          const value = docxHeadingAlignmentEl.value;
-          settings.docxHeadingAlignment = (value === 'left' || value === 'center' || value === 'right' || value === 'justify')
-            ? value as TableAlignment
-            : null;
-          await saveSettingsToStorage();
-        });
-      }
-    }
-
-    const docxCodeFontSizeEl = document.getElementById('docx-code-font-size-pt') as HTMLInputElement | null;
-    if (docxCodeFontSizeEl) {
-      setNumberInputValue(docxCodeFontSizeEl, settings.docxCodeFontSizePt);
-      if (!docxCodeFontSizeEl.dataset.listenerAdded) {
-        docxCodeFontSizeEl.dataset.listenerAdded = 'true';
-        docxCodeFontSizeEl.addEventListener('change', async () => {
-          settings.docxCodeFontSizePt = parseOptionalNumber(docxCodeFontSizeEl.value, 0);
-          await saveSettingsToStorage();
-        });
-      }
-    }
-
-    const docxTableBorderWidthEl = document.getElementById('docx-table-border-width-pt') as HTMLInputElement | null;
-    if (docxTableBorderWidthEl) {
-      setNumberInputValue(docxTableBorderWidthEl, settings.docxTableBorderWidthPt);
-      if (!docxTableBorderWidthEl.dataset.listenerAdded) {
-        docxTableBorderWidthEl.dataset.listenerAdded = 'true';
-        docxTableBorderWidthEl.addEventListener('change', async () => {
-          settings.docxTableBorderWidthPt = parseOptionalNumber(docxTableBorderWidthEl.value, 0);
-          await saveSettingsToStorage();
-        });
-      }
-    }
-
-    const docxTableCellPaddingEl = document.getElementById('docx-table-cell-padding-pt') as HTMLInputElement | null;
-    if (docxTableCellPaddingEl) {
-      setNumberInputValue(docxTableCellPaddingEl, settings.docxTableCellPaddingPt);
-      if (!docxTableCellPaddingEl.dataset.listenerAdded) {
-        docxTableCellPaddingEl.dataset.listenerAdded = 'true';
-        docxTableCellPaddingEl.addEventListener('change', async () => {
-          settings.docxTableCellPaddingPt = parseOptionalNumber(docxTableCellPaddingEl.value, 0);
           await saveSettingsToStorage();
         });
       }
@@ -1401,31 +324,17 @@ export function createSettingsTabManager({
       }
     }
 
-    // Table alignment
-    const tableAlignmentEl = document.getElementById('table-alignment') as HTMLSelectElement | null;
-    if (tableAlignmentEl) {
-      tableAlignmentEl.value = settings.tableAlignment || 'center';
-      if (!tableAlignmentEl.dataset.listenerAdded) {
-        tableAlignmentEl.dataset.listenerAdded = 'true';
-        tableAlignmentEl.addEventListener('change', async () => {
-          settings.tableAlignment = tableAlignmentEl.value as TableAlignment;
+    // Table layout
+    const tableLayoutEl = document.getElementById('table-layout') as HTMLSelectElement | null;
+    if (tableLayoutEl) {
+      tableLayoutEl.value = settings.tableLayout || 'center';
+      if (!tableLayoutEl.dataset.listenerAdded) {
+        tableLayoutEl.dataset.listenerAdded = 'true';
+        tableLayoutEl.addEventListener('change', async () => {
+          settings.tableLayout = tableLayoutEl.value as TableLayout;
           await saveSettingsToStorage();
           // Notify all tabs to re-render
-          notifySettingChanged('tableAlignment', settings.tableAlignment);
-        });
-      }
-    }
-
-    // Table style override
-    const tableStyleOverrideEl = document.getElementById('table-style-override') as HTMLSelectElement | null;
-    if (tableStyleOverrideEl) {
-      if (!tableStyleOverrideEl.dataset.listenerAdded) {
-        tableStyleOverrideEl.dataset.listenerAdded = 'true';
-        tableStyleOverrideEl.addEventListener('change', async () => {
-          settings.tableStyleOverride = normalizeTableStyleOverride(tableStyleOverrideEl.value);
-          await saveSettingsToStorage();
-          // Notify all tabs to re-render theme styles
-          notifySettingChanged('tableStyleOverride', settings.tableStyleOverride);
+          notifySettingChanged('tableLayout', settings.tableLayout);
         });
       }
     }
@@ -1489,10 +398,11 @@ export function createSettingsTabManager({
 
   async function loadLocalesIntoSelect(localeSelect: HTMLSelectElement): Promise<void> {
     try {
-      if (!localeRegistry) {
-        const url = chrome.runtime.getURL('_locales/registry.json');
-        const response = await fetch(url);
-        localeRegistry = (await response.json()) as LocaleRegistry;
+      const reg = ensureLocaleRegistry();
+      if (!reg) {
+        console.error('Locale registry not available');
+        localeSelect.value = settings.preferredLocale || DEFAULT_SETTING_LOCALE;
+        return;
       }
 
       // Rebuild options each time to ensure registry order is reflected.
@@ -1503,7 +413,7 @@ export function createSettingsTabManager({
       autoOption.setAttribute('data-i18n', 'settings_language_auto');
       localeSelect.appendChild(autoOption);
 
-      (localeRegistry.locales || []).forEach((locale) => {
+      (reg.locales || []).forEach((locale) => {
         const option = document.createElement('option');
         option.value = locale.code;
         option.textContent = locale.name;
@@ -1520,6 +430,145 @@ export function createSettingsTabManager({
       // Fallback: keep whatever is currently in the DOM
       localeSelect.value = settings.preferredLocale || DEFAULT_SETTING_LOCALE;
     }
+  }
+
+  /**
+   * Get display code for a locale (e.g., "zh_CN" -> "zh", "pt_BR" -> "pt")
+   */
+  function getLocaleDisplayCode(localeCode: string): string {
+    if (localeCode === 'auto') {
+      // Use Chrome's UI language (same as what the extension actually uses)
+      const chromeLocale = chrome.i18n.getUILanguage().replace('-', '_');
+      // Find matching locale in registry
+      const match = localeRegistry?.locales.find(l => 
+        l.code === chromeLocale || 
+        l.code.startsWith(chromeLocale.split('_')[0])
+      );
+      return match ? match.code.split('_')[0] : 'en';
+    }
+    return localeCode.split('_')[0];
+  }
+
+  /**
+   * Setup the compact language selector button and dropdown
+   */
+  async function setupLanguageSelector(): Promise<void> {
+    const langBtn = document.getElementById('language-selector') as HTMLButtonElement | null;
+    const dropdown = document.getElementById('language-dropdown') as HTMLElement | null;
+    const dropdownContent = document.getElementById('language-dropdown-content') as HTMLElement | null;
+
+    if (!langBtn || !dropdown || !dropdownContent) {
+      return;
+    }
+
+    // Load locale registry if not already loaded
+    const reg = ensureLocaleRegistry();
+    if (!reg) {
+      return;
+    }
+
+    // Update button text with current locale code
+    const currentLocale = settings.preferredLocale || DEFAULT_SETTING_LOCALE;
+    langBtn.textContent = getLocaleDisplayCode(currentLocale);
+
+    // Populate dropdown options
+    dropdownContent.innerHTML = '';
+
+    // Add "Auto" option
+    const autoOption = document.createElement('div');
+    autoOption.className = 'language-option' + (currentLocale === 'auto' ? ' active' : '');
+    autoOption.dataset.locale = 'auto';
+    autoOption.innerHTML = `
+      <span class="language-option-code">auto</span>
+      <span data-i18n="settings_language_auto">Auto</span>
+    `;
+    dropdownContent.appendChild(autoOption);
+
+    // Add language options
+    (reg.locales || []).forEach((locale) => {
+      const option = document.createElement('div');
+      option.className = 'language-option' + (currentLocale === locale.code ? ' active' : '');
+      option.dataset.locale = locale.code;
+      option.innerHTML = `
+        <span class="language-option-code">${locale.code.split('_')[0]}</span>
+        <span>${locale.name}</span>
+      `;
+      dropdownContent.appendChild(option);
+    });
+
+    // Apply i18n
+    applyI18nText();
+
+    // Toggle dropdown on button click
+    if (!langBtn.dataset.listenerAdded) {
+      langBtn.dataset.listenerAdded = 'true';
+      langBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isVisible = dropdown.style.display !== 'none';
+        if (isVisible) {
+          dropdown.style.display = 'none';
+        } else {
+          // Position dropdown below button
+          const rect = langBtn.getBoundingClientRect();
+          dropdown.style.top = `${rect.bottom + 4}px`;
+          dropdown.style.right = `${window.innerWidth - rect.right}px`;
+          dropdown.style.display = 'block';
+        }
+      });
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+      dropdown.style.display = 'none';
+    });
+
+    // Handle language option clicks
+    dropdownContent.addEventListener('click', async (e) => {
+      const target = (e.target as HTMLElement).closest('.language-option') as HTMLElement | null;
+      if (!target) return;
+
+      const newLocale = target.dataset.locale;
+      const currentSettingLocale = settings.preferredLocale || DEFAULT_SETTING_LOCALE;
+      if (!newLocale || newLocale === currentSettingLocale) {
+        dropdown.style.display = 'none';
+        return;
+      }
+
+      try {
+        settings.preferredLocale = newLocale;
+        await storageSet({
+          markdownViewerSettings: settings
+        });
+
+        await Localization.setPreferredLocale(newLocale);
+        safeSendMessage({
+          id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          type: 'LOCALE_CHANGED',
+          payload: { locale: newLocale },
+          timestamp: Date.now(),
+          source: 'popup-settings',
+        });
+        
+        // Update button text
+        langBtn.textContent = getLocaleDisplayCode(newLocale);
+
+        // Update active state in dropdown
+        dropdownContent.querySelectorAll<HTMLElement>('.language-option').forEach(opt => {
+          opt.classList.toggle('active', opt.dataset.locale === newLocale);
+        });
+
+        applyI18nText();
+
+        // Reload themes to update names
+        loadThemes();
+
+        dropdown.style.display = 'none';
+        showMessage(translate('settings_language_changed'), 'success');
+      } catch (error) {
+        console.error('Failed to change language:', error);
+        showMessage(translate('settings_save_failed'), 'error');
+      }
+    });
   }
 
   /**
@@ -1662,11 +711,7 @@ export function createSettingsTabManager({
             description: theme.description,
             description_en: theme.description_en,
             category: themeInfo.category,
-            featured: themeInfo.featured || false,
-            layoutScheme: theme.layoutScheme,
-            colorScheme: theme.colorScheme,
-            tableStyle: theme.tableStyle,
-            codeTheme: theme.codeTheme
+            featured: themeInfo.featured || false
           } as ThemeDefinition;
         } catch (error) {
           console.error(`Failed to load theme ${themeInfo.id}:`, error);
@@ -1684,19 +729,6 @@ export function createSettingsTabManager({
         // Get current locale to determine which name to use
         const locale = getUiLocale();
         const useEnglish = !locale.startsWith('zh');
-
-        if (customThemeBundle) {
-          const customGroup = document.createElement('optgroup');
-          customGroup.label = translate('settings_custom_theme_option');
-          const customOption = document.createElement('option');
-          customOption.value = 'custom';
-          customOption.textContent = translate('settings_custom_theme_option');
-          if (currentTheme === 'custom') {
-            customOption.selected = true;
-          }
-          customGroup.appendChild(customOption);
-          themeSelector.appendChild(customGroup);
-        }
 
         // Group themes by category
         const themesByCategory: Record<string, ThemeDefinition[]> = {};
@@ -1745,11 +777,6 @@ export function createSettingsTabManager({
           const target = event.target as HTMLSelectElement;
           switchTheme(target.value);
         });
-
-        populateCustomThemeBaseSelect();
-        if (codeThemeOptions.length === 0) {
-          void loadCodeThemeOptions().then(() => populateCodeThemeSelect());
-        }
       }
     } catch (error) {
       console.error('Failed to load themes:', error);
@@ -1757,102 +784,17 @@ export function createSettingsTabManager({
   }
 
   /**
-   * Load available table styles from registry
-   */
-  async function loadTableStyles(): Promise<void> {
-    try {
-      if (!tableStyleRegistry) {
-        const registryResponse = await fetch(chrome.runtime.getURL('themes/table-styles/registry.json'));
-        tableStyleRegistry = await registryResponse.json();
-      }
-
-      if (tableStyles.length === 0 && tableStyleRegistry?.styles) {
-        const stylePromises = tableStyleRegistry.styles.map(async (styleInfo) => {
-          try {
-            const response = await fetch(chrome.runtime.getURL(`themes/table-styles/${styleInfo.file}`));
-            const style = await response.json();
-            return {
-              id: style.id,
-              name: style.name,
-              name_en: style.name_en,
-              description: style.description,
-              description_en: style.description_en
-            } as TableStyleDefinition;
-          } catch (error) {
-            console.error(`Failed to load table style ${styleInfo.id}:`, error);
-            return null;
-          }
-        });
-
-        tableStyles = (await Promise.all(stylePromises)).filter((t): t is TableStyleDefinition => t !== null);
-      }
-
-      refreshTableStyleSelect();
-    } catch (error) {
-      console.error('Failed to load table styles:', error);
-    }
-  }
-
-  function refreshTableStyleSelect(): void {
-    const tableStyleSelect = document.getElementById('table-style-override') as HTMLSelectElement | null;
-    if (!tableStyleSelect) {
-      return;
-    }
-
-    tableStyleSelect.innerHTML = '';
-
-    const followOption = document.createElement('option');
-    followOption.value = 'theme';
-    followOption.setAttribute('data-i18n', 'settings_table_style_follow_theme');
-    followOption.textContent = translate('settings_table_style_follow_theme');
-    tableStyleSelect.appendChild(followOption);
-
-    const locale = getUiLocale();
-    const useEnglish = !locale.startsWith('zh');
-    tableStyles.forEach((style) => {
-      const option = document.createElement('option');
-      option.value = style.id;
-      option.textContent = useEnglish ? style.name_en : style.name;
-      tableStyleSelect.appendChild(option);
-    });
-
-    const availableIds = new Set(tableStyles.map((style) => style.id));
-    const selected = settings.tableStyleOverride && settings.tableStyleOverride !== 'theme' && availableIds.has(settings.tableStyleOverride)
-      ? settings.tableStyleOverride
-      : 'theme';
-    settings.tableStyleOverride = selected;
-    tableStyleSelect.value = selected;
-
-    applyI18nText();
-  }
-
-  /**
    * Update theme description display
    * @param themeId - Theme ID
    */
   function updateThemeDescription(themeId: string): void {
+    const theme = themes.find(t => t.id === themeId);
     const descEl = document.getElementById('theme-description');
 
-    if (!descEl) {
-      return;
-    }
-
-    if (themeId === 'custom' && customThemeBundle) {
-      const baseTheme = themes.find(t => t.id === customThemeBundle?.basePresetId);
-      const locale = getUiLocale();
-      const useEnglish = !locale.startsWith('zh');
-      const baseName = useEnglish ? (baseTheme?.name_en || customThemeBundle.basePresetId) : (baseTheme?.name || customThemeBundle.basePresetId);
-      descEl.textContent = translate('settings_custom_theme_based_on', [baseName]);
-      return;
-    }
-
-    const theme = themes.find(t => t.id === themeId);
-    if (theme) {
+    if (descEl && theme) {
       const locale = getUiLocale();
       const useEnglish = !locale.startsWith('zh');
       descEl.textContent = useEnglish ? theme.description_en : theme.description;
-    } else {
-      descEl.textContent = '';
     }
   }
 
@@ -1862,10 +804,6 @@ export function createSettingsTabManager({
    */
   async function switchTheme(themeId: string): Promise<void> {
     try {
-      if (themeId === 'custom' && !customThemeBundle) {
-        showMessage(translate('settings_custom_theme_restore_empty'), 'error');
-        return;
-      }
       // Save theme selection
       await storageSet({ selectedTheme: themeId });
       currentTheme = themeId;
@@ -1909,54 +847,6 @@ export function createSettingsTabManager({
       const docxEmojiStyleEl = document.getElementById('docx-emoji-style') as HTMLSelectElement | null;
       if (docxEmojiStyleEl) {
         settings.docxEmojiStyle = docxEmojiStyleEl.value as EmojiStyle;
-      }
-
-      const docxHeadingScaleEl = document.getElementById('docx-heading-scale-pct') as HTMLInputElement | null;
-      if (docxHeadingScaleEl) {
-        settings.docxHeadingScalePct = parseOptionalNumber(docxHeadingScaleEl.value, 1);
-      }
-
-      const docxHeadingSpacingBeforeEl = document.getElementById('docx-heading-spacing-before-pt') as HTMLInputElement | null;
-      if (docxHeadingSpacingBeforeEl) {
-        settings.docxHeadingSpacingBeforePt = parseOptionalNumber(docxHeadingSpacingBeforeEl.value, 0);
-      }
-
-      const docxHeadingSpacingAfterEl = document.getElementById('docx-heading-spacing-after-pt') as HTMLInputElement | null;
-      if (docxHeadingSpacingAfterEl) {
-        settings.docxHeadingSpacingAfterPt = parseOptionalNumber(docxHeadingSpacingAfterEl.value, 0);
-      }
-
-      const docxHeadingAlignmentEl = document.getElementById('docx-heading-alignment') as HTMLSelectElement | null;
-      if (docxHeadingAlignmentEl) {
-        const value = docxHeadingAlignmentEl.value;
-        settings.docxHeadingAlignment = (value === 'left' || value === 'center' || value === 'right' || value === 'justify')
-          ? value as TableAlignment
-          : null;
-      }
-
-      const docxCodeFontSizeEl = document.getElementById('docx-code-font-size-pt') as HTMLInputElement | null;
-      if (docxCodeFontSizeEl) {
-        settings.docxCodeFontSizePt = parseOptionalNumber(docxCodeFontSizeEl.value, 0);
-      }
-
-      const docxTableBorderWidthEl = document.getElementById('docx-table-border-width-pt') as HTMLInputElement | null;
-      if (docxTableBorderWidthEl) {
-        settings.docxTableBorderWidthPt = parseOptionalNumber(docxTableBorderWidthEl.value, 0);
-      }
-
-      const docxTableCellPaddingEl = document.getElementById('docx-table-cell-padding-pt') as HTMLInputElement | null;
-      if (docxTableCellPaddingEl) {
-        settings.docxTableCellPaddingPt = parseOptionalNumber(docxTableCellPaddingEl.value, 0);
-      }
-
-      const tableAlignmentEl = document.getElementById('table-alignment') as HTMLSelectElement | null;
-      if (tableAlignmentEl) {
-        settings.tableAlignment = tableAlignmentEl.value as TableAlignment;
-      }
-
-      const tableStyleOverrideEl = document.getElementById('table-style-override') as HTMLSelectElement | null;
-      if (tableStyleOverrideEl) {
-        settings.tableStyleOverride = normalizeTableStyleOverride(tableStyleOverrideEl.value);
       }
 
       // Load supported file extensions from checkboxes
@@ -2013,13 +903,6 @@ export function createSettingsTabManager({
         preferredLocale: DEFAULT_SETTING_LOCALE,
         docxHrDisplay: 'hide',
         docxEmojiStyle: 'system',
-        docxHeadingScalePct: null,
-        docxHeadingSpacingBeforePt: null,
-        docxHeadingSpacingAfterPt: null,
-        docxHeadingAlignment: null,
-        docxCodeFontSizePt: null,
-        docxTableBorderWidthPt: null,
-        docxTableCellPaddingPt: null,
         supportedExtensions: {
           mermaid: true,
           vega: true,
@@ -2030,8 +913,7 @@ export function createSettingsTabManager({
           drawio: true,
         },
         tableMergeEmpty: true,
-        tableAlignment: 'center',
-        tableStyleOverride: 'theme',
+        tableLayout: 'center',
       };
 
       await storageSet({
@@ -2074,6 +956,7 @@ export function createSettingsTabManager({
     saveSettings,
     resetSettings,
     getSettings,
-    loadThemes
+    loadThemes,
+    setupLanguageSelector
   };
 }
