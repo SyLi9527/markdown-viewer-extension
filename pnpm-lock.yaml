@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@antv/infographic':
-        specifier: ^0.2.7
+        specifier: ^0.2.13
         version: 0.2.13
       '@markdown-viewer/drawio2svg':
-        specifier: ^1.1.1
-        version: 1.1.2
+        specifier: ^1.3.0
+        version: 1.3.0
       '@trbn/jsoncanvas':
         specifier: ^1.0.6
         version: 1.0.6
@@ -35,6 +35,15 @@ importers:
       eventemitter3:
         specifier: ^5.0.1
         version: 5.0.4
+      github-slugger:
+        specifier: ^2.0.0
+        version: 2.0.0
+      hast-util-heading-rank:
+        specifier: ^3.0.0
+        version: 3.0.0
+      hast-util-to-string:
+        specifier: ^3.0.1
+        version: 3.0.1
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
@@ -123,30 +132,15 @@ importers:
       '@types/chrome':
         specifier: ^0.1.32
         version: 0.1.36
-      '@types/hast':
-        specifier: ^3.0.4
-        version: 3.0.4
-      '@types/mdast':
-        specifier: ^4.0.4
-        version: 4.0.4
       '@types/node':
         specifier: ^25.0.3
         version: 25.2.0
-      '@types/pako':
-        specifier: ^2.0.4
-        version: 2.0.4
-      '@types/unist':
-        specifier: ^3.0.3
-        version: 3.0.3
       '@types/vscode':
         specifier: ^1.107.0
         version: 1.108.1
       '@vscode/vsce':
         specifier: ^3.7.1
         version: 3.7.1
-      fibjs:
-        specifier: ^0.1.8
-        version: 0.1.8
       knip:
         specifier: ^5.80.0
         version: 5.82.1(@types/node@25.2.0)(typescript@5.9.3)
@@ -787,8 +781,8 @@ packages:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
 
-  '@markdown-viewer/drawio2svg@1.1.2':
-    resolution: {integrity: sha512-Mh02P750sckuxgZzNAf8fIbIp4yHcLesWVJfqInfYb0sKPO/HB+1MOGidtsScSuRh5CTKU8Ua4yac1R/w1Z9cQ==}
+  '@markdown-viewer/drawio2svg@1.3.0':
+    resolution: {integrity: sha512-NCb+EF2BSqUcHp9QZiZjPeLXcAtgwwlo6L0n7fAsciKBTv3Fc5Y1AvKIbCdu/GvKRm5ypSKESTSmAfcN4P1ddA==}
     engines: {fibjs: '>=0.38.0'}
 
   '@mermaid-js/parser@0.6.3':
@@ -1434,9 +1428,6 @@ packages:
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
-
-  '@types/pako@2.0.4':
-    resolution: {integrity: sha512-VWDCbrLeVXJM9fihYodcLiIv0ku+AlOa/TQ1SvYOaBuyrSKgEcro95LJyIsJ4vSo6BXIxOKxiJAat04CmST9Fw==}
 
   '@types/sarif@2.1.7':
     resolution: {integrity: sha512-kRz0VEkJqWLf1LLVN4pT1cg1Z9wAuvI6L97V3m2f5B76Tg8d413ddvLBPTEHAZJlnn4XSvu0FkZtViCQGVyrXQ==}
@@ -2110,10 +2101,6 @@ packages:
   fd-slicer@1.1.0:
     resolution: {integrity: sha512-cE1qsB/VwyQozZ+q1dGxR8LBYNZeofhEdUNGSMbQD3Gw2lAzX9Zb3uIU6Ebc/Fmyjo9AWWfnn0AUCHqtevs/8g==}
 
-  fibjs@0.1.8:
-    resolution: {integrity: sha512-o1qxYiXhxrFmAQgsBQWg8mdvNc9E4UksJOjLn3nol1Hk1aPRHalz1ixP2fBLN2ktHQ3kPwMF6yRqjOyX7WOk4A==}
-    hasBin: true
-
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
@@ -2169,8 +2156,8 @@ packages:
     resolution: {integrity: sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g==}
     engines: {node: '>= 0.4'}
 
-  get-tsconfig@4.13.3:
-    resolution: {integrity: sha512-vp8Cj/+9Q/ibZUrq1rhy8mCTQpCk31A3uu9wc1C50yAb3x2pFHOsGdAZQ7jD86ARayyxZUViYeIztW+GE8dcrg==}
+  get-tsconfig@4.13.6:
+    resolution: {integrity: sha512-shZT/QMiSHc/YBLxxOkMtgSid5HFoauqCE3/exfsEcwg1WkeqjG+V40yBbBrsD+jW2HDXcs28xOfcbm2jI8Ddw==}
 
   github-from-package@0.0.0:
     resolution: {integrity: sha512-SyHy3T1v2NUXn29OsWdxmK6RwHD+vkj3v8en8AOBZ1wBQ/hCAQ5bAQTD02kW4W9tUp/3Qh6J8r9EvntiyCmOOw==}
@@ -4504,7 +4491,7 @@ snapshots:
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
 
-  '@markdown-viewer/drawio2svg@1.1.2':
+  '@markdown-viewer/drawio2svg@1.3.0':
     dependencies:
       pako: 2.1.0
 
@@ -5352,8 +5339,6 @@ snapshots:
 
   '@types/normalize-package-data@2.4.4': {}
 
-  '@types/pako@2.0.4': {}
-
   '@types/sarif@2.1.7': {}
 
   '@types/trusted-types@2.0.7':
@@ -6112,8 +6097,6 @@ snapshots:
     dependencies:
       pend: 1.2.0
 
-  fibjs@0.1.8: {}
-
   fill-range@7.1.1:
     dependencies:
       to-regex-range: 5.0.1
@@ -6175,7 +6158,7 @@ snapshots:
       dunder-proto: 1.0.1
       es-object-atoms: 1.1.1
 
-  get-tsconfig@4.13.3:
+  get-tsconfig@4.13.6:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
@@ -7669,7 +7652,7 @@ snapshots:
   tsx@4.21.0:
     dependencies:
       esbuild: 0.27.3
-      get-tsconfig: 4.13.3
+      get-tsconfig: 4.13.6
     optionalDependencies:
       fsevents: 2.3.3
 

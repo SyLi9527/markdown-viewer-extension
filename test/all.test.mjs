@@ -18,3 +18,5 @@ import './inline-markdown.test.ts';
 import './markdown-linter.test.ts';
 import './remark-inline-html.test.js';
 import './table-merge-utils.test.ts';
+import './core-extra.test.ts';
+import './plugins-extra.test.ts';
